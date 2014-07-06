@@ -42,7 +42,7 @@ public class ThirdPersonMotor : MonoBehaviour
         {
             // Rotate the character to match the direction the camera is facing
             this.transform.rotation = Quaternion.Euler(
-                this.transform.eulerAngles.x, Camera.main.transform.eulerAngles.y, this.transform.eulerAngles.z);
+                this.transform.eulerAngles.x, ThirdPersonCameraController.Camera.transform.eulerAngles.y, this.transform.eulerAngles.z);
         }
     }
 

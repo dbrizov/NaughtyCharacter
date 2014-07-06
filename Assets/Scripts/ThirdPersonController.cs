@@ -22,13 +22,11 @@ public class ThirdPersonController : MonoBehaviour
 
     private void Update()
     {
-        if (Camera.main == null)
+        if (ThirdPersonCameraController.Camera != null)
         {
-            return;
+            ThirdPersonMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
+            ThirdPersonMotor.Instance.UpdateMotor();
         }
-
-        ThirdPersonMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
-        ThirdPersonMotor.Instance.UpdateMotor();
     }
 
     #endregion Unity Events
