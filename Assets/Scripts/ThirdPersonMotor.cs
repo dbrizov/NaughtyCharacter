@@ -54,7 +54,7 @@ public class ThirdPersonMotor : MonoBehaviour
         // Normalize MoveVector if Magnitude > 1
         if (this.MoveVector.magnitude > 1)
         {
-            this.MoveVector.Normalize();
+            this.MoveVector = Vector3.Normalize(this.MoveVector);
         }
 
         // Multiply MoveVector by moveSpeed
