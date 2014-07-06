@@ -22,6 +22,10 @@ public class ThirdPersonMotor : MonoBehaviour
 
     #endregion Unity Events
 
+    /// <summary>
+    /// Gets a reference to this instance.
+    /// </summary>
+    /// <value>The instance.</value>
     public static ThirdPersonMotor Instance
     {
         get
@@ -30,6 +34,9 @@ public class ThirdPersonMotor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the motor so that any motion data is converted to character movement.
+    /// </summary>
     public void UpdateMotor()
     {
         this.SnapAlignCharacterWithCamera();

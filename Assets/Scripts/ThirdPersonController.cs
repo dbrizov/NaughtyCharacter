@@ -31,6 +31,10 @@ public class ThirdPersonController : MonoBehaviour
 
     #endregion Unity Events
 
+    /// <summary>
+    /// Gets the character controller.
+    /// </summary>
+    /// <value>The character controller.</value>
     public static CharacterController CharacterController
     {
         get
@@ -39,6 +43,10 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets a reference to this instance.
+    /// </summary>
+    /// <value>The instance.</value>
     public static ThirdPersonController Instance
     {
         get
