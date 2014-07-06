@@ -7,15 +7,15 @@ using System.Collections;
 /// </summary>
 public class ThirdPersonController : MonoBehaviour
 {
-    public static CharacterController CharacterController;
-    public static ThirdPersonController Instance;
+    private static CharacterController characterController;
+    private static ThirdPersonController instance;
 
     #region Unity Events
 
     private void Awake()
     {
-        CharacterController = this.GetComponent<CharacterController>();
-        Instance = this;
+        characterController = this.GetComponent<CharacterController>();
+        instance = this;
     }
 
     private void Update()
@@ -29,6 +29,22 @@ public class ThirdPersonController : MonoBehaviour
     }
 
     #endregion Unity Events
+
+    public static CharacterController CharacterController
+    {
+        get
+        {
+            return characterController;
+        }
+    }
+
+    public static ThirdPersonController Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     private void GetLocomotionInput()
     {

@@ -7,7 +7,7 @@ using System.Collections;
 /// </summary>
 public class ThirdPersonMotor : MonoBehaviour
 {
-    public static ThirdPersonMotor Instance;
+    private static ThirdPersonMotor instance;
 
     public float moveSpeed = 10.0f;
 
@@ -17,10 +17,18 @@ public class ThirdPersonMotor : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        instance = this;
     }
 
     #endregion Unity Events
+
+    public static ThirdPersonMotor Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
 
     public void UpdateMotor()
     {
