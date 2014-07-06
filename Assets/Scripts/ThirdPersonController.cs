@@ -10,6 +10,8 @@ public class ThirdPersonController : MonoBehaviour
     private static CharacterController characterController;
     private static ThirdPersonController instance;
 
+    public float moveVectorDeadZone = 0.1f; // The character will move only if any of the "x" and "z" properties of the MoveVector is greated then the dead zone;
+
     #region Unity Events
 
     private void Awake()
@@ -25,7 +27,8 @@ public class ThirdPersonController : MonoBehaviour
             return;
         }
 
-        this.GetLocomotionInput();
+        ThirdPersonMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
+        ThirdPersonMotor.Instance.UpdateMotor();
     }
 
     #endregion Unity Events
@@ -46,8 +49,22 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
-    private void GetLocomotionInput()
+    private Vector3 GetMoveVectorFromInput()
     {
+        Vector3 moveVector = Vector3.zero;
 
+        float xAxis = Input.GetAxis("Horizontal");
+        if (Mathf.Abs(xAxis) > this.moveVectorDeadZone)
+        {
+            moveVector.x += xAxis;
+        }
+
+        float zAxis = Input.GetAxis("Vertical");
+        if (Mathf.Abs(zAxis) > this.moveVectorDeadZone)
+        {
+            moveVector.z += zAxis;
+        }
+
+        return moveVector;
     }
 }
