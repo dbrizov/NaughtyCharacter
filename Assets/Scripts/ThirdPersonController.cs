@@ -10,6 +10,8 @@ public class ThirdPersonController : MonoBehaviour
     public static CharacterController CharacterController;
     public static ThirdPersonController Instance;
 
+    #region Unity Events
+
     private void Awake()
     {
         CharacterController = this.GetComponent<CharacterController>();
@@ -25,6 +27,8 @@ public class ThirdPersonController : MonoBehaviour
 
         this.GetLocomotionInput();
     }
+
+    #endregion Unity Events
 
     private void GetLocomotionInput()
     {
