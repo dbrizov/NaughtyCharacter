@@ -30,8 +30,8 @@ public class ThirdPersonCameraController : MonoBehaviour
     public float mouseYSensitivity = 5.0f;
     public float mouseWheelSensitivity = 5.0f;
     public float mouseWheelDeadZone = 0.1f;
-    public float upperMouseYRotationLimit = -40.0f; // In degrees
-    public float lowerMouseYRotationLimit = 80.0f; // In degrees
+    public float upperMouseYRotationLimit = 80.0f; // In degrees
+    public float lowerMouseYRotationLimit = -40.0f; // In degrees
 
     #region Unity Events
 
