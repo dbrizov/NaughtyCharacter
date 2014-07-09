@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BallController : MonoBehaviour
@@ -16,7 +16,7 @@ public class BallController : MonoBehaviour
 
     private void Update()
     {
-        if (BallCameraController.Camera != null)
+        if (ThirdPersonCameraController.Camera != null)
         {
             BallMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
             BallMotor.Instance.UpdateMotor();

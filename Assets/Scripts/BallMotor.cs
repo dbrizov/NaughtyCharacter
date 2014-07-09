@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class BallMotor : MonoBehaviour
 {
     private static BallMotor instance;
 
-    private GameObject dummy;
+    private GameObject cameraAligner; // A dummy game object that helps for proper convertion of the moveVector from Local-Space to World-Space
     private Vector3 moveVector = Vector3.zero;
     
     public float moveSpeed = 750.0f;
@@ -19,8 +19,8 @@ public class BallMotor : MonoBehaviour
 
     private void Start()
     {
-        this.dummy = new GameObject("Dummy");
-        this.dummy.transform.position = Vector3.zero;
+        this.cameraAligner = new GameObject("_CameraAligner");
+        this.cameraAligner.transform.position = Vector3.zero;
     }
 
     #endregion Unity Events
@@ -49,21 +49,21 @@ public class BallMotor : MonoBehaviour
     {
         if (this.IsBallMoving())
         {
-            this.SnapAlignDummyWithCamera();
+            this.SnapAlignCameraAlignerWithCamera();
             this.ProcessMotion();
         }
     }
 
-    private void SnapAlignDummyWithCamera()
+    private void SnapAlignCameraAlignerWithCamera()
     {
-        this.dummy.transform.rotation = Quaternion.Euler(
-            this.dummy.transform.eulerAngles.x, BallCameraController.Camera.transform.eulerAngles.y, this.dummy.transform.eulerAngles.z);
+        this.cameraAligner.transform.rotation = Quaternion.Euler(
+            this.cameraAligner.transform.eulerAngles.x, ThirdPersonCameraController.Camera.transform.eulerAngles.y, this.cameraAligner.transform.eulerAngles.z);
     }
 
     private void ProcessMotion()
     {
-        // Transform MoveVector to World Space relative to Dummy's orientation
-        this.MoveVector = this.dummy.transform.TransformDirection(this.MoveVector);
+        // Transform MoveVector to World Space relative to cameraAligner's orientation
+        this.MoveVector = this.cameraAligner.transform.TransformDirection(this.MoveVector);
 
         if (this.MoveVector.magnitude> 1.0f)
         {
