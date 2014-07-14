@@ -57,7 +57,6 @@ public class ThirdPersonCameraController : MonoBehaviour
     }
 
     public static Camera Camera
-
     {
         get
         {
