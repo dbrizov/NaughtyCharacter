@@ -114,11 +114,11 @@ public class ThirdPersonCameraController : MonoBehaviour
 
         if (this.camera != null)
         {
-            float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad;
-            float aspectRatio = this.camera.aspect;
+            float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
+            float aspectRatio = this.camera.aspect; // viewportWidth / viewportHeight
             float distanceToNearClipPlane = this.camera.nearClipPlane;
-            float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane;
-            float halfWidth = halfHeight * aspectRatio;
+            float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's frustum
+            float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's frustum
 
             nearClipPlanePoints.UpperLeft = this.transform.position - this.transform.right * halfWidth;
             nearClipPlanePoints.UpperLeft += this.transform.up * halfHeight;
