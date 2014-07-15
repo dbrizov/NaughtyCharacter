@@ -4,6 +4,17 @@ using Utils;
 
 public class ThirdPersonCameraController : MonoBehaviour
 {
+    private struct ClipPlanePoints
+    {
+        public Vector3 UpperLeft { get; set; }
+
+        public Vector3 UpperRight { get; set; }
+
+        public Vector3 LowerLeft { get; set; }
+
+        public Vector3 LowerRight { get; set; }
+    }
+
     private static ThirdPersonCameraController instance;
     private static Camera cameraInstance;
 
@@ -14,7 +25,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     public float distanceToTarget = 5.0f; // In meters
     public float minDistanceToTarget = 2.0f;
     public float maxDistanceToTarget = 20.0f;
-    public float catchUpSpeed = 7.5f; // In meters/second
+    public float catchUpSpeed = 10.0f; // In meters/second
     public float mouseXSensitivity = 5.0f;
     public float mouseYSensitivity = 5.0f;
     public float mouseWheelSensitivity = 5.0f;
@@ -73,8 +84,7 @@ public class ThirdPersonCameraController : MonoBehaviour
             outMouseXRotation += Input.GetAxis("Mouse X") * this.mouseXSensitivity;
             outMouseYRotation -= Input.GetAxis("Mouse Y") * this.mouseYSensitivity;
 
-            outMouseYRotation =
-                MathfUtils.ClampAngle(outMouseYRotation, this.mouseYRotationLowerLimit, this.mouseYRotationUpperLimit);
+            outMouseYRotation = Mathf.Clamp(outMouseYRotation, this.mouseYRotationLowerLimit, this.mouseYRotationUpperLimit);
         }
 
         // Calculate the new distance to target
@@ -96,5 +106,37 @@ public class ThirdPersonCameraController : MonoBehaviour
     {
         this.transform.position = Vector3.Lerp(this.transform.position, position, this.catchUpSpeed * Time.deltaTime);
         this.transform.LookAt(this.targetToLookAt);
+    }
+
+    private ClipPlanePoints GetNearClipPlanePoints()
+    {
+        ClipPlanePoints nearClipPlanePoints = new ClipPlanePoints();
+
+        if (this.camera != null)
+        {
+            float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad;
+            float aspectRatio = this.camera.aspect;
+            float distanceToNearClipPlane = this.camera.nearClipPlane;
+            float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane;
+            float halfWidth = halfHeight * aspectRatio;
+
+            nearClipPlanePoints.UpperLeft = this.transform.position - this.transform.right * halfWidth;
+            nearClipPlanePoints.UpperLeft += this.transform.up * halfHeight;
+            nearClipPlanePoints.UpperLeft += this.transform.forward * distanceToNearClipPlane;
+
+            nearClipPlanePoints.UpperRight = this.transform.position + this.transform.right * halfWidth;
+            nearClipPlanePoints.UpperRight += this.transform.up * halfHeight;
+            nearClipPlanePoints.UpperRight += this.transform.forward * distanceToNearClipPlane;
+
+            nearClipPlanePoints.LowerLeft = this.transform.position - this.transform.right * halfWidth;
+            nearClipPlanePoints.LowerLeft -= this.transform.up * halfHeight;
+            nearClipPlanePoints.LowerLeft += this.transform.forward * distanceToNearClipPlane;
+
+            nearClipPlanePoints.LowerRight = this.transform.position + this.transform.right * halfWidth;
+            nearClipPlanePoints.LowerRight -= this.transform.up * halfHeight;
+            nearClipPlanePoints.LowerRight += this.transform.forward * distanceToNearClipPlane;
+        }
+
+        return nearClipPlanePoints;
     }
 }
