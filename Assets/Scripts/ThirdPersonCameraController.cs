@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using Utils;
 
 public class ThirdPersonCameraController : MonoBehaviour
 {
-    private struct ClipPlanePoints
+    private struct ClipPlaneCornerPoints
     {
         public Vector3 UpperLeft { get; set; }
 
@@ -20,6 +21,7 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     private float mouseXRotation = 0.0f; // In degrees
     private float mouseYRotation = 20.0f; // In degrees
+    private int ignorePlayerBitMask; // When checking for camera collisions/occlusions we need to ignore collisions/occlusions with players
 
     public Transform targetToLookAt;
     public float distanceToTarget = 5.0f; // In meters
@@ -31,6 +33,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     public float mouseWheelSensitivity = 5.0f;
     public float mouseYRotationUpperLimit = 80.0f; // In degrees
     public float mouseYRotationLowerLimit = -40.0f; // In degrees
+    public int playerLayer; // The index of the Player Layer
 
     #region Unity Events
 
@@ -38,6 +41,8 @@ public class ThirdPersonCameraController : MonoBehaviour
     {
         instance = this;
         cameraInstance = this.camera;
+
+        this.ignorePlayerBitMask = ~(1 << this.playerLayer);
     }
 
     private void Start()
@@ -52,6 +57,12 @@ public class ThirdPersonCameraController : MonoBehaviour
             this.HandlePlayerInput(ref this.distanceToTarget, ref this.mouseXRotation, ref this.mouseYRotation);
 
             Vector3 newPosition = this.CalculateNewCameraPosition(this.distanceToTarget, this.mouseXRotation, this.mouseYRotation);
+
+            float nearestCollisionDistance = this.CheckCameraCollisionPoints(newPosition);
+            if (nearestCollisionDistance > -1.0f)
+            {
+                Debug.Log(nearestCollisionDistance);
+            }
 
             this.UpdatePosition(newPosition);
         }
@@ -108,9 +119,9 @@ public class ThirdPersonCameraController : MonoBehaviour
         this.transform.LookAt(this.targetToLookAt);
     }
 
-    private ClipPlanePoints GetNearClipPlanePoints()
+    private ClipPlaneCornerPoints GetNearClipPlaneCornerPoints(Vector3 cameraPosition)
     {
-        ClipPlanePoints nearClipPlanePoints = new ClipPlanePoints();
+        ClipPlaneCornerPoints nearClipPlanePoints = new ClipPlaneCornerPoints();
 
         if (this.camera != null)
         {
@@ -120,23 +131,68 @@ public class ThirdPersonCameraController : MonoBehaviour
             float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's frustum
             float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's frustum
 
-            nearClipPlanePoints.UpperLeft = this.transform.position - this.transform.right * halfWidth;
+            nearClipPlanePoints.UpperLeft = cameraPosition - this.transform.right * halfWidth;
             nearClipPlanePoints.UpperLeft += this.transform.up * halfHeight;
             nearClipPlanePoints.UpperLeft += this.transform.forward * distanceToNearClipPlane;
 
-            nearClipPlanePoints.UpperRight = this.transform.position + this.transform.right * halfWidth;
+            nearClipPlanePoints.UpperRight = cameraPosition + this.transform.right * halfWidth;
             nearClipPlanePoints.UpperRight += this.transform.up * halfHeight;
             nearClipPlanePoints.UpperRight += this.transform.forward * distanceToNearClipPlane;
 
-            nearClipPlanePoints.LowerLeft = this.transform.position - this.transform.right * halfWidth;
+            nearClipPlanePoints.LowerLeft = cameraPosition - this.transform.right * halfWidth;
             nearClipPlanePoints.LowerLeft -= this.transform.up * halfHeight;
             nearClipPlanePoints.LowerLeft += this.transform.forward * distanceToNearClipPlane;
 
-            nearClipPlanePoints.LowerRight = this.transform.position + this.transform.right * halfWidth;
+            nearClipPlanePoints.LowerRight = cameraPosition + this.transform.right * halfWidth;
             nearClipPlanePoints.LowerRight -= this.transform.up * halfHeight;
             nearClipPlanePoints.LowerRight += this.transform.forward * distanceToNearClipPlane;
         }
 
         return nearClipPlanePoints;
+    }
+
+    /// <summary>
+    /// Checks the camera collision points and returns the nearest collision distance.
+    /// </summary>
+    /// <returns>-1, if there are no collisions, else it returnes the nearest collision distance</returns>
+    /// <param name="cameraPosition">The position of the camera.</param>
+    private float CheckCameraCollisionPoints(Vector3 cameraPosition)
+    {
+        float nearestCollisionDistance = -1.0f;
+
+        ClipPlaneCornerPoints nearClipPlaneCornerPoints = this.GetNearClipPlaneCornerPoints(cameraPosition);
+
+        // Draw the lines to the collision points for debugging
+        Debug.DrawLine(this.targetToLookAt.position, cameraPosition - this.transform.forward * this.camera.nearClipPlane, Color.red);
+        Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.UpperLeft, Color.green);
+        Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.UpperRight, Color.green);
+        Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.LowerLeft, Color.green);
+        Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.LowerRight, Color.green);
+        Debug.DrawLine(nearClipPlaneCornerPoints.UpperLeft, nearClipPlaneCornerPoints.UpperRight, Color.green);
+        Debug.DrawLine(nearClipPlaneCornerPoints.UpperRight, nearClipPlaneCornerPoints.LowerRight, Color.green);
+        Debug.DrawLine(nearClipPlaneCornerPoints.LowerRight, nearClipPlaneCornerPoints.LowerLeft, Color.green);
+        Debug.DrawLine(nearClipPlaneCornerPoints.LowerLeft, nearClipPlaneCornerPoints.UpperLeft, Color.green);
+
+        // Cast lines to the collision points to see if the camera is occluded
+        RaycastHit hit;
+        IList<Vector3> collisionPoints = new List<Vector3>();
+        collisionPoints.Add(nearClipPlaneCornerPoints.UpperLeft);
+        collisionPoints.Add(nearClipPlaneCornerPoints.UpperRight);
+        collisionPoints.Add(nearClipPlaneCornerPoints.LowerLeft);
+        collisionPoints.Add(nearClipPlaneCornerPoints.LowerRight);
+        collisionPoints.Add(cameraPosition - this.transform.forward * this.camera.nearClipPlane);
+
+        foreach (var collisionPoint in collisionPoints)
+        {
+            if (Physics.Linecast(this.targetToLookAt.position, collisionPoint, out hit, this.ignorePlayerBitMask))
+            {
+                if (hit.distance < nearestCollisionDistance || nearestCollisionDistance == -1.0f)
+                {
+                    nearestCollisionDistance = hit.distance;
+                }
+            }
+        }
+
+        return nearestCollisionDistance;
     }
 }
