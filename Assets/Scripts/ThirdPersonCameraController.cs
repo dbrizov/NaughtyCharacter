@@ -22,10 +22,11 @@ public class ThirdPersonCameraController : MonoBehaviour
     private float mouseXRotation = 0.0f; // In degrees
     private float mouseYRotation = 20.0f; // In degrees
     private int ignorePlayerBitMask; // When checking for camera collisions/occlusions we need to ignore collisions/occlusions with players
+    private float distanceToTargetWhenCameraIsOccluded;
 
     public Transform targetToLookAt;
     public float distanceToTarget = 5.0f; // In meters
-    public float minDistanceToTarget = 2.0f;
+    public float minDistanceToTarget = 1.0f;
     public float maxDistanceToTarget = 20.0f;
     public float catchUpSpeed = 10.0f; // In meters/second
     public float mouseXSensitivity = 5.0f;
@@ -58,10 +59,9 @@ public class ThirdPersonCameraController : MonoBehaviour
 
             Vector3 newPosition = this.CalculateNewCameraPosition(this.distanceToTarget, this.mouseXRotation, this.mouseYRotation);
 
-            float nearestCollisionDistance = this.CheckCameraCollisionPoints(newPosition);
-            if (nearestCollisionDistance > -1.0f)
+            if (this.IsCameraOccluded(newPosition, ref this.distanceToTargetWhenCameraIsOccluded))
             {
-                Debug.Log(nearestCollisionDistance);
+                newPosition = this.CalculateNewCameraPosition(this.distanceToTargetWhenCameraIsOccluded, this.mouseXRotation, this.mouseYRotation);
             }
 
             this.UpdatePosition(newPosition);
@@ -194,5 +194,21 @@ public class ThirdPersonCameraController : MonoBehaviour
         }
 
         return nearestCollisionDistance;
+    }
+
+    private bool IsCameraOccluded(Vector3 cameraPosition, ref float outDistanceToTarget)
+    {
+        bool isOccluded = false;
+
+        float nearestCollisionDistance = this.CheckCameraCollisionPoints(cameraPosition);
+
+        if (nearestCollisionDistance > -1.0f)
+        {
+            isOccluded = true;
+
+            outDistanceToTarget = nearestCollisionDistance - this.camera.nearClipPlane;
+        }
+
+        return isOccluded;
     }
 }
