@@ -23,6 +23,8 @@ public class ThirdPersonCameraController : MonoBehaviour
     private float mouseYRotation = 20.0f; // In degrees
     private int ignorePlayerBitMask; // When checking for camera collisions/occlusions we need to ignore collisions/occlusions with players
     private float distanceToTargetWhenCameraIsOccluded;
+    private int maxOcclusionChecks = 5; // Each frame we check if the camera is occluded 5 times total
+    private int currentOcclusionCheck = 0; // The currentOcclusion check. If it exceeds the maxOcclusionChecks, then the loop breaks
 
     public Transform targetToLookAt;
     public float distanceToTarget = 5.0f; // In meters
@@ -59,10 +61,15 @@ public class ThirdPersonCameraController : MonoBehaviour
 
             Vector3 newPosition = this.CalculateNewCameraPosition(this.distanceToTarget, this.mouseXRotation, this.mouseYRotation);
 
-            if (this.IsCameraOccluded(newPosition, ref this.distanceToTargetWhenCameraIsOccluded))
+            this.currentOcclusionCheck = 0;
+            while (this.IsCameraOccluded(newPosition, ref this.distanceToTargetWhenCameraIsOccluded) &&
+                   this.currentOcclusionCheck < this.maxOcclusionChecks)
             {
                 newPosition = this.CalculateNewCameraPosition(this.distanceToTargetWhenCameraIsOccluded, this.mouseXRotation, this.mouseYRotation);
+                this.currentOcclusionCheck++;
             }
+
+            Debug.Log(this.currentOcclusionCheck);
 
             this.UpdatePosition(newPosition);
         }
@@ -113,9 +120,9 @@ public class ThirdPersonCameraController : MonoBehaviour
         return newPosition;
     }
 
-    private void UpdatePosition(Vector3 position)
+    private void UpdatePosition(Vector3 newPosition)
     {
-        this.transform.position = Vector3.Lerp(this.transform.position, position, this.catchUpSpeed * Time.deltaTime);
+        this.transform.position = Vector3.Lerp(this.transform.position, newPosition, this.catchUpSpeed * Time.deltaTime);
         this.transform.LookAt(this.targetToLookAt);
     }
 
@@ -128,8 +135,8 @@ public class ThirdPersonCameraController : MonoBehaviour
             float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
             float aspectRatio = this.camera.aspect; // viewportWidth / viewportHeight
             float distanceToNearClipPlane = this.camera.nearClipPlane;
-            float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's frustum
-            float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's frustum
+            float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's view frustum
+            float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's view frustum
 
             nearClipPlanePoints.UpperLeft = cameraPosition - this.transform.right * halfWidth;
             nearClipPlanePoints.UpperLeft += this.transform.up * halfHeight;
@@ -153,8 +160,9 @@ public class ThirdPersonCameraController : MonoBehaviour
 
     /// <summary>
     /// Checks the camera collision points and returns the nearest collision distance.
+    /// The nearest collision distance is -1, if there are no collisions, else it is greater than -1
     /// </summary>
-    /// <returns>-1, if there are no collisions, else it returnes the nearest collision distance</returns>
+    /// <returns>If there are no collisions returns -1. Else it returns a float greater than -1</returns>
     /// <param name="cameraPosition">The position of the camera.</param>
     private float CheckCameraCollisionPoints(Vector3 cameraPosition)
     {
