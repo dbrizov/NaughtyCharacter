@@ -23,19 +23,19 @@ public class ThirdPersonCameraController : MonoBehaviour
     private float mouseYRotation = 20.0f; // In degrees
     private int ignorePlayerBitMask; // When checking for camera collisions/occlusions we need to ignore collisions/occlusions with players
     private float distanceToTargetWhenCameraIsOccluded;
-    private int maxOcclusionChecks = 5; // Each frame we check if the camera is occluded 5 times total
     private int currentOcclusionCheck = 0; // The currentOcclusion check. If it exceeds the maxOcclusionChecks, then the loop breaks
 
     public Transform targetToLookAt;
-    public float distanceToTarget = 5.0f; // In meters
+    public float distanceToTarget = 3.0f; // In meters
     public float minDistanceToTarget = 1.0f;
     public float maxDistanceToTarget = 20.0f;
+    public int maxOcclusionChecks = 5; // Each frame we check if the camera is occluded 5 times total
     public float catchUpSpeed = 10.0f; // In meters/second
     public float mouseXSensitivity = 5.0f;
     public float mouseYSensitivity = 5.0f;
     public float mouseWheelSensitivity = 5.0f;
     public float mouseYRotationUpperLimit = 80.0f; // In degrees
-    public float mouseYRotationLowerLimit = -40.0f; // In degrees
+    public float mouseYRotationLowerLimit = -50.0f; // In degrees
     public int playerLayer; // The index of the Player Layer
 
     #region Unity Events
@@ -68,8 +68,6 @@ public class ThirdPersonCameraController : MonoBehaviour
                 newPosition = this.CalculateNewCameraPosition(this.distanceToTargetWhenCameraIsOccluded, this.mouseXRotation, this.mouseYRotation);
                 this.currentOcclusionCheck++;
             }
-
-            Debug.Log(this.currentOcclusionCheck);
 
             this.UpdatePosition(newPosition);
         }

@@ -5,10 +5,10 @@ using System.Collections;
 /// Third person controller.
 /// Processes player input and sends the input as "Move Vector" to the ThirdPersonMotor.
 /// </summary>
-public class ThirdPersonController : MonoBehaviour
+public class ThirdPersonCharacterController : MonoBehaviour
 {
     private static CharacterController characterController;
-    private static ThirdPersonController instance;
+    private static ThirdPersonCharacterController instance;
 
     public float moveVectorDeadZone = 0.1f; // The character will move only if any of the "x" and "z" properties of the MoveVector is greated then the dead zone;
 
@@ -24,8 +24,8 @@ public class ThirdPersonController : MonoBehaviour
     {
         if (ThirdPersonCameraController.Camera != null)
         {
-            ThirdPersonMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
-            ThirdPersonMotor.Instance.UpdateMotor();
+            ThirdPersonCharacterMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
+            ThirdPersonCharacterMotor.Instance.UpdateMotor();
         }
     }
 
@@ -47,7 +47,7 @@ public class ThirdPersonController : MonoBehaviour
     /// Gets a reference to this instance.
     /// </summary>
     /// <value>The instance.</value>
-    public static ThirdPersonController Instance
+    public static ThirdPersonCharacterController Instance
     {
         get
         {
