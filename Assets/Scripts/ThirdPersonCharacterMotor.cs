@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Third person motor.
+/// Third person character motor.
 /// Processes the MoveVector and moves the character
 /// </summary>
 public class ThirdPersonCharacterMotor : MonoBehaviour
@@ -13,21 +13,6 @@ public class ThirdPersonCharacterMotor : MonoBehaviour
     private Vector3 moveVector;
 
     public float moveSpeed = 10.0f;
-
-    #region Unity Events
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
-    private void Start()
-    {
-        this.cameraAligner = new GameObject("_CameraAligner");
-        this.cameraAligner.transform.position = Vector3.zero;
-    }
-
-    #endregion Unity Events
 
     /// <summary>
     /// Gets a reference to this instance.
@@ -41,6 +26,10 @@ public class ThirdPersonCharacterMotor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets or sets the move vector.
+    /// </summary>
+    /// <value>The move vector.</value>
     public Vector3 MoveVector
     {
         get
@@ -52,6 +41,21 @@ public class ThirdPersonCharacterMotor : MonoBehaviour
             this.moveVector = value;
         }
     }
+    
+    #region Unity Events
+    
+    private void Awake()
+    {
+        instance = this;
+    }
+    
+    private void Start()
+    {
+        this.cameraAligner = new GameObject("_CameraAligner");
+        this.cameraAligner.transform.position = Vector3.zero;
+    }
+    
+    #endregion Unity Events
 
     /// <summary>
     /// Updates the motor so that any motion data is converted to character movement.

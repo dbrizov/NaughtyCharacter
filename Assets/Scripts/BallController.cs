@@ -7,13 +7,21 @@ public class BallController : MonoBehaviour
 
     public float moveVectorDeadZone = 0.1f;
 
+    public static BallController Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    
     #region Unity Events
-
+    
     private void Awake()
     {
         instance = this;
     }
-
+    
     private void Update()
     {
         if (ThirdPersonCameraController.Camera != null)
@@ -22,16 +30,8 @@ public class BallController : MonoBehaviour
             BallMotor.Instance.UpdateMotor();
         }
     }
-
+    
     #endregion Unity Events
-
-    public static BallController Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
 
     private Vector3 GetMoveVectorFromInput()
     {

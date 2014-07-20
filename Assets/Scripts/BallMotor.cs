@@ -10,21 +10,6 @@ public class BallMotor : MonoBehaviour
     
     public float moveSpeed = 750.0f;
 
-    #region Unity Events
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
-    private void Start()
-    {
-        this.cameraAligner = new GameObject("_CameraAligner");
-        this.cameraAligner.transform.position = Vector3.zero;
-    }
-
-    #endregion Unity Events
-
     public static BallMotor Instance
     {
         get
@@ -44,6 +29,21 @@ public class BallMotor : MonoBehaviour
             this.moveVector = value;
         }
     }
+    
+    #region Unity Events
+    
+    private void Awake()
+    {
+        instance = this;
+    }
+    
+    private void Start()
+    {
+        this.cameraAligner = new GameObject("_CameraAligner");
+        this.cameraAligner.transform.position = Vector3.zero;
+    }
+    
+    #endregion Unity Events
 
     public void UpdateMotor()
     {

@@ -38,43 +38,10 @@ public class ThirdPersonCameraController : MonoBehaviour
     public float mouseYRotationLowerLimit = -50.0f; // In degrees
     public int playerLayer; // The index of the Player Layer
 
-    #region Unity Events
-
-    private void Awake()
-    {
-        instance = this;
-        cameraInstance = this.camera;
-
-        this.ignorePlayerBitMask = ~(1 << this.playerLayer);
-    }
-
-    private void Start()
-    {
-        this.distanceToTarget = Mathf.Clamp(this.distanceToTarget, this.minDistanceToTarget, this.maxDistanceToTarget);
-    }
-
-    private void LateUpdate()
-    {
-        if (this.targetToLookAt != null)
-        {
-            this.HandlePlayerInput(ref this.distanceToTarget, ref this.mouseXRotation, ref this.mouseYRotation);
-
-            Vector3 newPosition = this.CalculateNewCameraPosition(this.distanceToTarget, this.mouseXRotation, this.mouseYRotation);
-
-            this.currentOcclusionCheck = 0;
-            while (this.IsCameraOccluded(newPosition, ref this.distanceToTargetWhenCameraIsOccluded) &&
-                   this.currentOcclusionCheck < this.maxOcclusionChecks)
-            {
-                newPosition = this.CalculateNewCameraPosition(this.distanceToTargetWhenCameraIsOccluded, this.mouseXRotation, this.mouseYRotation);
-                this.currentOcclusionCheck++;
-            }
-
-            this.UpdatePosition(newPosition);
-        }
-    }
-
-    #endregion Unity Events
-
+    /// <summary>
+    /// Gets a reference to this instance.
+    /// </summary>
+    /// <value>The instance.</value>
     public static ThirdPersonCameraController Instance
     {
         get
@@ -83,6 +50,10 @@ public class ThirdPersonCameraController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Gets the camera component.
+    /// </summary>
+    /// <value>The camera.</value>
     public static Camera Camera
     {
         get
@@ -90,6 +61,43 @@ public class ThirdPersonCameraController : MonoBehaviour
             return cameraInstance;
         }
     }
+
+    #region Unity Events
+    
+    private void Awake()
+    {
+        instance = this;
+        cameraInstance = this.camera;
+        
+        this.ignorePlayerBitMask = ~(1 << this.playerLayer);
+    }
+    
+    private void Start()
+    {
+        this.distanceToTarget = Mathf.Clamp(this.distanceToTarget, this.minDistanceToTarget, this.maxDistanceToTarget);
+    }
+    
+    private void LateUpdate()
+    {
+        if (this.targetToLookAt != null)
+        {
+            this.HandlePlayerInput(ref this.distanceToTarget, ref this.mouseXRotation, ref this.mouseYRotation);
+            
+            Vector3 newPosition = this.CalculateNewCameraPosition(this.distanceToTarget, this.mouseXRotation, this.mouseYRotation);
+            
+            this.currentOcclusionCheck = 0;
+            while (this.IsCameraOccluded(newPosition, ref this.distanceToTargetWhenCameraIsOccluded) &&
+                   this.currentOcclusionCheck < this.maxOcclusionChecks)
+            {
+                newPosition = this.CalculateNewCameraPosition(this.distanceToTargetWhenCameraIsOccluded, this.mouseXRotation, this.mouseYRotation);
+                this.currentOcclusionCheck++;
+            }
+            
+            this.UpdatePosition(newPosition);
+        }
+    }
+    
+    #endregion Unity Events
 
     private void HandlePlayerInput(ref float outDistanceToTarget, ref float outMouseXRotation, ref float outMouseYRotation)
     {

@@ -2,7 +2,7 @@
 using System.Collections;
 
 /// <summary>
-/// Third person controller.
+/// Third person character controller.
 /// Processes player input and sends the input as "Move Vector" to the ThirdPersonMotor.
 /// </summary>
 public class ThirdPersonCharacterController : MonoBehaviour
@@ -11,25 +11,6 @@ public class ThirdPersonCharacterController : MonoBehaviour
     private static ThirdPersonCharacterController instance;
 
     public float moveVectorDeadZone = 0.1f; // The character will move only if any of the "x" and "z" properties of the MoveVector is greated then the dead zone;
-
-    #region Unity Events
-
-    private void Awake()
-    {
-        characterController = this.GetComponent<CharacterController>();
-        instance = this;
-    }
-
-    private void Update()
-    {
-        if (ThirdPersonCameraController.Camera != null)
-        {
-            ThirdPersonCharacterMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
-            ThirdPersonCharacterMotor.Instance.UpdateMotor();
-        }
-    }
-
-    #endregion Unity Events
 
     /// <summary>
     /// Gets the character controller.
@@ -54,6 +35,25 @@ public class ThirdPersonCharacterController : MonoBehaviour
             return instance;
         }
     }
+    
+    #region Unity Events
+    
+    private void Awake()
+    {
+        characterController = this.GetComponent<CharacterController>();
+        instance = this;
+    }
+    
+    private void Update()
+    {
+        if (ThirdPersonCameraController.Camera != null)
+        {
+            ThirdPersonCharacterMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
+            ThirdPersonCharacterMotor.Instance.UpdateMotor();
+        }
+    }
+    
+    #endregion Unity Events
 
     private Vector3 GetMoveVectorFromInput()
     {
