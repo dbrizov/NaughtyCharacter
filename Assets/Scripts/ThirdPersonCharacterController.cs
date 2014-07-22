@@ -7,22 +7,7 @@ using System.Collections;
 /// </summary>
 public class ThirdPersonCharacterController : MonoBehaviour
 {
-    private static CharacterController characterController;
     private static ThirdPersonCharacterController instance;
-
-    public float moveVectorDeadZone = 0.1f; // The character will move only if any of the "x" and "z" properties of the MoveVector is greated then the dead zone;
-
-    /// <summary>
-    /// Gets the character controller.
-    /// </summary>
-    /// <value>The character controller.</value>
-    public static CharacterController CharacterController
-    {
-        get
-        {
-            return characterController;
-        }
-    }
 
     /// <summary>
     /// Gets a reference to this instance.
@@ -40,16 +25,17 @@ public class ThirdPersonCharacterController : MonoBehaviour
     
     private void Awake()
     {
-        characterController = this.GetComponent<CharacterController>();
         instance = this;
     }
     
-    private void Update()
+    private void FixedUpdate()
     {
         if (ThirdPersonCameraController.Camera != null)
         {
-            ThirdPersonCharacterMotor.Instance.MoveVector = this.GetMoveVectorFromInput();
-            ThirdPersonCharacterMotor.Instance.UpdateMotor();
+            Vector3 moveVector = this.GetMoveVectorFromInput();
+
+            ThirdPersonCharacterAnimator.Instance.MoveVector = moveVector;
+            ThirdPersonCharacterAnimator.Instance.UpdateAnimator();
         }
     }
     
@@ -60,16 +46,10 @@ public class ThirdPersonCharacterController : MonoBehaviour
         Vector3 moveVector = Vector3.zero;
 
         float xAxis = Input.GetAxis("Horizontal");
-        if (Mathf.Abs(xAxis) > this.moveVectorDeadZone)
-        {
-            moveVector.x += xAxis;
-        }
+        moveVector.x += xAxis;
 
         float zAxis = Input.GetAxis("Vertical");
-        if (Mathf.Abs(zAxis) > this.moveVectorDeadZone)
-        {
-            moveVector.z += zAxis;
-        }
+        moveVector.z += zAxis;
 
         return moveVector;
     }
