@@ -16,7 +16,7 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
 
     public float speed = 6.0f; // The speed of the character
     public float speedDampTime = 0.1f;
-    public float turnSmoothing = 15.0f;
+//    public float turnSmoothing = 15.0f;
 
     /// <summary>
     /// Gets a reference to this instance.
