@@ -37,6 +37,26 @@ public class ThirdPersonCharacterController : MonoBehaviour
     }
     
     #endregion Unity Events
+    
+    private void ProcessMovement()
+    {
+        ThirdPersonCharacterAnimator.Instance.IsCharacterSprinting = this.IsCharacterSprinting();
+        
+        Vector3 moveVector = this.GetMoveVectorFromInput();
+        ThirdPersonCharacterAnimator.Instance.MoveCharacter(moveVector);
+    }
+
+    private bool IsCharacterSprinting()
+    {
+        bool isSprinting = false;
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            isSprinting = true;
+        }
+
+        return isSprinting;
+    }
 
     private Vector3 GetMoveVectorFromInput()
     {
@@ -49,12 +69,5 @@ public class ThirdPersonCharacterController : MonoBehaviour
         moveVector.z += zAxis;
 
         return moveVector;
-    }
-
-    private void ProcessMovement()
-    {
-        Vector3 moveVector = this.GetMoveVectorFromInput();
-
-        ThirdPersonCharacterAnimator.Instance.MoveCharacter(moveVector);
     }
 }

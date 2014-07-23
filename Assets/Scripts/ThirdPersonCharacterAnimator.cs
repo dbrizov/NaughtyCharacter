@@ -9,15 +9,15 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
 {
     private static ThirdPersonCharacterAnimator instance;
 
-    private const float WalkSpeed = 1.5f;
-    private const float RunSpeed = 5.0f;
-
     private Animator animator;
     private Vector3 moveVector;
     private GameObject cameraAligner; // A dummy game object that helps for proper convertion of the moveVector from Local-Space to World-Space
-    private float speed = 6.0f; // The speed of the character
-    private float speedDampTime = 0.15f;
+    private float walkSpeed = 1.5f;
+    private float runSpeed = 5.5f;
+    private float sprintSpeed = 7.0f;
+    private float speedDampTime = 0.1f;
     private int speedHash;
+    private int isSprintingHash;
     
     #region Unity Events
     
@@ -28,6 +28,7 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
         this.animator = this.GetComponent<Animator>();
         
         this.speedHash = Animator.StringToHash("Speed");
+        this.isSprintingHash = Animator.StringToHash("IsSprinting");
     }
     
     private void Start()
@@ -54,7 +55,19 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
     {
         get
         {
-            return this.animator.GetFloat(this.speedHash) > WalkSpeed;
+            return this.animator.GetFloat(this.speedHash) > this.walkSpeed;
+        }
+    }
+
+    public bool IsCharacterSprinting
+    {
+        get
+        {
+            return this.animator.GetBool(this.isSprintingHash);
+        }
+        set
+        {
+            this.animator.SetBool(this.isSprintingHash, value);
         }
     }
     
@@ -85,7 +98,20 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
         this.rigidbody.MoveRotation(newRotation);
         
         // Move the character
-        this.animator.SetFloat(this.speedHash, this.speed, this.speedDampTime, Time.deltaTime);
+        float moveVectorMagnitude = this.moveVector.magnitude;
+        if (moveVectorMagnitude > 1.0f)
+        {
+            moveVectorMagnitude = 1.0f;
+        }
+
+        if (this.IsCharacterSprinting)
+        {
+            this.animator.SetFloat(this.speedHash, this.sprintSpeed * moveVectorMagnitude, this.speedDampTime, Time.deltaTime);
+        }
+        else
+        {
+            this.animator.SetFloat(this.speedHash, this.runSpeed * moveVectorMagnitude, this.speedDampTime, Time.deltaTime);
+        }
     }
     
     private void StopCharacter()
