@@ -40,22 +40,10 @@ public class ThirdPersonCharacterController : MonoBehaviour
     
     private void ProcessMovement()
     {
-        ThirdPersonCharacterAnimator.Instance.IsCharacterSprinting = this.IsCharacterSprinting();
+        ThirdPersonCharacterAnimator.Instance.IsCharacterSprinting = Input.GetButton("Sprint");
         
         Vector3 moveVector = this.GetMoveVectorFromInput();
         ThirdPersonCharacterAnimator.Instance.MoveCharacter(moveVector);
-    }
-
-    private bool IsCharacterSprinting()
-    {
-        bool isSprinting = false;
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            isSprinting = true;
-        }
-
-        return isSprinting;
     }
 
     private Vector3 GetMoveVectorFromInput()
