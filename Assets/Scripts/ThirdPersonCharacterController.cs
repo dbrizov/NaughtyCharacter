@@ -32,10 +32,7 @@ public class ThirdPersonCharacterController : MonoBehaviour
     {
         if (ThirdPersonCameraController.Camera != null)
         {
-            Vector3 moveVector = this.GetMoveVectorFromInput();
-
-            ThirdPersonCharacterAnimator.Instance.MoveVector = moveVector;
-            ThirdPersonCharacterAnimator.Instance.UpdateAnimator();
+            this.ProcessMovement();
         }
     }
     
@@ -52,5 +49,12 @@ public class ThirdPersonCharacterController : MonoBehaviour
         moveVector.z += zAxis;
 
         return moveVector;
+    }
+
+    private void ProcessMovement()
+    {
+        Vector3 moveVector = this.GetMoveVectorFromInput();
+
+        ThirdPersonCharacterAnimator.Instance.MoveCharacter(moveVector);
     }
 }
