@@ -67,7 +67,7 @@ public class ThirdPersonCameraController : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        cameraInstance = this.camera;
+        cameraInstance = this.GetComponent<Camera>();
         
         this.ignorePlayerBitMask = ~(1 << this.playerLayer);
     }
@@ -136,11 +136,11 @@ public class ThirdPersonCameraController : MonoBehaviour
     {
         ClipPlaneCornerPoints nearClipPlanePoints = new ClipPlaneCornerPoints();
 
-        if (this.camera != null)
+        if (this.GetComponent<Camera>() != null)
         {
-            float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
-            float aspectRatio = this.camera.aspect; // viewportWidth / viewportHeight
-            float distanceToNearClipPlane = this.camera.nearClipPlane;
+            float halfFOV = (this.GetComponent<Camera>().fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
+            float aspectRatio = this.GetComponent<Camera>().aspect; // viewportWidth / viewportHeight
+            float distanceToNearClipPlane = this.GetComponent<Camera>().nearClipPlane;
             float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's view frustum
             float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's view frustum
 
@@ -177,7 +177,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         ClipPlaneCornerPoints nearClipPlaneCornerPoints = this.GetNearClipPlaneCornerPoints(cameraPosition);
 
         // Draw the lines to the collision points for debugging
-        Debug.DrawLine(this.targetToLookAt.position, cameraPosition - this.transform.forward * this.camera.nearClipPlane, Color.red);
+        Debug.DrawLine(this.targetToLookAt.position, cameraPosition - this.transform.forward * this.GetComponent<Camera>().nearClipPlane, Color.red);
         Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.UpperLeft, Color.green);
         Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.UpperRight, Color.green);
         Debug.DrawLine(this.targetToLookAt.position, nearClipPlaneCornerPoints.LowerLeft, Color.green);
@@ -194,7 +194,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         collisionPoints.Add(nearClipPlaneCornerPoints.UpperRight);
         collisionPoints.Add(nearClipPlaneCornerPoints.LowerLeft);
         collisionPoints.Add(nearClipPlaneCornerPoints.LowerRight);
-        collisionPoints.Add(cameraPosition - this.transform.forward * this.camera.nearClipPlane);
+        collisionPoints.Add(cameraPosition - this.transform.forward * this.GetComponent<Camera>().nearClipPlane);
 
         foreach (var collisionPoint in collisionPoints)
         {
@@ -220,7 +220,7 @@ public class ThirdPersonCameraController : MonoBehaviour
         {
             isOccluded = true;
 
-            outDistanceToTarget = nearestCollisionDistance - this.camera.nearClipPlane;
+            outDistanceToTarget = nearestCollisionDistance - this.GetComponent<Camera>().nearClipPlane;
         }
 
         return isOccluded;

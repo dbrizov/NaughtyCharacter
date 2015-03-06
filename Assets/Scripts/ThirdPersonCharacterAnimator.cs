@@ -95,7 +95,7 @@ public class ThirdPersonCharacterAnimator : MonoBehaviour
         
         // Orient character rotation to moveVector
         Quaternion newRotation = Quaternion.LookRotation(this.moveVector, Vector3.up);
-        this.rigidbody.MoveRotation(newRotation);
+        this.GetComponent<Rigidbody>().MoveRotation(newRotation);
         
         // Move the character
         float moveVectorMagnitude = this.moveVector.magnitude;
