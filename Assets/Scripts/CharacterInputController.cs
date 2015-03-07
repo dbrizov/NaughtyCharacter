@@ -21,6 +21,17 @@ public class CharacterInputController : MonoBehaviour
 
     protected virtual void Update()
     {
+        this.UpdateMoveVector();
+        this.UpdateHorizontalSpeed();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        this.character.Move(this.moveVector);
+    }
+
+    private void UpdateMoveVector()
+    {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
@@ -44,8 +55,16 @@ public class CharacterInputController : MonoBehaviour
         }
     }
 
-    protected virtual void FixedUpdate()
+    private void UpdateHorizontalSpeed()
     {
-        this.character.Move(this.moveVector);
+        if (Input.GetButtonDown("Sprint"))
+        {
+            this.character.IsSprinting = true;
+        }
+
+        if (Input.GetButtonUp("Sprint"))
+        {
+            this.character.IsJogging = true;
+        }
     }
 }

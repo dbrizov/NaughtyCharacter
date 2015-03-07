@@ -3,8 +3,8 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
-    private const float MinTiltAngle = -90.0f;
-    private const float MaxTiltAngle = 90.0f;
+    private const float MinTiltAngle = -89.0f;
+    private const float MaxTiltAngle = 89.0f;
 
     [SerializeField]
     private Transform target = null; // The target to follow
