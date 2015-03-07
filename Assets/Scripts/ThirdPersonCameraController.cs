@@ -60,8 +60,6 @@ public class ThirdPersonCameraController : MonoBehaviour
             return cameraInstance;
         }
     }
-
-    #region Unity Events
     
     private void Awake()
     {
@@ -95,8 +93,6 @@ public class ThirdPersonCameraController : MonoBehaviour
             this.UpdatePosition(newPosition);
         }
     }
-    
-    #endregion Unity Events
 
     private void HandlePlayerInput(ref float outDistanceToTarget, ref float outMouseXRotation, ref float outMouseYRotation)
     {

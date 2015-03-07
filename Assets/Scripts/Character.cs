@@ -77,7 +77,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    public float Speed
+    public float HorizontalSpeed
     {
         get
         {

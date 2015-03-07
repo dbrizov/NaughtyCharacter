@@ -61,8 +61,7 @@ public class CharacterInputController : MonoBehaviour
         {
             this.character.IsSprinting = true;
         }
-
-        if (Input.GetButtonUp("Sprint"))
+        else if (Input.GetButtonUp("Sprint"))
         {
             this.character.IsJogging = true;
         }

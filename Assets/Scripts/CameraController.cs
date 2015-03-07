@@ -33,11 +33,11 @@ public class CameraController : MonoBehaviour
     private Transform pivot; // The pivot the camera is rotating around
     private float lookAngle;
     private float tiltAngle;
-    private Vector3 initialCameraLocalPosition;
     private Vector3 initialPivotEulers;
+    private Vector3 initialCameraLocalPosition;
     private Quaternion pivotTargetLocalRotation; // Controls the tilt rotation
     private Quaternion rigTargetLocalRotation; // Controlls the look rotation
-    private Vector3 moveVelocity; // The velocity at which the camera moved
+    private Vector3 cameraVelocity; // The velocity at which the camera moves
 
     protected virtual void Awake()
     {
@@ -48,12 +48,18 @@ public class CameraController : MonoBehaviour
             this.target = GameObject.FindGameObjectWithTag(this.targetTag).transform;
         }
 
-        this.initialCameraLocalPosition = this.transform.localPosition;
-
         this.pivot = this.transform.parent;
         this.initialPivotEulers = this.pivot.rotation.eulerAngles;
 
         this.rig = this.pivot.parent;
+
+        this.initialCameraLocalPosition = this.transform.localPosition;
+
+        // Position the camera
+        Vector3 cameraTargetLocalPosition = this.initialCameraLocalPosition;
+        cameraTargetLocalPosition.z = -this.distanceToTarget;
+
+        this.transform.localPosition = cameraTargetLocalPosition;
     }
 
     protected virtual void Update()
@@ -73,10 +79,7 @@ public class CameraController : MonoBehaviour
             return;
         }
 
-        this.rig.position = Vector3.SmoothDamp(this.rig.position, this.target.position, ref this.moveVelocity, this.catchSpeedDamp);
-
-        this.initialCameraLocalPosition.z = -this.distanceToTarget;
-        this.transform.localPosition = this.initialCameraLocalPosition;
+        this.rig.position = Vector3.SmoothDamp(this.rig.position, this.target.position, ref this.cameraVelocity, this.catchSpeedDamp);
     }
 
     private void HandleRotationMovement(float deltaTime)

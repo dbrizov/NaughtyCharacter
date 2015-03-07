@@ -18,6 +18,6 @@ public class CharacterAnimatorController : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.animator.SetFloat(SpeedHash, this.character.Speed);
+        this.animator.SetFloat(SpeedHash, this.character.HorizontalSpeed);
     }
 }
