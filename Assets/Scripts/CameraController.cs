@@ -34,7 +34,6 @@ public class CameraController : MonoBehaviour
     private float lookAngle;
     private float tiltAngle;
     private Vector3 initialPivotEulers;
-    private Vector3 initialCameraLocalPosition;
     private Quaternion pivotTargetLocalRotation; // Controls the tilt rotation
     private Quaternion rigTargetLocalRotation; // Controlls the look rotation
     private Vector3 cameraVelocity; // The velocity at which the camera moves
@@ -53,10 +52,8 @@ public class CameraController : MonoBehaviour
 
         this.rig = this.pivot.parent;
 
-        this.initialCameraLocalPosition = this.transform.localPosition;
-
         // Position the camera
-        Vector3 cameraTargetLocalPosition = this.initialCameraLocalPosition;
+        Vector3 cameraTargetLocalPosition = this.transform.localPosition;
         cameraTargetLocalPosition.z = -this.distanceToTarget;
 
         this.transform.localPosition = cameraTargetLocalPosition;
@@ -84,6 +81,11 @@ public class CameraController : MonoBehaviour
 
     private void HandleRotationMovement(float deltaTime)
     {
+        if (!Input.GetMouseButton(1))
+        {
+            return;
+        }
+
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 

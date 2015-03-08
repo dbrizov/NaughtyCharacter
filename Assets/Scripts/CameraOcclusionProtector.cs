@@ -16,12 +16,14 @@ public class CameraOcclusionProtector : MonoBehaviour
         public Vector3 LowerRight { get; set; }
     }
 
+    private const float ExtraOcclusionSecureDistance = 0.25f;
+
     [SerializeField]
     private float occlusionMoveTime = 0.05f; // The lesser, the better
 
     [SerializeField]
     [Tooltip("What objects should the camera ignore when checked for clips and occlusions")]
-    private LayerMask ignoreLayerMask; // What objects should the camera ignore when checked for clips and occlusions
+    private LayerMask ignoreLayerMask = 0; // What objects should the camera ignore when checked for clips and occlusions
 
     [SerializeField]
     private int maxOcclusionChecks = 5;
@@ -33,8 +35,9 @@ public class CameraOcclusionProtector : MonoBehaviour
     private Transform followCameraTransform;
     private Transform pivot; // The point at which the camera pivots around
     private float originalDistanceToTarget;
-    private float distanceToTarget;
-    private Vector3 initialCameraLocalPosition;
+    private float desiredDistanceToTarget;
+    private Vector3 desiredCameraLocalPosition;
+    private Vector3 desiredCameraPosition;
     private Vector3 cameraVelocity;
     private int currentOcclusionCheck;
 
@@ -42,29 +45,18 @@ public class CameraOcclusionProtector : MonoBehaviour
     {
         this.followCamera = this.GetComponent<Camera>();
         this.followCameraTransform = this.followCamera.transform;
-        this.pivot = this.followCamera.transform.parent;
-
-        this.initialCameraLocalPosition = this.followCameraTransform.localPosition;
+        this.pivot = this.followCameraTransform.parent;
     }
 
     protected virtual void Start()
     {
         this.originalDistanceToTarget = this.followCameraTransform.localPosition.magnitude;
-        this.distanceToTarget = this.originalDistanceToTarget;
+        this.desiredDistanceToTarget = this.originalDistanceToTarget;
     }
 
     protected virtual void LateUpdate()
     {
-        this.distanceToTarget = this.originalDistanceToTarget;
-
-        this.currentOcclusionCheck = 0;
-        while (this.IsCameraOccluded(this.followCameraTransform.position, ref this.distanceToTarget) &&
-               this.currentOcclusionCheck < this.maxOcclusionChecks)
-        {
-            this.currentOcclusionCheck++;
-        }
-
-        //this.UpdateCameraPosition();
+        this.UpdateCameraPosition();
     }
 
     private ClipPlaneCornerPoints GetNearClipPlaneCornerPoints(Vector3 cameraPosition)
@@ -153,8 +145,7 @@ public class CameraOcclusionProtector : MonoBehaviour
         if (nearestCollisionDistance > -1.0f)
         {
             isOccluded = true;
-
-            outDistanceToTarget = nearestCollisionDistance - this.followCamera.nearClipPlane;
+            outDistanceToTarget = nearestCollisionDistance - this.followCamera.nearClipPlane - ExtraOcclusionSecureDistance;
         }
 
         return isOccluded;
@@ -162,18 +153,22 @@ public class CameraOcclusionProtector : MonoBehaviour
 
     private void UpdateCameraPosition()
     {
-        Vector3 cameraTargetLocalPosition = this.initialCameraLocalPosition;
+        this.currentOcclusionCheck = 0;
+        this.desiredCameraLocalPosition = this.followCameraTransform.localPosition;
+        this.desiredCameraLocalPosition.z = -this.originalDistanceToTarget;
+        this.desiredCameraPosition = this.pivot.TransformPoint(this.desiredCameraLocalPosition);
 
-        if (this.distanceToTarget > -1.0f)
+        while (this.IsCameraOccluded(this.desiredCameraPosition, ref this.desiredDistanceToTarget) &&
+               this.currentOcclusionCheck < this.maxOcclusionChecks)
         {
-            cameraTargetLocalPosition.z = -this.distanceToTarget;
-        }
-        else
-        {
-            cameraTargetLocalPosition.z = -this.originalDistanceToTarget;
+            this.desiredCameraLocalPosition.z = -this.desiredDistanceToTarget;
+            this.desiredCameraPosition = this.pivot.TransformPoint(this.desiredCameraLocalPosition);
+
+            this.currentOcclusionCheck++;
         }
 
+        // Update the position
         this.followCameraTransform.localPosition = Vector3.SmoothDamp(
-            this.followCameraTransform.localPosition, cameraTargetLocalPosition, ref this.cameraVelocity, this.occlusionMoveTime);
+            this.followCameraTransform.localPosition, this.desiredCameraLocalPosition, ref this.cameraVelocity, this.occlusionMoveTime);
     }
 }

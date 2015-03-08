@@ -20,7 +20,6 @@ public class Character : MonoBehaviour
     private bool isSprinting;
     private float maxMoveSpeed; // In meters per second
     private Rigidbody rigidBody;
-    private CapsuleCollider capsuleCollider;
     private bool shouldOrientRotationToMovement;
 
     public bool IsWalking
@@ -92,9 +91,7 @@ public class Character : MonoBehaviour
 
         this.rigidBody = this.GetComponent<Rigidbody>();
         this.rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-
-        this.capsuleCollider = this.GetComponent<CapsuleCollider>();
-
+        
         this.shouldOrientRotationToMovement = true;
     }
 
