@@ -16,9 +16,14 @@ public class CameraOcclusionProtector : MonoBehaviour
         public Vector3 LowerRight { get; set; }
     }
 
-    private const float ExtraOcclusionSecureDistance = 0.25f;
+    [SerializeField]
+    [Range(0f, 1f)]
+    [Tooltip("This value is subtracted from the distance to target to ensure an even safer unoccluded position when an occlusion occurs (In meters)")]
+    private float extraOcclusionSecureDistance = 0.2f; // In meters
 
     [SerializeField]
+    [Range(0f, 1f)]
+    [Tooltip("The time need for the camera to reach secure position when an occlusion occurs (In seconds)")]
     private float occlusionMoveTime = 0.05f; // The lesser, the better
 
     [SerializeField]
@@ -26,6 +31,8 @@ public class CameraOcclusionProtector : MonoBehaviour
     private LayerMask ignoreLayerMask = 0; // What objects should the camera ignore when checked for clips and occlusions
 
     [SerializeField]
+    [Range(1f, 10f)]
+    [Tooltip("More occlusion checks will ensure that there is no camera occlusions")]
     private int maxOcclusionChecks = 5;
 
     [SerializeField]
@@ -145,7 +152,7 @@ public class CameraOcclusionProtector : MonoBehaviour
         if (nearestCollisionDistance > -1.0f)
         {
             isOccluded = true;
-            outDistanceToTarget = nearestCollisionDistance - this.followCamera.nearClipPlane - ExtraOcclusionSecureDistance;
+            outDistanceToTarget = nearestCollisionDistance - this.followCamera.nearClipPlane - this.extraOcclusionSecureDistance;
         }
 
         return isOccluded;

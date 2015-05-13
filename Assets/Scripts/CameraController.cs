@@ -10,12 +10,14 @@ public class CameraController : MonoBehaviour
     private Transform target = null; // The target to follow
 
     [SerializeField]
+    [Tooltip("Should the target be found with the target tag")]
     private bool autoFindTarget = true;
 
     [SerializeField]
     private string targetTag = Tag.Player;
 
     [SerializeField]
+    [Tooltip("In meters")]
     private float distanceToTarget = 3.0f; // In meters
 
     [SerializeField]
@@ -27,6 +29,7 @@ public class CameraController : MonoBehaviour
     private float mouseSensitivity = 3.0f;
 
     [SerializeField]
+    [Range(0.0f, 30.0f)]
     private float rotationSmooting = 15.0f;
 
     private Transform rig;
@@ -81,10 +84,10 @@ public class CameraController : MonoBehaviour
 
     private void HandleRotationMovement(float deltaTime)
     {
-        if (!Input.GetMouseButton(1))
-        {
-            return;
-        }
+        //if (!Input.GetMouseButton(1))
+        //{
+        //    return;
+        //}
 
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");

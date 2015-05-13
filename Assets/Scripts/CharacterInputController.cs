@@ -4,6 +4,7 @@ using System.Collections;
 public class CharacterInputController : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("The default camera is the main camera")]
     private Transform followCamera;
 
     private Character character;
@@ -57,11 +58,13 @@ public class CharacterInputController : MonoBehaviour
 
     private void UpdateHorizontalSpeed()
     {
-        if (Input.GetButtonDown("Sprint"))
+        float sprintAxis = Input.GetAxis("Sprint");
+
+        if (sprintAxis > 0f)
         {
             this.character.IsSprinting = true;
         }
-        else if (Input.GetButtonUp("Sprint"))
+        else
         {
             this.character.IsJogging = true;
         }

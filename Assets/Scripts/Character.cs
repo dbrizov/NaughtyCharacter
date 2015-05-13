@@ -7,12 +7,15 @@ using System.Collections;
 public class Character : MonoBehaviour
 {
     [SerializeField]
+    [Tooltip("In meters/second")]
     private float walkSpeed = 1.6f; // In meters per second
 
     [SerializeField]
+    [Tooltip("In meters/second")]
     private float jogSpeed = 5.7f; // In meters per second
 
     [SerializeField]
+    [Tooltip("In meters/second")]
     private float sprintSpeed = 8.0f; // In meters per seconds
 
     private bool isWalking;
