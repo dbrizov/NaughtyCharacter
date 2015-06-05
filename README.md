@@ -1,4 +1,4 @@
 Unity-ThirdPersonController
 ===========================
 
-Sample project showing third person camera behavior and Mecanim animations
+My personal implementation of a Third Person Controller for Unity Engine
