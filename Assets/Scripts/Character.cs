@@ -28,26 +28,35 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     [Range(MinRotationSmoothing, MaxRotationSmoothing)]
-    private float rotationSmoothing = 20f;
+    [Tooltip("How fast the character rotates around the Y axis")]
+    private float rotationSmoothing = 15f;
 
-    [SerializeField]
-    private bool bOrientRotationToMovement = true;
-
-    private bool isWalking;
-    private bool isJogging;
-    private bool isSprinting;
+    private bool bOrientRotationToMovement;
+    private bool bUseControlRotation;
+    private bool bIsWalking;
+    private bool bIsJogging;
+    private bool bIsSprinting;
     private float maxMoveSpeed; // In meters per second
     private Rigidbody rigidBody;
+    private Quaternion controlRotationX;
+    private Quaternion controlRotationY;
 
     protected virtual void Awake()
     {
+        this.B_OrientRotationToMovement = true;
+        this.B_UseControlRotation = false;
         this.WalkSpeed = this.WalkSpeed;
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
-        this.maxMoveSpeed = this.JogSpeed;
+        this.B_IsJogging = true;
 
         this.rigidBody = this.GetComponent<Rigidbody>();
         this.rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+    }
+
+    protected virtual void Update()
+    {
+        this.AlignRotationWithControlRotationY();
     }
 
     public float WalkSpeed
@@ -98,56 +107,100 @@ public class Character : MonoBehaviour
         }
     }
 
-    public bool IsWalking
+    public bool B_UseControlRotation
     {
         get
         {
-            return this.isWalking;
+            return this.bUseControlRotation;
         }
         set
         {
-            this.isWalking = value;
-            if (this.isWalking)
+            this.bUseControlRotation = value;
+        }
+    }
+
+    public Quaternion ControlRotationX
+    {
+        get
+        {
+            return this.controlRotationX;
+        }
+        set
+        {
+            this.controlRotationX = value;
+        }
+    }
+
+    public Quaternion ControlRotationY
+    {
+        get
+        {
+            return this.controlRotationY;
+        }
+        set
+        {
+            this.controlRotationY = value;
+        }
+    }
+
+    public Quaternion ControlRotation
+    {
+        get
+        {
+            return this.ControlRotationX * this.ControlRotationY;
+        }
+    }
+
+    public bool B_IsWalking
+    {
+        get
+        {
+            return this.bIsWalking;
+        }
+        set
+        {
+            this.bIsWalking = value;
+            if (this.bIsWalking)
             {
                 this.maxMoveSpeed = this.WalkSpeed;
-                this.IsJogging = false;
-                this.IsSprinting = false;
+                this.B_IsJogging = false;
+                this.B_IsSprinting = false;
             }
         }
     }
 
-    public bool IsJogging
+    public bool B_IsJogging
     {
         get
         {
-            return this.isJogging;
+            return this.bIsJogging;
         }
         set
         {
-            this.isJogging = value;
-            if (this.isJogging)
+            this.bIsJogging = value;
+            if (this.bIsJogging)
             {
                 this.maxMoveSpeed = this.JogSpeed;
-                this.IsWalking = false;
-                this.IsSprinting = false;
+                this.B_IsWalking = false;
+                this.B_IsSprinting = false;
             }
         }
     }
 
-    public bool IsSprinting
+    public bool B_IsSprinting
     {
         get
         {
-            return this.isSprinting;
+            return this.bIsSprinting;
         }
         set
         {
-            this.isSprinting = value;
-            if (this.isSprinting)
+            this.bIsSprinting = value;
+            if (this.bIsSprinting)
             {
                 this.maxMoveSpeed = this.SprintSpeed;
-                this.IsWalking = false;
-                this.IsJogging = false;
+                this.B_IsWalking = false;
+                this.B_IsJogging = false;
             }
         }
     }
@@ -156,8 +209,7 @@ public class Character : MonoBehaviour
     {
         get
         {
-            Vector3 horizontalVelocity = new Vector3(this.rigidBody.velocity.x, 0f, this.rigidBody.velocity.z);
-            return horizontalVelocity.magnitude;
+            return this.HorizontalVelocity.magnitude;
         }
     }
 
@@ -165,8 +217,23 @@ public class Character : MonoBehaviour
     {
         get
         {
-            Vector3 verticalVelocity = new Vector3(0f, this.rigidBody.velocity.y, 0f);
-            return verticalVelocity.magnitude;
+            return this.VerticalVelocity.magnitude;
+        }
+    }
+
+    public Vector3 HorizontalVelocity
+    {
+        get
+        {
+            return new Vector3(this.rigidBody.velocity.x, 0f, this.rigidBody.velocity.z);
+        }
+    }
+
+    public Vector3 VerticalVelocity
+    {
+        get
+        {
+            return new Vector3(0f, this.rigidBody.velocity.y, 0f);
         }
     }
 
@@ -183,9 +250,10 @@ public class Character : MonoBehaviour
         this.OrientRotationToMovement(moveVector);
     }
 
-    private void OrientRotationToMovement(Vector3 moveVector)
+    private bool OrientRotationToMovement(Vector3 moveVector)
     {
-        if (this.B_OrientRotationToMovement && moveVector.magnitude != 0.0f)
+        if (this.B_OrientRotationToMovement &&
+            moveVector.magnitude * this.maxMoveSpeed >= this.WalkSpeed)
         {
             Quaternion rotation = Quaternion.LookRotation(moveVector, Vector3.up);
             if (rotationSmoothing > 0f)
@@ -196,6 +264,21 @@ public class Character : MonoBehaviour
             {
                 this.transform.rotation = rotation;
             }
+
+            return true;
         }
+
+        return false;
+    }
+
+    private bool AlignRotationWithControlRotationY()
+    {
+        if (this.B_UseControlRotation)
+        {
+            this.transform.rotation = this.ControlRotationY;
+            return true;
+        }
+
+        return false;
     }
 }
