@@ -3,8 +3,16 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
-    private const float MinTiltAngle = -89.0f;
-    private const float MaxTiltAngle = 89.0f;
+    public const float MinTiltAngle = -89.0f;
+    public const float MaxTiltAngle = 89.0f;
+    public const float MinDistanceToPlayer = 1f;
+    public const float MaxDistanceToPlayer = 5f;
+    public const float MinCatchSpeedDamp = 0f;
+    public const float MaxCatchSpeedDamp = 1f;
+    public const float MinMouseSensitivity = 1f;
+    public const float MaxMouseSensitivity = 5f;
+    public const float MinRotationSmoothing = 0f;
+    public const float MaxRotationSmoothing = 30f;
 
     [SerializeField]
     private Transform target = null; // The target to follow
@@ -17,20 +25,21 @@ public class CameraController : MonoBehaviour
     private string targetTag = Tag.Player;
 
     [SerializeField]
+    [Range(MinDistanceToPlayer, MaxDistanceToPlayer)]
     [Tooltip("In meters")]
     private float distanceToTarget = 3.0f; // In meters
 
     [SerializeField]
-    [Range(0.0f, 1.0f)]
+    [Range(MinCatchSpeedDamp, MaxCatchSpeedDamp)]
     private float catchSpeedDamp = 0.1f;
 
     [SerializeField]
-    [Range(1.0f, 5.0f)]
+    [Range(MinMouseSensitivity, MaxMouseSensitivity)]
     private float mouseSensitivity = 3.0f;
 
     [SerializeField]
-    [Range(0.0f, 30.0f)]
-    private float rotationSmooting = 15.0f;
+    [Range(MinRotationSmoothing, MaxRotationSmoothing)]
+    private float rotationSmoothing = 15.0f;
 
     private Transform rig;
     private Transform pivot; // The pivot the camera is rotating around
@@ -43,8 +52,6 @@ public class CameraController : MonoBehaviour
 
     protected virtual void Awake()
     {
-        Application.targetFrameRate = 60;
-
         if (this.autoFindTarget)
         {
             this.target = GameObject.FindGameObjectWithTag(this.targetTag).transform;
@@ -98,14 +105,14 @@ public class CameraController : MonoBehaviour
 
         // Adjust the tilt angle
         this.tiltAngle += mouseY * this.mouseSensitivity;
-        this.tiltAngle = Mathf.Clamp(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
+        this.tiltAngle = MathfUtils.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
         this.pivotTargetLocalRotation = Quaternion.Euler(-this.tiltAngle, this.initialPivotEulers.y, this.initialPivotEulers.z);
 
         // Rotate the camera
-        if (this.rotationSmooting > 0.0f)
+        if (this.rotationSmoothing > 0.0f)
         {
-            this.pivot.localRotation = Quaternion.Slerp(this.pivot.localRotation, this.pivotTargetLocalRotation, this.rotationSmooting * deltaTime);
-            this.rig.localRotation = Quaternion.Slerp(this.rig.localRotation, this.rigTargetLocalRotation, this.rotationSmooting * deltaTime);
+            this.pivot.localRotation = Quaternion.Slerp(this.pivot.localRotation, this.pivotTargetLocalRotation, this.rotationSmoothing * deltaTime);
+            this.rig.localRotation = Quaternion.Slerp(this.rig.localRotation, this.rigTargetLocalRotation, this.rotationSmoothing * deltaTime);
         }
         else
         {
