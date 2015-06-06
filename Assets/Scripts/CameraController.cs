@@ -36,7 +36,6 @@ public class CameraController : MonoBehaviour
 
     private Transform rig; // The root transform of the camera rig
     private Transform pivot; // The pivot the camera is rotating around
-    private Vector3 initialPivotEulers;
     private Quaternion pivotTargetLocalRotation; // Controls the X Rotation (Tilt Rotation)
     private Quaternion rigTargetLocalRotation; // Controlls the Y Rotation (Look Rotation)
     private Vector3 cameraVelocity; // The velocity at which the camera moves
@@ -49,8 +48,6 @@ public class CameraController : MonoBehaviour
         }
 
         this.pivot = this.transform.parent;
-        this.initialPivotEulers = this.pivot.rotation.eulerAngles;
-
         this.rig = this.pivot.parent;
 
         // Position the camera
@@ -77,13 +74,13 @@ public class CameraController : MonoBehaviour
 
     private void UpdateRotation(float deltaTime)
     {
-        if (target != null)
+        if (this.target != null)
         {
             // Y Rotation (Look Rotation)
-            this.rigTargetLocalRotation = target.ControlRotationY;
+            this.rigTargetLocalRotation = this.target.ControlRotationY;
 
             // X Rotation (Tilt Rotation)
-            this.pivotTargetLocalRotation = Quaternion.Euler(target.ControlRotationX.eulerAngles.x, this.initialPivotEulers.y, this.initialPivotEulers.z);
+            this.pivotTargetLocalRotation = this.target.ControlRotationX;
 
             if (this.rotationSmoothing > 0.0f)
             {
