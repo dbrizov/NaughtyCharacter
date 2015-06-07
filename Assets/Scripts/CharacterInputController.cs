@@ -126,7 +126,7 @@ public class CharacterInputController : MonoBehaviour
 
         // Adjust the tilt angle (X Rotation)
         this.tiltAngle += mouseY * this.mouseSensitivity;
-        this.tiltAngle = MathfUtils.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
+        this.tiltAngle = MathfExtensions.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
         this.ControlRotationX = Quaternion.Euler(-this.tiltAngle, 0f, 0f);
 
         // The entire Control Rotation

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public static class MathfUtils
+public static class MathfExtensions
 {
     public static float ClampAngle(float angle, float min, float max)
     {

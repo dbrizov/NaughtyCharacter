@@ -150,7 +150,7 @@ ModelImporter:
     4300000: Beta_HighLimbsGeo
     4300002: Beta_HighTorsoGeo
     4300004: Beta_HighJointsGeo
-    7400000: rejected
+    7400000: idle_rejected
     9500000: //RootNode
     13700000: Beta_HighJointsGeo
     13700002: Beta_HighLimbsGeo
@@ -172,7 +172,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: rejected
+      name: idle_rejected
       takeName: mixamo.com
       firstFrame: 0
       lastFrame: 144

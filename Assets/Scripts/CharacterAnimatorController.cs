@@ -5,8 +5,6 @@ using System.Collections;
 [RequireComponent(typeof(Character))]
 public class CharacterAnimatorController : MonoBehaviour
 {
-    private readonly int SpeedHash = Animator.StringToHash("Speed");
-
     private Animator animator;
     private Character character;
 
@@ -18,6 +16,6 @@ public class CharacterAnimatorController : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.animator.SetFloat(SpeedHash, this.character.HorizontalSpeed);
+        this.animator.SetFloat(AnimatorPropertyHash.Speed, this.character.HorizontalSpeed);
     }
 }
