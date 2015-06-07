@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 4b4cf4572d4294047a226d01f0a606da
-timeCreated: 1433680309
+guid: 54de12885dbec924ca5daa04ba555b66
+timeCreated: 1433680312
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -72,6 +72,10 @@ ModelImporter:
     100128: Beta:Spine1
     100130: Beta:Spine2
     100132: //RootNode
+    100134: Beta_HighJointsGeo
+    100136: Beta_HighLimbsGeo
+    100138: Beta_HighTorsoGeo
+    100140: BetaHighResMeshes
     400000: Beta:Head
     400002: Beta:HeadTop_End
     400004: Beta:Hips
@@ -139,8 +143,18 @@ ModelImporter:
     400128: Beta:Spine1
     400130: Beta:Spine2
     400132: //RootNode
-    7400000: running
+    400134: Beta_HighJointsGeo
+    400136: Beta_HighLimbsGeo
+    400138: Beta_HighTorsoGeo
+    400140: BetaHighResMeshes
+    4300000: Beta_HighLimbsGeo
+    4300002: Beta_HighTorsoGeo
+    4300004: Beta_HighJointsGeo
+    7400000: crouched_walking
     9500000: //RootNode
+    13700000: Beta_HighJointsGeo
+    13700002: Beta_HighLimbsGeo
+    13700004: Beta_HighTorsoGeo
   materials:
     importMaterials: 1
     materialName: 0
@@ -158,10 +172,10 @@ ModelImporter:
     extraExposedTransformPaths: []
     clipAnimations:
     - serializedVersion: 16
-      name: running
+      name: crouched_walking
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 21
+      lastFrame: 31
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -314,6 +328,14 @@ ModelImporter:
       - path: Beta:Hips/Beta:Spine/Beta:Spine1/Beta:Spine2/Beta:RightShoulder/Beta:RightArm/Beta:RightForeArm/Beta:RightHand/Beta:RightHandThumb1/Beta:RightHandThumb2/Beta:RightHandThumb3
         weight: 1
       - path: Beta:Hips/Beta:Spine/Beta:Spine1/Beta:Spine2/Beta:RightShoulder/Beta:RightArm/Beta:RightForeArm/Beta:RightHand/Beta:RightHandThumb1/Beta:RightHandThumb2/Beta:RightHandThumb3/Beta:RightHandThumb4
+        weight: 1
+      - path: BetaHighResMeshes
+        weight: 1
+      - path: BetaHighResMeshes/Beta_HighJointsGeo
+        weight: 1
+      - path: BetaHighResMeshes/Beta_HighLimbsGeo
+        weight: 1
+      - path: BetaHighResMeshes/Beta_HighTorsoGeo
         weight: 1
       maskType: 0
       maskSource: {instanceID: 0}

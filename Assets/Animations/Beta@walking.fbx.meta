@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 1cb2682504c1413429e6b27fb7d6907b
-timeCreated: 1433590927
+guid: cead0e22e54898e4390da762a9e0c1b1
+timeCreated: 1433680331
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -161,7 +161,7 @@ ModelImporter:
       name: walking
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 57
+      lastFrame: 29
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

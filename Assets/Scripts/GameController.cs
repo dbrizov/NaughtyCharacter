@@ -21,6 +21,6 @@ public class GameController : MonoBehaviour
 
     private void ToggleSlowMotion()
     {
-        Time.timeScale = Time.timeScale == 1f ? 0.2f : 1f;
+        Time.timeScale = Time.timeScale == 1f ? 0.3f : 1f;
     }
 }

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 43321eb217bb6bb4498cef95525c035e
-timeCreated: 1433590929
+guid: 98307ead46e5b0745a55129e4b8fdd3b
+timeCreated: 1433680316
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -161,7 +161,7 @@ ModelImporter:
       name: idle
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 500
+      lastFrame: 250
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

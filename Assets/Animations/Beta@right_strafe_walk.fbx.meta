@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 9f4e91eb6163a914e87a58654466427e
-timeCreated: 1433590929
+guid: 7ed7ea5ced759974586ed45f041da544
+timeCreated: 1433680315
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -161,7 +161,7 @@ ModelImporter:
       name: right_strafe_walk
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 55
+      lastFrame: 28
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

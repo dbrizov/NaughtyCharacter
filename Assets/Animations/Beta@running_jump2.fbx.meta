@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: a7e1984d855897f4dbc796fcb09ba9d0
-timeCreated: 1433590930
+guid: 399032c7a7c4f0243be7e6c2b42251bc
+timeCreated: 1433680309
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -72,6 +72,10 @@ ModelImporter:
     100128: Beta:Spine1
     100130: Beta:Spine2
     100132: //RootNode
+    100134: Beta_HighJointsGeo
+    100136: Beta_HighLimbsGeo
+    100138: Beta_HighTorsoGeo
+    100140: BetaHighResMeshes
     400000: Beta:Head
     400002: Beta:HeadTop_End
     400004: Beta:Hips
@@ -139,8 +143,18 @@ ModelImporter:
     400128: Beta:Spine1
     400130: Beta:Spine2
     400132: //RootNode
+    400134: Beta_HighJointsGeo
+    400136: Beta_HighLimbsGeo
+    400138: Beta_HighTorsoGeo
+    400140: BetaHighResMeshes
+    4300000: Beta_HighLimbsGeo
+    4300002: Beta_HighTorsoGeo
+    4300004: Beta_HighJointsGeo
     7400000: mixamo.com
     9500000: //RootNode
+    13700000: Beta_HighJointsGeo
+    13700002: Beta_HighLimbsGeo
+    13700004: Beta_HighTorsoGeo
   materials:
     importMaterials: 1
     materialName: 0

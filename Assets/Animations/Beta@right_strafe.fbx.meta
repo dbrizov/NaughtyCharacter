@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 6faa36a9f5eafa240900fed8c46aa18d
-timeCreated: 1433590929
+guid: b982c1aff09287441b958d4ff1e2f1df
+timeCreated: 1433680325
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -161,7 +161,7 @@ ModelImporter:
       name: right_strafe
       takeName: mixamo.com
       firstFrame: 0
-      lastFrame: 40
+      lastFrame: 20
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
