@@ -17,13 +17,18 @@ public class CameraOcclusionProtector : MonoBehaviour
     }
 
     [SerializeField]
-    [Range(0f, 1f)]
-    [Tooltip("This value is subtracted from the distance to target to ensure an even safer unoccluded position when an occlusion occurs (In meters)")]
+    [Range(0f, 0.5f)]
+    [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target (In meters)")]
     private float extraOcclusionSecureDistance = 0.2f; // In meters
 
     [SerializeField]
+    [Range(1f, 2f)]
+    [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target")]
+    private float nearClipPlaneExtentMultiplier = 1.1f; // In meters
+
+    [SerializeField]
     [Range(0f, 1f)]
-    [Tooltip("The time need for the camera to reach secure position when an occlusion occurs (In seconds)")]
+    [Tooltip("The time needed for the camera to reach secure position when an occlusion occurs (In seconds)")]
     private float occlusionMoveTime = 0.05f; // The lesser, the better
 
     [SerializeField]
@@ -32,7 +37,7 @@ public class CameraOcclusionProtector : MonoBehaviour
 
     [SerializeField]
     [Range(1f, 10f)]
-    [Tooltip("More occlusion checks will ensure that there is no camera occlusions")]
+    [Tooltip("More occlusion checks will ensure there are no camera occlusions")]
     private int maxOcclusionChecks = 5;
 
     [SerializeField]
@@ -57,7 +62,7 @@ public class CameraOcclusionProtector : MonoBehaviour
 
     protected virtual void Start()
     {
-        this.originalDistanceToTarget = this.followCameraTransform.localPosition.magnitude;
+        this.originalDistanceToTarget = (this.pivot.position - this.followCameraTransform.position).magnitude;
         this.desiredDistanceToTarget = this.originalDistanceToTarget;
     }
 
@@ -73,7 +78,7 @@ public class CameraOcclusionProtector : MonoBehaviour
         float halfFOV = (this.followCamera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
         float aspectRatio = this.followCamera.aspect; // viewportWidth / viewportHeight
         float distanceToNearClipPlane = this.followCamera.nearClipPlane;
-        float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane; // The half height of the Near Clip Plane of the Camera's view frustum
+        float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane * this.nearClipPlaneExtentMultiplier; // The half height of the Near Clip Plane of the Camera's view frustum
         float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's view frustum
 
         nearClipPlanePoints.UpperLeft = cameraPosition - this.transform.right * halfWidth;

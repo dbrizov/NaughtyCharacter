@@ -12,6 +12,11 @@ public class Character : MonoBehaviour
     public const float MaxRotationSmoothing = 30f;
 
     [SerializeField]
+    [Range(1f, 30f)]
+    [Tooltip("How fast the character accelerates")]
+    private float speedAcceleration = 10f;
+
+    [SerializeField]
     [Range(MinMoveSpeed, MaxMoveSpeed)]
     [Tooltip("In meters/second")]
     private float walkSpeed = 2f; // In meters per second
@@ -19,12 +24,12 @@ public class Character : MonoBehaviour
     [SerializeField]
     [Range(MinMoveSpeed, MaxMoveSpeed)]
     [Tooltip("In meters/second")]
-    private float jogSpeed = 3f; // In meters per second
+    private float jogSpeed = 4f; // In meters per second
 
     [SerializeField]
     [Range(MinMoveSpeed, MaxMoveSpeed)]
     [Tooltip("In meters/second")]
-    private float sprintSpeed = 5f; // In meters per seconds
+    private float sprintSpeed = 6f; // In meters per seconds
 
     [SerializeField]
     [Range(MinRotationSmoothing, MaxRotationSmoothing)]
@@ -36,7 +41,10 @@ public class Character : MonoBehaviour
     private bool bIsWalking;
     private bool bIsJogging;
     private bool bIsSprinting;
+    private Vector3 previousMoveVector;
     private float maxMoveSpeed; // In meters per second
+    private float targetMoveSpeed; // In meters per second
+    private float currentMoveSpeed; // In meters per second
     private Rigidbody rigidBody;
     private Quaternion controlRotation;
     private Quaternion controlRotationX;
@@ -56,6 +64,7 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
+        this.AccelerateMoveSpeed(Time.deltaTime);
         this.AlignRotationWithControlRotationY();
     }
 
@@ -257,21 +266,41 @@ public class Character : MonoBehaviour
 
     public void Move(Vector3 moveVector)
     {
-        if (moveVector.magnitude * this.maxMoveSpeed < this.WalkSpeed)
+        float moveSpeed = moveVector.magnitude * this.maxMoveSpeed;
+        if (moveSpeed < float.Epsilon)
         {
-            return;
+            moveVector = this.previousMoveVector;
+            this.targetMoveSpeed = 0f;
+        }
+        else if (moveSpeed <= this.WalkSpeed)
+        {
+            this.targetMoveSpeed = this.WalkSpeed;
+        }
+        else if (moveSpeed > this.WalkSpeed && moveSpeed <= this.JogSpeed)
+        {
+            this.targetMoveSpeed = this.JogSpeed;
+        }
+        else if (moveSpeed > this.JogSpeed)
+        {
+            this.targetMoveSpeed = this.SprintSpeed;
         }
 
-        Vector3 newVelocity = new Vector3(moveVector.x, this.rigidBody.velocity.y, moveVector.z) * this.maxMoveSpeed;
+        if (moveSpeed > 0f && Mathf.Abs(moveSpeed - this.maxMoveSpeed) > 0.1f)
+        {
+            moveVector.Normalize();
+        }
+
+        Vector3 horizontalVelocity = moveVector * this.currentMoveSpeed;
+        Vector3 newVelocity = new Vector3(horizontalVelocity.x, this.rigidBody.velocity.y, horizontalVelocity.z);
         this.rigidBody.velocity = newVelocity;
 
         this.OrientRotationToMovement(moveVector);
+        this.previousMoveVector = moveVector;
     }
 
     private bool OrientRotationToMovement(Vector3 moveVector)
     {
-        if (this.B_OrientRotationToMovement &&
-            moveVector.magnitude * this.maxMoveSpeed >= this.WalkSpeed)
+        if (this.B_OrientRotationToMovement && moveVector.magnitude > 0f)
         {
             Quaternion rotation = Quaternion.LookRotation(moveVector, Vector3.up);
             if (rotationSmoothing > 0f)
@@ -298,5 +327,13 @@ public class Character : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void AccelerateMoveSpeed(float deltaTime)
+    {
+        if (Mathf.Abs(this.currentMoveSpeed - this.targetMoveSpeed) > 0.01f)
+        {
+            this.currentMoveSpeed = Mathf.Lerp(this.currentMoveSpeed, this.targetMoveSpeed, deltaTime * this.speedAcceleration);
+        }
     }
 }
