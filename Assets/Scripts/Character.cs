@@ -38,13 +38,13 @@ public class Character : MonoBehaviour
     private bool bIsSprinting;
     private float maxMoveSpeed; // In meters per second
     private Rigidbody rigidBody;
+    private Quaternion controlRotation;
     private Quaternion controlRotationX;
     private Quaternion controlRotationY;
 
     protected virtual void Awake()
     {
         this.B_OrientRotationToMovement = true;
-        this.B_UseControlRotation = false;
         this.WalkSpeed = this.WalkSpeed;
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
@@ -95,6 +95,9 @@ public class Character : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// If set to true, this automatically sets B_UseControlRotation to false
+    /// </summary>
     public bool B_OrientRotationToMovement
     {
         get
@@ -104,9 +107,16 @@ public class Character : MonoBehaviour
         set
         {
             this.bOrientRotationToMovement = value;
+            if (this.bOrientRotationToMovement)
+            {
+                this.bUseControlRotation = false;
+            }
         }
     }
 
+    /// <summary>
+    /// If set to true, this automatically sets B_OrientRotationToMovement to false
+    /// </summary>
     public bool B_UseControlRotation
     {
         get
@@ -116,6 +126,22 @@ public class Character : MonoBehaviour
         set
         {
             this.bUseControlRotation = value;
+            if (this.bUseControlRotation)
+            {
+                this.bOrientRotationToMovement = false;
+            }
+        }
+    }
+
+    public Quaternion ControlRotation
+    {
+        get
+        {
+            return this.controlRotation;
+        }
+        set
+        {
+            this.controlRotation = value;
         }
     }
 
@@ -140,14 +166,6 @@ public class Character : MonoBehaviour
         set
         {
             this.controlRotationY = value;
-        }
-    }
-
-    public Quaternion ControlRotation
-    {
-        get
-        {
-            return this.ControlRotationX * this.ControlRotationY;
         }
     }
 

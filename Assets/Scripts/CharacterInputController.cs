@@ -20,6 +20,7 @@ public class CharacterInputController : MonoBehaviour
     private Vector3 moveVector;
     private float lookAngle;
     private float tiltAngle;
+    private Quaternion controlRotation;
     private Quaternion controlRotationX;
     private Quaternion controlRotationY;
 
@@ -41,6 +42,8 @@ public class CharacterInputController : MonoBehaviour
         this.UpdateMoveVector();
         this.UpdateHorizontalSpeed();
         this.UpdateControlRotation();
+
+        this.character.ControlRotation = this.ControlRotation;
         this.character.ControlRotationX = this.ControlRotationX;
         this.character.ControlRotationY = this.ControlRotationY;
     }
@@ -48,6 +51,18 @@ public class CharacterInputController : MonoBehaviour
     protected virtual void FixedUpdate()
     {
         this.character.Move(this.moveVector);
+    }
+
+    public Quaternion ControlRotation
+    {
+        get
+        {
+            return this.controlRotation;
+        }
+        private set
+        {
+            this.controlRotation = value;
+        }
     }
 
     public Quaternion ControlRotationX
@@ -82,8 +97,9 @@ public class CharacterInputController : MonoBehaviour
         if (this.followCamera != null)
         {
             // Calculate the move vector relative to camera direction
-            Vector3 cameraForward = Vector3.Scale(this.followCamera.forward, new Vector3(1.0f, 0.0f, 1.0f)).normalized;
-            Vector3 cameraRight = Vector3.Scale(this.followCamera.right, new Vector3(1.0f, 0.0f, 1.0f)).normalized;
+            Vector3 scalerVector = new Vector3(1f, 0f, 1f);
+            Vector3 cameraForward = Vector3.Scale(this.followCamera.forward, scalerVector).normalized;
+            Vector3 cameraRight = Vector3.Scale(this.followCamera.right, scalerVector).normalized;
 
             this.moveVector = (cameraForward * vertical + cameraRight * horizontal);
         }
@@ -106,12 +122,15 @@ public class CharacterInputController : MonoBehaviour
 
         // Adjust the look angle (Y Rotation)
         this.lookAngle += mouseX * this.mouseSensitivity;
-        this.ControlRotationY = Quaternion.Euler(0.0f, this.lookAngle, 0.0f);
+        this.ControlRotationY = Quaternion.Euler(0f, this.lookAngle, 0f);
 
         // Adjust the tilt angle (X Rotation)
         this.tiltAngle += mouseY * this.mouseSensitivity;
         this.tiltAngle = MathfUtils.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
         this.ControlRotationX = Quaternion.Euler(-this.tiltAngle, 0f, 0f);
+
+        // The entire Control Rotation
+        this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
     }
 
     private void UpdateHorizontalSpeed()
