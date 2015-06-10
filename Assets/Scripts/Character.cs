@@ -41,6 +41,7 @@ public class Character : MonoBehaviour
     private bool bIsWalking;
     private bool bIsJogging;
     private bool bIsSprinting;
+    private bool bIsJumping;
     private Vector3 previousMoveVector;
     private float maxMoveSpeed; // In meters per second
     private float targetMoveSpeed; // In meters per second
@@ -229,6 +230,18 @@ public class Character : MonoBehaviour
                 this.B_IsWalking = false;
                 this.B_IsJogging = false;
             }
+        }
+    }
+
+    public bool B_IsJumping
+    {
+        get
+        {
+            return this.bIsJumping;
+        }
+        set
+        {
+            this.bIsJumping = value;
         }
     }
 

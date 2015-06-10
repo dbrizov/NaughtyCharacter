@@ -7,4 +7,5 @@ public static class AnimatorPropertyHash
     public static readonly int Idle = Animator.StringToHash("Idle");
     public static readonly int IdleThinking = Animator.StringToHash("IdleThinking");
     public static readonly int IdleRejected = Animator.StringToHash("IdleRejected");
+    public static readonly int IsJumping = Animator.StringToHash("IsJumping");
 }

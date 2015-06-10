@@ -40,12 +40,9 @@ public class CharacterInputController : MonoBehaviour
     protected virtual void Update()
     {
         this.UpdateMoveVector();
-        this.UpdateHorizontalSpeed();
-        this.UpdateControlRotation();
-
-        this.character.ControlRotation = this.ControlRotation;
-        this.character.ControlRotationX = this.ControlRotationX;
-        this.character.ControlRotationY = this.ControlRotationY;
+        this.UpdateSprintState();
+        this.UpdateJumpState();
+        this.UpdateControlRotation();        
     }
 
     protected virtual void FixedUpdate()
@@ -131,9 +128,13 @@ public class CharacterInputController : MonoBehaviour
 
         // The entire Control Rotation
         this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
+
+        this.character.ControlRotation = this.ControlRotation;
+        this.character.ControlRotationX = this.ControlRotationX;
+        this.character.ControlRotationY = this.ControlRotationY;
     }
 
-    private void UpdateHorizontalSpeed()
+    private void UpdateSprintState()
     {
         float sprintAxis = Input.GetAxis("Sprint");
 
@@ -145,5 +146,10 @@ public class CharacterInputController : MonoBehaviour
         {
             this.character.B_IsJogging = true;
         }
+    }
+
+    private void UpdateJumpState()
+    {
+        this.character.B_IsJumping = Input.GetButtonDown("Jump");
     }
 }
