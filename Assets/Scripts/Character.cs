@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(CapsuleCollider))]
+[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterInputController))]
 public class Character : MonoBehaviour
@@ -47,7 +46,7 @@ public class Character : MonoBehaviour
     private float maxMoveSpeed; // In meters per second
     private float targetMoveSpeed; // In meters per second
     private float currentMoveSpeed; // In meters per second
-    private Rigidbody rigidBody;
+    private CharacterController controller;
     private Quaternion controlRotation;
     private Quaternion controlRotationX;
     private Quaternion controlRotationY;
@@ -60,16 +59,12 @@ public class Character : MonoBehaviour
         this.B_IsJogging = true;
         this.B_OrientRotationToMovement = true;
 
-        this.rigidBody = this.GetComponent<Rigidbody>();
-        this.rigidBody.useGravity = false;
-        this.rigidBody.isKinematic = false;
-        this.rigidBody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+        this.controller = this.GetComponent<CharacterController>();
     }
 
     protected virtual void Update()
     {
-        this.AccelerateMoveSpeed(Time.deltaTime);
-        this.OrientRotationToMovement(this.moveVector, Time.deltaTime);
+        this.AccelerateMoveSpeed();
         this.AlignRotationWithControlRotationY();
     }
 
@@ -249,17 +244,41 @@ public class Character : MonoBehaviour
         }
     }
 
+    public bool B_IsGrounded
+    {
+        get
+        {
+            return this.controller.isGrounded;
+        }
+    }
+
     public float HorizontalSpeed
     {
         get
         {
-            return this.currentMoveSpeed;
+            return this.HorizontalVelocity.magnitude;
+        }
+    }
+
+    public Vector3 Velocity
+    {
+        get
+        {
+            return this.controller.velocity;
+        }
+    }
+
+    public Vector3 HorizontalVelocity
+    {
+        get
+        {
+            return new Vector3(this.Velocity.x, 0f, this.Velocity.z);
         }
     }
 
     public void Move(Vector3 moveVector)
     {
-        this.OrientRotationToMovement(moveVector, Time.deltaTime);
+        this.OrientRotationToMovement(moveVector);
 
         float moveSpeed = moveVector.magnitude * this.maxMoveSpeed;
         if (moveSpeed < float.Epsilon)
@@ -285,20 +304,20 @@ public class Character : MonoBehaviour
             moveVector.Normalize();
         }
 
-        Vector3 positionOffset = moveVector * this.currentMoveSpeed * Time.deltaTime;
-        this.transform.position += positionOffset;
+        Vector3 motion = moveVector * this.currentMoveSpeed * Time.deltaTime;
+        this.controller.Move(motion);
 
         this.moveVector = moveVector;
     }
 
-    private bool OrientRotationToMovement(Vector3 moveVector, float deltaTime)
+    private bool OrientRotationToMovement(Vector3 moveVector)
     {
         if (this.B_OrientRotationToMovement && moveVector.magnitude > 0f)
         {
             Quaternion rotation = Quaternion.LookRotation(moveVector, Vector3.up);
             if (rotationSmoothing > 0f)
             {
-                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, rotation, this.rotationSmoothing * deltaTime);
+                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, rotation, this.rotationSmoothing * Time.deltaTime);
             }
             else
             {
@@ -322,11 +341,11 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void AccelerateMoveSpeed(float deltaTime)
+    private void AccelerateMoveSpeed()
     {
         if (Mathf.Abs(this.currentMoveSpeed - this.targetMoveSpeed) > 0.01f)
         {
-            this.currentMoveSpeed = Mathf.Lerp(this.currentMoveSpeed, this.targetMoveSpeed, deltaTime * this.speedAcceleration);
+            this.currentMoveSpeed = Mathf.Lerp(this.currentMoveSpeed, this.targetMoveSpeed, this.speedAcceleration * Time.deltaTime);
         }
     }
 }
