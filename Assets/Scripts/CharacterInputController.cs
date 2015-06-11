@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Character))]
 public class CharacterInputController : MonoBehaviour
 {
     public const float MinTiltAngle = -89.0f;
@@ -42,11 +43,8 @@ public class CharacterInputController : MonoBehaviour
         this.UpdateMoveVector();
         this.UpdateSprintState();
         this.UpdateJumpState();
-        this.UpdateControlRotation();        
-    }
+        this.UpdateControlRotation();
 
-    protected virtual void FixedUpdate()
-    {
         this.character.Move(this.moveVector);
     }
 

@@ -6,6 +6,9 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private int targetFrameRate = 60;
 
+    [SerializeField]
+    private float slowMotion = 0.2f;
+
     protected virtual void Awake()
     {
         Application.targetFrameRate = targetFrameRate;
@@ -13,7 +16,7 @@ public class GameController : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetButtonDown("Slow Motion"))
         {
             this.ToggleSlowMotion();
         }
@@ -21,6 +24,6 @@ public class GameController : MonoBehaviour
 
     private void ToggleSlowMotion()
     {
-        Time.timeScale = Time.timeScale == 1f ? 0.3f : 1f;
+        Time.timeScale = Time.timeScale == 1f ? this.slowMotion : 1f;
     }
 }
