@@ -4,8 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(Character))]
 public class CharacterInputController : MonoBehaviour
 {
-    public const float MinTiltAngle = -89.0f;
-    public const float MaxTiltAngle = 89.0f;
+    public const float MinTiltAngle = -75.0f;
+    public const float MaxTiltAngle = 45.0f;
     public const float MinMouseSensitivity = 1f;
     public const float MaxMouseSensitivity = 5f;
 
@@ -42,7 +42,6 @@ public class CharacterInputController : MonoBehaviour
     {
         this.UpdateMoveVector();
         this.UpdateSprintState();
-        this.UpdateJumpState();
         this.UpdateControlRotation();
 
         this.character.Move(this.moveVector);
@@ -112,6 +111,11 @@ public class CharacterInputController : MonoBehaviour
 
     private void UpdateControlRotation()
     {
+        //if (!Input.GetMouseButton(1))
+        //{
+        //    return;
+        //}
+
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
@@ -144,10 +148,5 @@ public class CharacterInputController : MonoBehaviour
         {
             this.character.IsJogging = true;
         }
-    }
-
-    private void UpdateJumpState()
-    {
-        this.character.IsJumping = Input.GetButtonDown("Jump");
     }
 }

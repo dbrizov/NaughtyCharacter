@@ -6,34 +6,34 @@ using System.Collections;
 [RequireComponent(typeof(CharacterInputController))]
 public class Character : MonoBehaviour
 {
-    public const float MinMoveSpeed = 0f;
-    public const float MaxMoveSpeed = 10f;
-    public const float MinRotationSmoothing = 0f;
-    public const float MaxRotationSmoothing = 30f;
+    private const float DefaultVerticalSpeed = -1f;
 
     [SerializeField]
-    [Range(1f, 30f)]
-    [Tooltip("How fast the character accelerates")]
-    private float speedAcceleration = 10f;
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float walkSpeed = 2f;
 
     [SerializeField]
-    [Range(MinMoveSpeed, MaxMoveSpeed)]
-    [Tooltip("In meters/second")]
-    private float walkSpeed = 2f; // In meters per second
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float jogSpeed = 4f;
 
     [SerializeField]
-    [Range(MinMoveSpeed, MaxMoveSpeed)]
-    [Tooltip("In meters/second")]
-    private float jogSpeed = 4f; // In meters per second
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float sprintSpeed = 6f;
 
     [SerializeField]
-    [Range(MinMoveSpeed, MaxMoveSpeed)]
-    [Tooltip("In meters/second")]
-    private float sprintSpeed = 6f; // In meters per seconds
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float maxVerticalSpeed = 50f;
 
     [SerializeField]
-    [Range(MinRotationSmoothing, MaxRotationSmoothing)]
-    [Tooltip("How fast the character rotates around the Y axis")]
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float horizontalAcceleration = 10f;
+
+    [SerializeField]
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float verticalAcceleration = 10f;
+
+    [SerializeField]
+    [Tooltip("How fast the character rotates around the Y axis. Value of 0 disables Rotation Smoothing")]
     private float rotationSmoothing = 15f;
 
     private bool orientRotationToMovement;
@@ -41,11 +41,11 @@ public class Character : MonoBehaviour
     private bool isWalking;
     private bool isJogging;
     private bool isSprinting;
-    private bool isJumping;
     private Vector3 moveVector;
-    private float maxMoveSpeed; // In meters per second
-    private float targetMoveSpeed; // In meters per second
-    private float currentMoveSpeed; // In meters per second
+    private float maxHorizontalSpeed; // In meters per second
+    private float targetHorizontalSpeed; // In meters per second
+    private float currentHorizontalSpeed; // In meters per second
+    private float currentVerticalSpeed; // In meters per second
     private CharacterController controller;
     private Quaternion controlRotation;
     private Quaternion controlRotationX;
@@ -53,19 +53,64 @@ public class Character : MonoBehaviour
 
     protected virtual void Awake()
     {
+        // Ensure that the entered values are correct though the setters
+        this.HorizontalAcceleration = this.HorizontalAcceleration;
+        this.VerticalAcceleration = this.VerticalAcceleration;
+        this.MaxVerticalSpeed = this.MaxVerticalSpeed;
         this.WalkSpeed = this.WalkSpeed;
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
+        this.RotationSmoothing = this.RotationSmoothing;
+
+        // Configure the character
         this.IsJogging = true;
         this.OrientRotationToMovement = true;
+        this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
 
         this.controller = this.GetComponent<CharacterController>();
     }
 
     protected virtual void Update()
     {
-        this.AccelerateMoveSpeed();
+        this.AccelerateHorizontalSpeed();
+        this.AccelerateVerticalSpeed();
         this.AlignRotationWithControlRotationY();
+    }
+
+    public float HorizontalAcceleration
+    {
+        get
+        {
+            return this.horizontalAcceleration;
+        }
+        set
+        {
+            this.horizontalAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float VerticalAcceleration
+    {
+        get
+        {
+            return this.verticalAcceleration;
+        }
+        set
+        {
+            this.verticalAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float MaxVerticalSpeed
+    {
+        get
+        {
+            return this.maxVerticalSpeed;
+        }
+        set
+        {
+            this.maxVerticalSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
     }
 
     public float WalkSpeed
@@ -76,7 +121,7 @@ public class Character : MonoBehaviour
         }
         set
         {
-            this.walkSpeed = Mathf.Clamp(value, MinMoveSpeed, MaxMoveSpeed);
+            this.walkSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
         }
     }
 
@@ -88,7 +133,7 @@ public class Character : MonoBehaviour
         }
         set
         {
-            this.jogSpeed = Mathf.Clamp(value, MinMoveSpeed, MaxMoveSpeed);
+            this.jogSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
         }
     }
 
@@ -100,7 +145,19 @@ public class Character : MonoBehaviour
         }
         set
         {
-            this.sprintSpeed = Mathf.Clamp(value, MinMoveSpeed, MaxMoveSpeed);
+            this.sprintSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float RotationSmoothing
+    {
+        get
+        {
+            return this.rotationSmoothing;
+        }
+        set
+        {
+            this.rotationSmoothing = Mathf.Clamp(value, 0f, float.MaxValue);
         }
     }
 
@@ -189,7 +246,7 @@ public class Character : MonoBehaviour
             this.isWalking = value;
             if (this.isWalking)
             {
-                this.maxMoveSpeed = this.WalkSpeed;
+                this.maxHorizontalSpeed = this.WalkSpeed;
                 this.IsJogging = false;
                 this.IsSprinting = false;
             }
@@ -207,7 +264,7 @@ public class Character : MonoBehaviour
             this.isJogging = value;
             if (this.isJogging)
             {
-                this.maxMoveSpeed = this.JogSpeed;
+                this.maxHorizontalSpeed = this.JogSpeed;
                 this.IsWalking = false;
                 this.IsSprinting = false;
             }
@@ -225,22 +282,10 @@ public class Character : MonoBehaviour
             this.isSprinting = value;
             if (this.isSprinting)
             {
-                this.maxMoveSpeed = this.SprintSpeed;
+                this.maxHorizontalSpeed = this.SprintSpeed;
                 this.IsWalking = false;
                 this.IsJogging = false;
             }
-        }
-    }
-
-    public bool IsJumping
-    {
-        get
-        {
-            return this.isJumping;
-        }
-        set
-        {
-            this.isJumping = value;
         }
     }
 
@@ -268,35 +313,43 @@ public class Character : MonoBehaviour
         }
     }
 
+    public Vector3 VerticalVelocity
+    {
+        get
+        {
+            return new Vector3(0f, this.Velocity.y, 0f);
+        }
+    }
+
     public void Move(Vector3 moveVector)
     {
         this.OrientRotationToMoveVector(moveVector);
 
-        float moveSpeed = moveVector.magnitude * this.maxMoveSpeed;
+        float moveSpeed = moveVector.magnitude * this.maxHorizontalSpeed;
         if (moveSpeed < float.Epsilon)
         {
             moveVector = this.moveVector;
-            this.targetMoveSpeed = 0f;
+            this.targetHorizontalSpeed = 0f;
         }
         else if (moveSpeed <= this.WalkSpeed)
         {
-            this.targetMoveSpeed = this.WalkSpeed;
+            this.targetHorizontalSpeed = this.WalkSpeed;
         }
         else if (moveSpeed > this.WalkSpeed && moveSpeed <= this.JogSpeed)
         {
-            this.targetMoveSpeed = this.JogSpeed;
+            this.targetHorizontalSpeed = this.JogSpeed;
         }
         else if (moveSpeed > this.JogSpeed)
         {
-            this.targetMoveSpeed = this.SprintSpeed;
+            this.targetHorizontalSpeed = this.SprintSpeed;
         }
 
-        if (moveSpeed > 0f && Mathf.Abs(moveSpeed - this.maxMoveSpeed) > 0.1f)
+        if (moveSpeed > 0f && Mathf.Abs(moveSpeed - this.maxHorizontalSpeed) > 0.1f)
         {
             moveVector.Normalize();
         }
 
-        Vector3 motion = moveVector * this.currentMoveSpeed * Time.deltaTime;
+        Vector3 motion = (moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed) * Time.deltaTime;
         this.controller.Move(motion);
 
         this.moveVector = moveVector;
@@ -307,9 +360,9 @@ public class Character : MonoBehaviour
         if (this.OrientRotationToMovement && moveVector.magnitude > 0f)
         {
             Quaternion rotation = Quaternion.LookRotation(moveVector, Vector3.up);
-            if (rotationSmoothing > 0f)
+            if (this.RotationSmoothing > 0f)
             {
-                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, rotation, this.rotationSmoothing * Time.deltaTime);
+                this.transform.rotation = Quaternion.Slerp(this.transform.rotation, rotation, this.RotationSmoothing * Time.deltaTime);
             }
             else
             {
@@ -333,11 +386,27 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void AccelerateMoveSpeed()
+    private void AccelerateHorizontalSpeed()
     {
-        if (Mathf.Abs(this.currentMoveSpeed - this.targetMoveSpeed) > 0.01f)
+        if (Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed) > 0.01f)
         {
-            this.currentMoveSpeed = Mathf.Lerp(this.currentMoveSpeed, this.targetMoveSpeed, this.speedAcceleration * Time.deltaTime);
+            this.currentHorizontalSpeed +=
+                this.HorizontalAcceleration * Mathf.Sign(this.targetHorizontalSpeed - this.currentHorizontalSpeed) * Time.deltaTime;
+        }
+    }
+
+    private void AccelerateVerticalSpeed()
+    {
+        if (!this.IsGrounded)
+        {
+            if (Mathf.Abs(this.currentVerticalSpeed - this.MaxVerticalSpeed) > 0.01f)
+            {
+                this.currentVerticalSpeed -= this.VerticalAcceleration * Time.deltaTime;
+            }
+        }
+        else
+        {
+            this.currentVerticalSpeed = DefaultVerticalSpeed;
         }
     }
 }
