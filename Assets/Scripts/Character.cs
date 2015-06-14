@@ -85,9 +85,9 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.ApplyHorizontalForce();
-        this.ApplyGravity();
-        this.ApplyJumpForce();
+        this.UpdateHorizontalSpeed();
+        this.UpdateGravitySpeed();
+        this.UpdateJumpSpeed();
         this.AlignRotationWithControlRotationY();
     }
 
@@ -432,7 +432,7 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void ApplyHorizontalForce()
+    private void UpdateHorizontalSpeed()
     {
         if (Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed) > 0.01f)
         {
@@ -441,7 +441,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void ApplyGravity()
+    private void UpdateGravitySpeed()
     {
         if (!this.IsGrounded)
         {
@@ -456,7 +456,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void ApplyJumpForce()
+    private void UpdateJumpSpeed()
     {
         if (this.currentJumpSpeed > Character.DefaultJumpSpeed)
         {
