@@ -138,16 +138,16 @@ public class CharacterInputController : MonoBehaviour
 
         if (sprintAxis > 0f)
         {
-            this.character.B_IsSprinting = true;
+            this.character.IsSprinting = true;
         }
         else
         {
-            this.character.B_IsJogging = true;
+            this.character.IsJogging = true;
         }
     }
 
     private void UpdateJumpState()
     {
-        this.character.B_IsJumping = Input.GetButtonDown("Jump");
+        this.character.IsJumping = Input.GetButtonDown("Jump");
     }
 }

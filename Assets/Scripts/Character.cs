@@ -36,12 +36,12 @@ public class Character : MonoBehaviour
     [Tooltip("How fast the character rotates around the Y axis")]
     private float rotationSmoothing = 15f;
 
-    private bool bOrientRotationToMovement;
-    private bool bUseControlRotation;
-    private bool bIsWalking;
-    private bool bIsJogging;
-    private bool bIsSprinting;
-    private bool bIsJumping;
+    private bool orientRotationToMovement;
+    private bool useControlRotation;
+    private bool isWalking;
+    private bool isJogging;
+    private bool isSprinting;
+    private bool isJumping;
     private Vector3 moveVector;
     private float maxMoveSpeed; // In meters per second
     private float targetMoveSpeed; // In meters per second
@@ -56,8 +56,8 @@ public class Character : MonoBehaviour
         this.WalkSpeed = this.WalkSpeed;
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
-        this.B_IsJogging = true;
-        this.B_OrientRotationToMovement = true;
+        this.IsJogging = true;
+        this.OrientRotationToMovement = true;
 
         this.controller = this.GetComponent<CharacterController>();
     }
@@ -107,18 +107,18 @@ public class Character : MonoBehaviour
     /// <summary>
     /// If set to true, this automatically sets B_UseControlRotation to false
     /// </summary>
-    public bool B_OrientRotationToMovement
+    public bool OrientRotationToMovement
     {
         get
         {
-            return this.bOrientRotationToMovement;
+            return this.orientRotationToMovement;
         }
         set
         {
-            this.bOrientRotationToMovement = value;
-            if (this.bOrientRotationToMovement)
+            this.orientRotationToMovement = value;
+            if (this.orientRotationToMovement)
             {
-                this.bUseControlRotation = false;
+                this.useControlRotation = false;
             }
         }
     }
@@ -126,18 +126,18 @@ public class Character : MonoBehaviour
     /// <summary>
     /// If set to true, this automatically sets B_OrientRotationToMovement to false
     /// </summary>
-    public bool B_UseControlRotation
+    public bool UseControlRotation
     {
         get
         {
-            return this.bUseControlRotation;
+            return this.useControlRotation;
         }
         set
         {
-            this.bUseControlRotation = value;
-            if (this.bUseControlRotation)
+            this.useControlRotation = value;
+            if (this.useControlRotation)
             {
-                this.bOrientRotationToMovement = false;
+                this.orientRotationToMovement = false;
             }
         }
     }
@@ -178,85 +178,77 @@ public class Character : MonoBehaviour
         }
     }
 
-    public bool B_IsWalking
+    public bool IsWalking
     {
         get
         {
-            return this.bIsWalking;
+            return this.isWalking;
         }
         set
         {
-            this.bIsWalking = value;
-            if (this.bIsWalking)
+            this.isWalking = value;
+            if (this.isWalking)
             {
                 this.maxMoveSpeed = this.WalkSpeed;
-                this.B_IsJogging = false;
-                this.B_IsSprinting = false;
+                this.IsJogging = false;
+                this.IsSprinting = false;
             }
         }
     }
 
-    public bool B_IsJogging
+    public bool IsJogging
     {
         get
         {
-            return this.bIsJogging;
+            return this.isJogging;
         }
         set
         {
-            this.bIsJogging = value;
-            if (this.bIsJogging)
+            this.isJogging = value;
+            if (this.isJogging)
             {
                 this.maxMoveSpeed = this.JogSpeed;
-                this.B_IsWalking = false;
-                this.B_IsSprinting = false;
+                this.IsWalking = false;
+                this.IsSprinting = false;
             }
         }
     }
 
-    public bool B_IsSprinting
+    public bool IsSprinting
     {
         get
         {
-            return this.bIsSprinting;
+            return this.isSprinting;
         }
         set
         {
-            this.bIsSprinting = value;
-            if (this.bIsSprinting)
+            this.isSprinting = value;
+            if (this.isSprinting)
             {
                 this.maxMoveSpeed = this.SprintSpeed;
-                this.B_IsWalking = false;
-                this.B_IsJogging = false;
+                this.IsWalking = false;
+                this.IsJogging = false;
             }
         }
     }
 
-    public bool B_IsJumping
+    public bool IsJumping
     {
         get
         {
-            return this.bIsJumping;
+            return this.isJumping;
         }
         set
         {
-            this.bIsJumping = value;
+            this.isJumping = value;
         }
     }
 
-    public bool B_IsGrounded
+    public bool IsGrounded
     {
         get
         {
             return this.controller.isGrounded;
-        }
-    }
-
-    public float HorizontalSpeed
-    {
-        get
-        {
-            return this.HorizontalVelocity.magnitude;
         }
     }
 
@@ -278,7 +270,7 @@ public class Character : MonoBehaviour
 
     public void Move(Vector3 moveVector)
     {
-        this.OrientRotationToMovement(moveVector);
+        this.OrientRotationToMoveVector(moveVector);
 
         float moveSpeed = moveVector.magnitude * this.maxMoveSpeed;
         if (moveSpeed < float.Epsilon)
@@ -310,9 +302,9 @@ public class Character : MonoBehaviour
         this.moveVector = moveVector;
     }
 
-    private bool OrientRotationToMovement(Vector3 moveVector)
+    private bool OrientRotationToMoveVector(Vector3 moveVector)
     {
-        if (this.B_OrientRotationToMovement && moveVector.magnitude > 0f)
+        if (this.OrientRotationToMovement && moveVector.magnitude > 0f)
         {
             Quaternion rotation = Quaternion.LookRotation(moveVector, Vector3.up);
             if (rotationSmoothing > 0f)
@@ -332,7 +324,7 @@ public class Character : MonoBehaviour
 
     private bool AlignRotationWithControlRotationY()
     {
-        if (this.B_UseControlRotation)
+        if (this.UseControlRotation)
         {
             this.transform.rotation = this.ControlRotationY;
             return true;

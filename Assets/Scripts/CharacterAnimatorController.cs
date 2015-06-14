@@ -16,7 +16,7 @@ public class CharacterAnimatorController : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.animator.SetFloat(AnimatorPropertyHash.Speed, this.character.HorizontalSpeed);
-        this.animator.SetBool(AnimatorPropertyHash.IsJumping, this.character.B_IsJumping);
+        this.animator.SetFloat(AnimatorPropertyHash.Speed, this.character.HorizontalVelocity.magnitude);
+        this.animator.SetBool(AnimatorPropertyHash.IsJumping, this.character.IsJumping);
     }
 }
