@@ -18,7 +18,6 @@ public class CharacterAnimatorController : MonoBehaviour
     {
         this.animator.SetFloat(AnimatorPropertyHash.HorizontalSpeed, this.character.HorizontalVelocity.magnitude);
         this.animator.SetFloat(AnimatorPropertyHash.VerticalSpeed, this.character.VerticalVelocity.magnitude);
-        //this.animator.SetBool(AnimatorPropertyHash.IsGrounded, this.character.IsGrounded);
-        //Debug.Log(this.character.IsGrounded);
+        this.animator.SetBool(AnimatorPropertyHash.IsGrounded, this.character.IsGrounded);
     }
 }

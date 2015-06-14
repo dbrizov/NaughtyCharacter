@@ -42,6 +42,7 @@ public class CharacterInputController : MonoBehaviour
     {
         this.UpdateMoveVector();
         this.UpdateSprintState();
+        this.UpdateJumpState();
         this.UpdateControlRotation();
 
         this.character.Move(this.moveVector);
@@ -85,8 +86,8 @@ public class CharacterInputController : MonoBehaviour
 
     private void UpdateMoveVector()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        float horizontalAxis = Input.GetAxis("Horizontal");
+        float verticalAxis = Input.GetAxis("Vertical");
 
         if (this.followCamera != null)
         {
@@ -95,12 +96,12 @@ public class CharacterInputController : MonoBehaviour
             Vector3 cameraForward = Vector3.Scale(this.followCamera.forward, scalerVector).normalized;
             Vector3 cameraRight = Vector3.Scale(this.followCamera.right, scalerVector).normalized;
 
-            this.moveVector = (cameraForward * vertical + cameraRight * horizontal);
+            this.moveVector = (cameraForward * verticalAxis + cameraRight * horizontalAxis);
         }
         else
         {
             // Use world relative directions
-            this.moveVector = (Vector3.forward * vertical + Vector3.right * horizontal);
+            this.moveVector = (Vector3.forward * verticalAxis + Vector3.right * horizontalAxis);
         }
 
         if (this.moveVector.magnitude > 1.0f)
@@ -147,6 +148,14 @@ public class CharacterInputController : MonoBehaviour
         else
         {
             this.character.IsJogging = true;
+        }
+    }
+
+    private void UpdateJumpState()
+    {
+        if (Input.GetButtonDown("Jump"))
+        {
+            this.character.Jump();
         }
     }
 }

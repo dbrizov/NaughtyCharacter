@@ -7,6 +7,7 @@ using System.Collections;
 public class Character : MonoBehaviour
 {
     private const float DefaultVerticalSpeed = -1f;
+    private const float DefaultJumpSpeed = -1;
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
@@ -22,6 +23,10 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
+    private float maxJumpSpeed = 5f;
+
+    [SerializeField]
+    [Tooltip("In meters/second, [0, Infinity)")]
     private float maxVerticalSpeed = 50f;
 
     [SerializeField]
@@ -30,7 +35,11 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
-    private float verticalAcceleration = 10f;
+    private float jumpAcceleration = 25f;
+
+    [SerializeField]
+    [Tooltip("In meters/second, [0, Infinity)")]
+    private float gravityAcceleration = 20f;
 
     [SerializeField]
     [Tooltip("How fast the character rotates around the Y axis. Value of 0 disables Rotation Smoothing")]
@@ -46,6 +55,7 @@ public class Character : MonoBehaviour
     private float targetHorizontalSpeed; // In meters per second
     private float currentHorizontalSpeed; // In meters per second
     private float currentVerticalSpeed; // In meters per second
+    private float currentJumpSpeed; // In meters per second
     private CharacterController controller;
     private Quaternion controlRotation;
     private Quaternion controlRotationX;
@@ -55,8 +65,10 @@ public class Character : MonoBehaviour
     {
         // Ensure that the entered values are correct though the setters
         this.HorizontalAcceleration = this.HorizontalAcceleration;
-        this.VerticalAcceleration = this.VerticalAcceleration;
+        this.GravityAcceleration = this.GravityAcceleration;
+        this.JumpAcceleration = this.JumpAcceleration;
         this.MaxVerticalSpeed = this.MaxVerticalSpeed;
+        this.MaxJumpSpeed = this.MaxJumpSpeed;
         this.WalkSpeed = this.WalkSpeed;
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
@@ -66,51 +78,17 @@ public class Character : MonoBehaviour
         this.IsJogging = true;
         this.OrientRotationToMovement = true;
         this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
+        this.currentJumpSpeed = Character.DefaultJumpSpeed;
 
         this.controller = this.GetComponent<CharacterController>();
     }
 
     protected virtual void Update()
     {
-        this.AccelerateHorizontalSpeed();
-        this.AccelerateVerticalSpeed();
+        this.ApplyHorizontalForce();
+        this.ApplyGravity();
+        this.ApplyJumpForce();
         this.AlignRotationWithControlRotationY();
-    }
-
-    public float HorizontalAcceleration
-    {
-        get
-        {
-            return this.horizontalAcceleration;
-        }
-        set
-        {
-            this.horizontalAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
-        }
-    }
-
-    public float VerticalAcceleration
-    {
-        get
-        {
-            return this.verticalAcceleration;
-        }
-        set
-        {
-            this.verticalAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
-        }
-    }
-
-    public float MaxVerticalSpeed
-    {
-        get
-        {
-            return this.maxVerticalSpeed;
-        }
-        set
-        {
-            this.maxVerticalSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
-        }
     }
 
     public float WalkSpeed
@@ -146,6 +124,66 @@ public class Character : MonoBehaviour
         set
         {
             this.sprintSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float MaxVerticalSpeed
+    {
+        get
+        {
+            return this.maxVerticalSpeed;
+        }
+        set
+        {
+            this.maxVerticalSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float MaxJumpSpeed
+    {
+        get
+        {
+            return this.maxJumpSpeed;
+        }
+        set
+        {
+            this.maxJumpSpeed = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float HorizontalAcceleration
+    {
+        get
+        {
+            return this.horizontalAcceleration;
+        }
+        set
+        {
+            this.horizontalAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float GravityAcceleration
+    {
+        get
+        {
+            return this.gravityAcceleration;
+        }
+        set
+        {
+            this.gravityAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float JumpAcceleration
+    {
+        get
+        {
+            return this.jumpAcceleration;
+        }
+        set
+        {
+            this.jumpAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
         }
     }
 
@@ -355,6 +393,14 @@ public class Character : MonoBehaviour
         this.moveVector = moveVector;
     }
 
+    public void Jump()
+    {
+        if (this.IsGrounded)
+        {
+            this.currentJumpSpeed = Character.DefaultJumpSpeed + 0.1f;
+        }
+    }
+
     private bool OrientRotationToMoveVector(Vector3 moveVector)
     {
         if (this.OrientRotationToMovement && moveVector.magnitude > 0f)
@@ -386,7 +432,7 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void AccelerateHorizontalSpeed()
+    private void ApplyHorizontalForce()
     {
         if (Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed) > 0.01f)
         {
@@ -395,18 +441,33 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void AccelerateVerticalSpeed()
+    private void ApplyGravity()
     {
         if (!this.IsGrounded)
         {
             if (Mathf.Abs(this.currentVerticalSpeed - this.MaxVerticalSpeed) > 0.01f)
             {
-                this.currentVerticalSpeed -= this.VerticalAcceleration * Time.deltaTime;
+                this.currentVerticalSpeed -= this.GravityAcceleration * Time.deltaTime;
             }
         }
         else
         {
             this.currentVerticalSpeed = DefaultVerticalSpeed;
+        }
+    }
+
+    private void ApplyJumpForce()
+    {
+        if (this.currentJumpSpeed > Character.DefaultJumpSpeed)
+        {
+            this.currentJumpSpeed += this.JumpAcceleration * Time.deltaTime;
+            this.currentVerticalSpeed = this.currentJumpSpeed;
+
+            if (this.currentJumpSpeed > this.MaxJumpSpeed)
+            {
+                this.currentJumpSpeed = Character.DefaultJumpSpeed;
+                this.currentVerticalSpeed = this.MaxJumpSpeed;
+            }
         }
     }
 }
