@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(CharacterInputController))]
 public class Character : MonoBehaviour
 {
+    // Const variables
     private const float DefaultVerticalSpeed = -1f;
     private const float DefaultJumpSpeed = -1;
 
+    // Serializable fields
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
     private float walkSpeed = 2f;
@@ -45,6 +48,7 @@ public class Character : MonoBehaviour
     [Tooltip("How fast the character rotates around the Y axis. Value of 0 disables Rotation Smoothing")]
     private float rotationSmoothing = 15f;
 
+    // Private fields
     private bool orientRotationToMovement;
     private bool useControlRotation;
     private bool isWalking;
@@ -88,7 +92,24 @@ public class Character : MonoBehaviour
         this.UpdateHorizontalSpeed();
         this.UpdateGravitySpeed();
         this.UpdateJumpSpeed();
+
         this.AlignRotationWithControlRotationY();
+    }
+
+    protected virtual void OnEnable()
+    {
+        CharacterInputController.OnMouseRotationInput += this.SetControlRotation;
+        CharacterInputController.OnMoveInput += this.Move;
+        CharacterInputController.OnJumpInput += this.Jump;
+        CharacterInputController.OnSprintInput += this.SetSprintState;
+    }
+
+    protected virtual void OnDisable()
+    {
+        CharacterInputController.OnMouseRotationInput -= this.SetControlRotation;
+        CharacterInputController.OnMoveInput -= this.Move;
+        CharacterInputController.OnJumpInput -= this.Jump;
+        CharacterInputController.OnSprintInput -= this.SetSprintState;
     }
 
     public float WalkSpeed
@@ -243,7 +264,7 @@ public class Character : MonoBehaviour
         {
             return this.controlRotation;
         }
-        set
+        private set
         {
             this.controlRotation = value;
         }
@@ -255,7 +276,7 @@ public class Character : MonoBehaviour
         {
             return this.controlRotationX;
         }
-        set
+        private set
         {
             this.controlRotationX = value;
         }
@@ -267,7 +288,7 @@ public class Character : MonoBehaviour
         {
             return this.controlRotationY;
         }
-        set
+        private set
         {
             this.controlRotationY = value;
         }
@@ -343,23 +364,24 @@ public class Character : MonoBehaviour
         }
     }
 
-    public Vector3 HorizontalVelocity
+    public float HorizontalSpeed
     {
         get
         {
-            return new Vector3(this.Velocity.x, 0f, this.Velocity.z);
+            return this.currentHorizontalSpeed;
+            //return new Vector3(this.Velocity.x, 0f, this.Velocity.z).magnitude;
         }
     }
 
-    public Vector3 VerticalVelocity
+    public float VerticalSpeed
     {
         get
         {
-            return new Vector3(0f, this.Velocity.y, 0f);
+            return this.Velocity.y;
         }
     }
 
-    public void Move(Vector3 moveVector)
+    private void Move(Vector3 moveVector)
     {
         this.OrientRotationToMoveVector(moveVector);
 
@@ -369,7 +391,7 @@ public class Character : MonoBehaviour
             moveVector = this.moveVector;
             this.targetHorizontalSpeed = 0f;
         }
-        else if (moveSpeed <= this.WalkSpeed)
+        else if (moveSpeed > 0f && moveSpeed <= this.WalkSpeed)
         {
             this.targetHorizontalSpeed = this.WalkSpeed;
         }
@@ -382,7 +404,7 @@ public class Character : MonoBehaviour
             this.targetHorizontalSpeed = this.SprintSpeed;
         }
 
-        if (moveSpeed > 0f && Mathf.Abs(moveSpeed - this.maxHorizontalSpeed) > 0.1f)
+        if (moveSpeed > 0f)
         {
             moveVector.Normalize();
         }
@@ -393,11 +415,23 @@ public class Character : MonoBehaviour
         this.moveVector = moveVector;
     }
 
-    public void Jump()
+    private void Jump()
     {
         if (this.IsGrounded)
         {
             this.currentJumpSpeed = Character.DefaultJumpSpeed + 0.1f;
+        }
+    }
+
+    private void SetSprintState(bool isSprinting)
+    {
+        if (isSprinting)
+        {
+            this.IsSprinting = true;
+        }
+        else
+        {
+            this.IsJogging = true;
         }
     }
 
@@ -421,6 +455,13 @@ public class Character : MonoBehaviour
         return false;
     }
 
+    private void SetControlRotation(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY)
+    {
+        this.ControlRotation = controlRotation;
+        this.ControlRotationX = controlRotationX;
+        this.ControlRotationY = controlRotationY;
+    }
+
     private bool AlignRotationWithControlRotationY()
     {
         if (this.UseControlRotation)
@@ -438,6 +479,11 @@ public class Character : MonoBehaviour
         {
             this.currentHorizontalSpeed +=
                 this.HorizontalAcceleration * Mathf.Sign(this.targetHorizontalSpeed - this.currentHorizontalSpeed) * Time.deltaTime;
+        }
+
+        if (this.targetHorizontalSpeed == 0f && this.currentHorizontalSpeed < 0.1f)
+        {
+            this.currentHorizontalSpeed = 0f;
         }
     }
 

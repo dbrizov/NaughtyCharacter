@@ -3,6 +3,7 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour
 {
+    // Const variables
     public const float MinDistanceToPlayer = 1f;
     public const float MaxDistanceToPlayer = 5f;
     public const float MinCatchSpeedDamp = 0f;
@@ -10,8 +11,9 @@ public class CameraController : MonoBehaviour
     public const float MinRotationSmoothing = 0f;
     public const float MaxRotationSmoothing = 30f;
 
+    // Serializable fields
     [SerializeField]
-    private Character target = null; // The target to follow
+    private Transform target = null; // The target to follow
 
     [SerializeField]
     [Tooltip("Should the target be found with the target tag")]
@@ -34,6 +36,7 @@ public class CameraController : MonoBehaviour
     [Tooltip("How fast the camera rotates around the pivot")]
     private float rotationSmoothing = 15.0f;
 
+    // private fields
     private Transform rig; // The root transform of the camera rig
     private Transform pivot; // The pivot the camera is rotating around
     private Quaternion pivotTargetLocalRotation; // Controls the X Rotation (Tilt Rotation)
@@ -44,7 +47,7 @@ public class CameraController : MonoBehaviour
     {
         if (this.autoFindTarget)
         {
-            this.target = GameObject.FindGameObjectWithTag(this.targetTag).GetComponent<Character>();
+            this.target = GameObject.FindGameObjectWithTag(this.targetTag).transform;
         }
 
         this.pivot = this.transform.parent;
@@ -59,7 +62,17 @@ public class CameraController : MonoBehaviour
     protected virtual void LateUpdate()
     {
         this.FollowTarget();
-        this.UpdateRotation(Time.deltaTime);
+        //this.UpdateRotation(Time.deltaTime);
+    }
+
+    protected virtual void OnEnable()
+    {
+        CharacterInputController.OnMouseRotationInput += this.UpdateRotation;
+    }
+
+    protected virtual void OnDisable()
+    {
+        CharacterInputController.OnMouseRotationInput -= this.UpdateRotation;
     }
 
     private void FollowTarget()
@@ -72,20 +85,23 @@ public class CameraController : MonoBehaviour
         this.rig.position = Vector3.SmoothDamp(this.rig.position, this.target.transform.position, ref this.cameraVelocity, this.catchSpeedDamp);
     }
 
-    private void UpdateRotation(float deltaTime)
+    private void UpdateRotation(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY)
     {
         if (this.target != null)
         {
             // Y Rotation (Look Rotation)
-            this.rigTargetLocalRotation = this.target.ControlRotationY;
+            this.rigTargetLocalRotation = controlRotationY;
 
             // X Rotation (Tilt Rotation)
-            this.pivotTargetLocalRotation = this.target.ControlRotationX;
+            this.pivotTargetLocalRotation = controlRotationX;
 
             if (this.rotationSmoothing > 0.0f)
             {
-                this.pivot.localRotation = Quaternion.Slerp(this.pivot.localRotation, this.pivotTargetLocalRotation, this.rotationSmoothing * deltaTime);
-                this.rig.localRotation = Quaternion.Slerp(this.rig.localRotation, this.rigTargetLocalRotation, this.rotationSmoothing * deltaTime);
+                this.pivot.localRotation =
+                    Quaternion.Slerp(this.pivot.localRotation, this.pivotTargetLocalRotation, this.rotationSmoothing * Time.deltaTime);
+
+                this.rig.localRotation =
+                    Quaternion.Slerp(this.rig.localRotation, this.rigTargetLocalRotation, this.rotationSmoothing * Time.deltaTime);
             }
             else
             {

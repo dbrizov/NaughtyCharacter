@@ -16,6 +16,7 @@ public class CameraOcclusionProtector : MonoBehaviour
         public Vector3 LowerRight { get; set; }
     }
 
+    // Serializable fields
     [SerializeField]
     [Range(0f, 0.5f)]
     [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target (In meters)")]
@@ -43,6 +44,7 @@ public class CameraOcclusionProtector : MonoBehaviour
     [SerializeField]
     private bool visualizeInScene = false;
 
+    // Private fields
     private Camera followCamera;
     private Transform followCameraTransform;
     private Transform pivot; // The point at which the camera pivots around

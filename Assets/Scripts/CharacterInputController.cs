@@ -1,14 +1,29 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
-[RequireComponent(typeof(Character))]
 public class CharacterInputController : MonoBehaviour
 {
+    // Delegates and Events
+    public delegate void MoveInputHandler(Vector3 moveVector);
+    public static event MoveInputHandler OnMoveInput;
+
+    public delegate void MouseRotationInputHandler(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY);
+    public static event MouseRotationInputHandler OnMouseRotationInput;
+
+    public delegate void JumpInputHandler();
+    public static event JumpInputHandler OnJumpInput;
+
+    public delegate void SprintInputHandler(bool isSprinting);
+    public static event SprintInputHandler OnSprintInput;
+
+    // Const variables
     public const float MinTiltAngle = -75.0f;
     public const float MaxTiltAngle = 45.0f;
     public const float MinMouseSensitivity = 1f;
     public const float MaxMouseSensitivity = 5f;
 
+    // Serializable fields 
     [SerializeField]
     [Tooltip("The default camera is the main camera")]
     private Transform followCamera;
@@ -17,7 +32,7 @@ public class CharacterInputController : MonoBehaviour
     [Range(MinMouseSensitivity, MaxMouseSensitivity)]
     private float mouseSensitivity = 3.0f;
 
-    private Character character;
+    // Private fields
     private Vector3 moveVector;
     private float lookAngle;
     private float tiltAngle;
@@ -32,7 +47,6 @@ public class CharacterInputController : MonoBehaviour
             this.followCamera = Camera.main.transform;
         }
 
-        this.character = this.GetComponent<Character>();
         this.moveVector = Vector3.zero;
         this.lookAngle = 0f;
         this.tiltAngle = 0f;
@@ -40,12 +54,10 @@ public class CharacterInputController : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.UpdateMoveVector();
         this.UpdateSprintState();
         this.UpdateJumpState();
         this.UpdateControlRotation();
-
-        this.character.Move(this.moveVector);
+        this.UpdateMoveVector();
     }
 
     public Quaternion ControlRotation
@@ -104,9 +116,14 @@ public class CharacterInputController : MonoBehaviour
             this.moveVector = (Vector3.forward * verticalAxis + Vector3.right * horizontalAxis);
         }
 
-        if (this.moveVector.magnitude > 1.0f)
+        if (this.moveVector.magnitude > 1f)
         {
             this.moveVector.Normalize();
+        }
+
+        if (OnMoveInput != null)
+        {
+            OnMoveInput(this.moveVector);
         }
     }
 
@@ -132,22 +149,19 @@ public class CharacterInputController : MonoBehaviour
         // The entire Control Rotation
         this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
 
-        this.character.ControlRotation = this.ControlRotation;
-        this.character.ControlRotationX = this.ControlRotationX;
-        this.character.ControlRotationY = this.ControlRotationY;
+        if (OnMouseRotationInput != null)
+        {
+            OnMouseRotationInput(this.ControlRotation, this.ControlRotationX, this.ControlRotationY);
+        }
     }
 
     private void UpdateSprintState()
     {
-        float sprintAxis = Input.GetAxis("Sprint");
+        bool isSprinting = Input.GetAxis("Sprint") > 0f ? true : false;
 
-        if (sprintAxis > 0f)
+        if (OnSprintInput != null)
         {
-            this.character.IsSprinting = true;
-        }
-        else
-        {
-            this.character.IsJogging = true;
+            OnSprintInput(isSprinting);
         }
     }
 
@@ -155,7 +169,10 @@ public class CharacterInputController : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
-            this.character.Jump();
+            if (OnJumpInput != null)
+            {
+                OnJumpInput();
+            }
         }
     }
 }

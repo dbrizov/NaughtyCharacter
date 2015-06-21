@@ -16,8 +16,8 @@ public class CharacterAnimatorController : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.animator.SetFloat(AnimatorPropertyHash.HorizontalSpeed, this.character.HorizontalVelocity.magnitude);
-        this.animator.SetFloat(AnimatorPropertyHash.VerticalSpeed, this.character.VerticalVelocity.magnitude);
+        this.animator.SetFloat(AnimatorPropertyHash.HorizontalSpeed, this.character.HorizontalSpeed);
+        this.animator.SetFloat(AnimatorPropertyHash.VerticalSpeed, this.character.VerticalSpeed);
         this.animator.SetBool(AnimatorPropertyHash.IsGrounded, this.character.IsGrounded);
     }
 }
