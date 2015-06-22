@@ -92,8 +92,6 @@ public class Character : MonoBehaviour
         this.UpdateHorizontalSpeed();
         this.UpdateGravitySpeed();
         this.UpdateJumpSpeed();
-
-        this.AlignRotationWithControlRotationY();
     }
 
     protected virtual void OnEnable()
@@ -221,7 +219,7 @@ public class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// If set to true, this automatically sets B_UseControlRotation to false
+    /// If set to true, this automatically sets UseControlRotation to false
     /// </summary>
     public bool OrientRotationToMovement
     {
@@ -240,7 +238,7 @@ public class Character : MonoBehaviour
     }
 
     /// <summary>
-    /// If set to true, this automatically sets B_OrientRotationToMovement to false
+    /// If set to true, this automatically sets OrientRotationToMovement to false
     /// </summary>
     public bool UseControlRotation
     {
@@ -460,6 +458,8 @@ public class Character : MonoBehaviour
         this.ControlRotation = controlRotation;
         this.ControlRotationX = controlRotationX;
         this.ControlRotationY = controlRotationY;
+
+        this.AlignRotationWithControlRotationY();
     }
 
     private bool AlignRotationWithControlRotationY()
@@ -475,13 +475,21 @@ public class Character : MonoBehaviour
 
     private void UpdateHorizontalSpeed()
     {
-        if (Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed) > 0.01f)
+        // TODO Fix the stuttering when the HorizontalAcceleration is too big
+        float deltaSpeed = Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed);
+
+        if (deltaSpeed > 0.01f)
         {
             this.currentHorizontalSpeed +=
                 this.HorizontalAcceleration * Mathf.Sign(this.targetHorizontalSpeed - this.currentHorizontalSpeed) * Time.deltaTime;
         }
 
-        if (this.targetHorizontalSpeed == 0f && this.currentHorizontalSpeed < 0.1f)
+        if (deltaSpeed < 0.1f)
+        {
+            this.currentHorizontalSpeed = this.targetHorizontalSpeed;
+        }
+
+        if (this.targetHorizontalSpeed < 0.001f && this.currentHorizontalSpeed < 0.1f)
         {
             this.currentHorizontalSpeed = 0f;
         }
@@ -491,9 +499,13 @@ public class Character : MonoBehaviour
     {
         if (!this.IsGrounded)
         {
-            if (Mathf.Abs(this.currentVerticalSpeed - this.MaxVerticalSpeed) > 0.01f)
+            if (this.currentVerticalSpeed > -this.MaxVerticalSpeed)
             {
                 this.currentVerticalSpeed -= this.GravityAcceleration * Time.deltaTime;
+            }
+            else
+            {
+                this.currentVerticalSpeed = -this.MaxVerticalSpeed;
             }
         }
         else
