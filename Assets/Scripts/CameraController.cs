@@ -38,7 +38,7 @@ public class CameraController : MonoBehaviour
 
     // private fields
     private Transform rig; // The root transform of the camera rig
-    private Transform pivot; // The pivot the camera is rotating around
+    private Transform pivot; // The pivot the camera is looking at
     private Quaternion pivotTargetLocalRotation; // Controls the X Rotation (Tilt Rotation)
     private Quaternion rigTargetLocalRotation; // Controlls the Y Rotation (Look Rotation)
     private Vector3 cameraVelocity; // The velocity at which the camera moves
@@ -85,15 +85,15 @@ public class CameraController : MonoBehaviour
         this.rig.position = Vector3.SmoothDamp(this.rig.position, this.target.transform.position, ref this.cameraVelocity, this.catchSpeedDamp);
     }
 
-    private void UpdateRotation(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY)
+    private void UpdateRotation(Quaternion controlRotation)
     {
         if (this.target != null)
         {
             // Y Rotation (Look Rotation)
-            this.rigTargetLocalRotation = controlRotationY;
+            this.rigTargetLocalRotation = Quaternion.Euler(0f, controlRotation.eulerAngles.y, 0f);
 
             // X Rotation (Tilt Rotation)
-            this.pivotTargetLocalRotation = controlRotationX;
+            this.pivotTargetLocalRotation = Quaternion.Euler(controlRotation.eulerAngles.x, 0f, 0f);
 
             if (this.rotationSmoothing > 0.0f)
             {

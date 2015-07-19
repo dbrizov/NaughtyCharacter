@@ -6,15 +6,13 @@ public class CharacterInputController : MonoBehaviour
 {
     // Delegates and Events
     public delegate void MoveInputHandler(Vector3 moveVector);
-    public static event MoveInputHandler OnMoveInput;
-
-    public delegate void MouseRotationInputHandler(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY);
-    public static event MouseRotationInputHandler OnMouseRotationInput;
-
+    public delegate void MouseRotationInputHandler(Quaternion controlRotation);
     public delegate void JumpInputHandler();
-    public static event JumpInputHandler OnJumpInput;
-
     public delegate void SprintInputHandler(bool isSprinting);
+
+    public static event MoveInputHandler OnMoveInput;
+    public static event MouseRotationInputHandler OnMouseRotationInput;
+    public static event JumpInputHandler OnJumpInput;
     public static event SprintInputHandler OnSprintInput;
 
     // Const variables
@@ -37,8 +35,6 @@ public class CharacterInputController : MonoBehaviour
     private float lookAngle;
     private float tiltAngle;
     private Quaternion controlRotation;
-    private Quaternion controlRotationX;
-    private Quaternion controlRotationY;
 
     protected virtual void Awake()
     {
@@ -69,30 +65,6 @@ public class CharacterInputController : MonoBehaviour
         private set
         {
             this.controlRotation = value;
-        }
-    }
-
-    public Quaternion ControlRotationX
-    {
-        get
-        {
-            return this.controlRotationX;
-        }
-        private set
-        {
-            this.controlRotationX = value;
-        }
-    }
-
-    public Quaternion ControlRotationY
-    {
-        get
-        {
-            return this.controlRotationY;
-        }
-        private set
-        {
-            this.controlRotationY = value;
         }
     }
 
@@ -139,19 +111,19 @@ public class CharacterInputController : MonoBehaviour
 
         // Adjust the look angle (Y Rotation)
         this.lookAngle += mouseX * this.mouseSensitivity;
-        this.ControlRotationY = Quaternion.Euler(0f, this.lookAngle, 0f);
+        this.lookAngle %= 360f;
 
         // Adjust the tilt angle (X Rotation)
         this.tiltAngle += mouseY * this.mouseSensitivity;
+        this.tiltAngle %= 360f;
         this.tiltAngle = MathfExtensions.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
-        this.ControlRotationX = Quaternion.Euler(-this.tiltAngle, 0f, 0f);
 
         // The entire Control Rotation
         this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
 
         if (OnMouseRotationInput != null)
         {
-            OnMouseRotationInput(this.ControlRotation, this.ControlRotationX, this.ControlRotationY);
+            OnMouseRotationInput(this.ControlRotation);
         }
     }
 

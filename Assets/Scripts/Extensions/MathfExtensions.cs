@@ -5,15 +5,15 @@ public static class MathfExtensions
 {
     public static float ClampAngle(float angle, float min, float max)
     {
-        while (angle < -360 || angle > 360)
+        while (angle < -360f || angle > 360f)
         {
-            if (angle < -360)
+            if (angle < -360f)
             {
-                angle += 360;
+                angle += 360f;
             }
-            else if (angle > 360)
+            else if (angle > 360f)
             {
-                angle -= 360;
+                angle -= 360f;
             }
         }
 

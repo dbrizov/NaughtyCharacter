@@ -62,8 +62,6 @@ public class Character : MonoBehaviour
     private float currentJumpSpeed; // In meters per second
     private CharacterController controller;
     private Quaternion controlRotation;
-    private Quaternion controlRotationX;
-    private Quaternion controlRotationY;
 
     protected virtual void Awake()
     {
@@ -268,30 +266,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    public Quaternion ControlRotationX
-    {
-        get
-        {
-            return this.controlRotationX;
-        }
-        private set
-        {
-            this.controlRotationX = value;
-        }
-    }
-
-    public Quaternion ControlRotationY
-    {
-        get
-        {
-            return this.controlRotationY;
-        }
-        private set
-        {
-            this.controlRotationY = value;
-        }
-    }
-
     public bool IsWalking
     {
         get
@@ -453,11 +427,9 @@ public class Character : MonoBehaviour
         return false;
     }
 
-    private void SetControlRotation(Quaternion controlRotation, Quaternion controlRotationX, Quaternion controlRotationY)
+    private void SetControlRotation(Quaternion controlRotation)
     {
         this.ControlRotation = controlRotation;
-        this.ControlRotationX = controlRotationX;
-        this.ControlRotationY = controlRotationY;
 
         this.AlignRotationWithControlRotationY();
     }
@@ -466,7 +438,7 @@ public class Character : MonoBehaviour
     {
         if (this.UseControlRotation)
         {
-            this.transform.rotation = this.ControlRotationY;
+            this.transform.rotation = Quaternion.Euler(0f, this.ControlRotation.eulerAngles.y, 0f);
             return true;
         }
 
