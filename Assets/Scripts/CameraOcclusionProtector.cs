@@ -2,9 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(Camera))]
+[RequireComponent(typeof(CameraController))]
 public class CameraOcclusionProtector : MonoBehaviour
 {
+    private const float MinDistanceToPlayer = 1f;
+    private const float MaxDistanceToPlayer = 5f;
+    private const float MinNearClipPlaneExtentMultiplier = 1f;
+    private const float MaxNearClipPlaneExtentMultiplier = 2f;
+    private const float MinOcclusionMoveTime = 0f;
+    private const float MaxOcclusionMoveTime = 1f;
+
     private struct ClipPlaneCornerPoints
     {
         public Vector3 UpperLeft { get; set; }
@@ -18,106 +25,62 @@ public class CameraOcclusionProtector : MonoBehaviour
 
     // Serializable fields
     [SerializeField]
-    [Range(0f, 0.5f)]
-    [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target (In meters)")]
-    private float extraOcclusionSecureDistance = 0.2f; // In meters
+    [Range(MinDistanceToPlayer, MaxDistanceToPlayer)]
+    [Tooltip("The original distance to target (in meters)")]
+    private float distanceToTarget = 2.5f; // In meters
 
     [SerializeField]
-    [Range(1f, 2f)]
+    [Range(MinNearClipPlaneExtentMultiplier, MaxNearClipPlaneExtentMultiplier)]
     [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target")]
-    private float nearClipPlaneExtentMultiplier = 1.1f; // In meters
+    private float nearClipPlaneExtentMultiplier = 1.2f;
 
     [SerializeField]
-    [Range(0f, 1f)]
-    [Tooltip("The time needed for the camera to reach secure position when an occlusion occurs (In seconds)")]
-    private float occlusionMoveTime = 0.05f; // The lesser, the better
+    [Range(MinOcclusionMoveTime, MaxOcclusionMoveTime)]
+    [Tooltip("The time needed for the camera to reach secure position when an occlusion occurs (in seconds)")]
+    private float occlusionMoveTime = 0.025f; // The lesser, the better
 
     [SerializeField]
     [Tooltip("What objects should the camera ignore when checked for clips and occlusions")]
     private LayerMask ignoreLayerMask = 0; // What objects should the camera ignore when checked for clips and occlusions
 
+#if UNITY_EDITOR
     [SerializeField]
-    [Range(1f, 10f)]
-    [Tooltip("More occlusion checks will ensure there are no camera occlusions")]
-    private int maxOcclusionChecks = 5;
-
-    [SerializeField]
-    private bool visualizeInScene = false;
+    private bool visualizeInScene = true;
+#endif
 
     // Private fields
-    private Camera followCamera;
-    private Transform followCameraTransform;
+    private new Camera camera;
     private Transform pivot; // The point at which the camera pivots around
-    private float originalDistanceToTarget;
-    private float desiredDistanceToTarget;
-    private Vector3 desiredCameraLocalPosition;
-    private Vector3 desiredCameraPosition;
     private Vector3 cameraVelocity;
-    private int currentOcclusionCheck;
+    private float nearClipPlaneHalfHeight;
+    private float nearClipPlaneHalfWidth;
+    private float sphereCastRadius;
 
     protected virtual void Awake()
     {
-        this.followCamera = this.GetComponent<Camera>();
-        this.followCameraTransform = this.followCamera.transform;
-        this.pivot = this.followCameraTransform.parent;
-    }
+        this.camera = this.GetComponent<Camera>();
+        this.pivot = this.transform.parent;
 
-    protected virtual void Start()
-    {
-        this.originalDistanceToTarget = (this.pivot.position - this.followCameraTransform.position).magnitude;
-        this.desiredDistanceToTarget = this.originalDistanceToTarget;
+        float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
+        this.nearClipPlaneHalfHeight = Mathf.Tan(halfFOV) * this.camera.nearClipPlane * this.nearClipPlaneExtentMultiplier;
+        this.nearClipPlaneHalfWidth = nearClipPlaneHalfHeight * this.camera.aspect;
+        this.sphereCastRadius = new Vector2(this.nearClipPlaneHalfWidth, this.nearClipPlaneHalfHeight).magnitude;
     }
 
     protected virtual void LateUpdate()
     {
         this.UpdateCameraPosition();
+        this.DrawDebugVisualization();
     }
 
-    private ClipPlaneCornerPoints GetNearClipPlaneCornerPoints(Vector3 cameraPosition)
+#if UNITY_EDITOR
+    private void DrawDebugVisualization()
     {
-        ClipPlaneCornerPoints nearClipPlanePoints = new ClipPlaneCornerPoints();
-
-        float halfFOV = (this.followCamera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
-        float aspectRatio = this.followCamera.aspect; // viewportWidth / viewportHeight
-        float distanceToNearClipPlane = this.followCamera.nearClipPlane;
-        float halfHeight = Mathf.Tan(halfFOV) * distanceToNearClipPlane * this.nearClipPlaneExtentMultiplier; // The half height of the Near Clip Plane of the Camera's view frustum
-        float halfWidth = halfHeight * aspectRatio; // The half width of the Near Clip Plane of the Camera's view frustum
-
-        nearClipPlanePoints.UpperLeft = cameraPosition - this.transform.right * halfWidth;
-        nearClipPlanePoints.UpperLeft += this.transform.up * halfHeight;
-        nearClipPlanePoints.UpperLeft += this.transform.forward * distanceToNearClipPlane;
-
-        nearClipPlanePoints.UpperRight = cameraPosition + this.transform.right * halfWidth;
-        nearClipPlanePoints.UpperRight += this.transform.up * halfHeight;
-        nearClipPlanePoints.UpperRight += this.transform.forward * distanceToNearClipPlane;
-
-        nearClipPlanePoints.LowerLeft = cameraPosition - this.transform.right * halfWidth;
-        nearClipPlanePoints.LowerLeft -= this.transform.up * halfHeight;
-        nearClipPlanePoints.LowerLeft += this.transform.forward * distanceToNearClipPlane;
-
-        nearClipPlanePoints.LowerRight = cameraPosition + this.transform.right * halfWidth;
-        nearClipPlanePoints.LowerRight -= this.transform.up * halfHeight;
-        nearClipPlanePoints.LowerRight += this.transform.forward * distanceToNearClipPlane;
-
-        return nearClipPlanePoints;
-    }
-
-    /// <summary>
-    /// Checks the camera collision points and returns the nearest collision distance.
-    /// The nearest collision distance is -1, if there are no collisions, else it is greater than -1
-    /// </summary>
-    /// <returns>If there are no collisions returns -1. Else it returns a float greater than -1</returns>
-    /// <param name="cameraPosition">The position of the camera.</param>
-    private float CheckCameraCollisionPoints(Vector3 cameraPosition)
-    {
-        float nearestCollisionDistance = -1.0f;
-
-        ClipPlaneCornerPoints nearClipPlaneCornerPoints = this.GetNearClipPlaneCornerPoints(cameraPosition);
-
         if (this.visualizeInScene)
         {
-            // Draw the lines to the collision points for debugging
-            Debug.DrawLine(this.pivot.position, cameraPosition - this.transform.forward * this.followCamera.nearClipPlane, Color.red);
+            ClipPlaneCornerPoints nearClipPlaneCornerPoints = this.GetNearClipPlaneCornerPoints(this.transform.position);
+
+            Debug.DrawLine(this.pivot.position, this.transform.position - this.transform.forward * this.camera.nearClipPlane, Color.red);
             Debug.DrawLine(this.pivot.position, nearClipPlaneCornerPoints.UpperLeft, Color.green);
             Debug.DrawLine(this.pivot.position, nearClipPlaneCornerPoints.UpperRight, Color.green);
             Debug.DrawLine(this.pivot.position, nearClipPlaneCornerPoints.LowerLeft, Color.green);
@@ -127,62 +90,83 @@ public class CameraOcclusionProtector : MonoBehaviour
             Debug.DrawLine(nearClipPlaneCornerPoints.LowerRight, nearClipPlaneCornerPoints.LowerLeft, Color.green);
             Debug.DrawLine(nearClipPlaneCornerPoints.LowerLeft, nearClipPlaneCornerPoints.UpperLeft, Color.green);
         }
+    }
+#endif
 
-        // Cast lines to the collision points to see if the camera is occluded
-        RaycastHit hit;
-        List<Vector3> collisionPoints = new List<Vector3>();
-        collisionPoints.Add(nearClipPlaneCornerPoints.UpperLeft);
-        collisionPoints.Add(nearClipPlaneCornerPoints.UpperRight);
-        collisionPoints.Add(nearClipPlaneCornerPoints.LowerLeft);
-        collisionPoints.Add(nearClipPlaneCornerPoints.LowerRight);
-        collisionPoints.Add(cameraPosition - this.transform.forward * this.followCamera.nearClipPlane);
+    /// <summary>
+    /// Checks if the camera is Occluded.
+    /// </summary>
+    /// <param name="cameraPosition"> The position of the camera</param>
+    /// <param name="outDistanceToTarget"> if the camera is occluded, the new distance to target is saved in this variable</param>
+    /// <returns></returns>
+    private bool IsCameraOccluded(Vector3 cameraPosition, ref float outDistanceToTarget)
+    {
+        // Cast a sphere along a ray to see if the camera is occluded
+        Ray ray = new Ray(this.pivot.transform.position, -this.transform.forward);
+        RaycastHit[] hits = Physics.SphereCastAll(ray, this.sphereCastRadius, this.distanceToTarget, ~this.ignoreLayerMask);
 
-        foreach (var collisionPoint in collisionPoints)
+        float nearestCollisionDistance = Mathf.Infinity;
+        foreach (var hit in hits)
         {
-            if (Physics.Linecast(this.pivot.position, collisionPoint, out hit, ~this.ignoreLayerMask))
+            if (!hit.collider.isTrigger && hit.distance < nearestCollisionDistance)
             {
-                if (hit.distance < nearestCollisionDistance || nearestCollisionDistance == -1.0f)
-                {
-                    nearestCollisionDistance = hit.distance;
-                }
+                nearestCollisionDistance = hit.distance;
             }
         }
 
-        return nearestCollisionDistance;
-    }
-
-    private bool IsCameraOccluded(Vector3 cameraPosition, ref float outDistanceToTarget)
-    {
-        bool isOccluded = false;
-        float nearestCollisionDistance = this.CheckCameraCollisionPoints(cameraPosition);
-
-        if (nearestCollisionDistance > -1.0f)
+        if (nearestCollisionDistance != Mathf.Infinity)
         {
-            isOccluded = true;
-            outDistanceToTarget = nearestCollisionDistance - this.followCamera.nearClipPlane - this.extraOcclusionSecureDistance;
+            outDistanceToTarget = nearestCollisionDistance + this.sphereCastRadius;
+            return true;
         }
-
-        return isOccluded;
+        else
+        {
+            outDistanceToTarget = -1f;
+            return false;
+        }
     }
 
     private void UpdateCameraPosition()
     {
-        this.currentOcclusionCheck = 0;
-        this.desiredCameraLocalPosition = this.followCameraTransform.localPosition;
-        this.desiredCameraLocalPosition.z = -this.originalDistanceToTarget;
-        this.desiredCameraPosition = this.pivot.TransformPoint(this.desiredCameraLocalPosition);
+        Vector3 newCameraLocalPosition = this.transform.localPosition;
+        newCameraLocalPosition.z = -this.distanceToTarget;
+        Vector3 newCameraPosition = this.pivot.TransformPoint(newCameraLocalPosition);
+        float newDistanceToTarget = this.distanceToTarget;
 
-        while (this.IsCameraOccluded(this.desiredCameraPosition, ref this.desiredDistanceToTarget) &&
-               this.currentOcclusionCheck < this.maxOcclusionChecks)
+        int occlusionChecks = 0;
+        if (this.IsCameraOccluded(newCameraPosition, ref newDistanceToTarget))
         {
-            this.desiredCameraLocalPosition.z = -this.desiredDistanceToTarget;
-            this.desiredCameraPosition = this.pivot.TransformPoint(this.desiredCameraLocalPosition);
+            newCameraLocalPosition.z = -newDistanceToTarget;
+            newCameraPosition = this.pivot.TransformPoint(newCameraLocalPosition);
 
-            this.currentOcclusionCheck++;
+            occlusionChecks++;
         }
 
         // Update the position
-        this.followCameraTransform.localPosition = Vector3.SmoothDamp(
-            this.followCameraTransform.localPosition, this.desiredCameraLocalPosition, ref this.cameraVelocity, this.occlusionMoveTime);
+        this.transform.localPosition = Vector3.SmoothDamp(
+            this.transform.localPosition, newCameraLocalPosition, ref this.cameraVelocity, this.occlusionMoveTime);
+    }
+
+    private ClipPlaneCornerPoints GetNearClipPlaneCornerPoints(Vector3 cameraPosition)
+    {
+        ClipPlaneCornerPoints nearClipPlanePoints = new ClipPlaneCornerPoints();
+
+        nearClipPlanePoints.UpperLeft = cameraPosition - this.transform.right * nearClipPlaneHalfWidth;
+        nearClipPlanePoints.UpperLeft += this.transform.up * nearClipPlaneHalfHeight;
+        nearClipPlanePoints.UpperLeft += this.transform.forward * this.camera.nearClipPlane;
+
+        nearClipPlanePoints.UpperRight = cameraPosition + this.transform.right * nearClipPlaneHalfWidth;
+        nearClipPlanePoints.UpperRight += this.transform.up * nearClipPlaneHalfHeight;
+        nearClipPlanePoints.UpperRight += this.transform.forward * this.camera.nearClipPlane;
+
+        nearClipPlanePoints.LowerLeft = cameraPosition - this.transform.right * nearClipPlaneHalfWidth;
+        nearClipPlanePoints.LowerLeft -= this.transform.up * nearClipPlaneHalfHeight;
+        nearClipPlanePoints.LowerLeft += this.transform.forward * this.camera.nearClipPlane;
+
+        nearClipPlanePoints.LowerRight = cameraPosition + this.transform.right * nearClipPlaneHalfWidth;
+        nearClipPlanePoints.LowerRight -= this.transform.up * nearClipPlaneHalfHeight;
+        nearClipPlanePoints.LowerRight += this.transform.forward * this.camera.nearClipPlane;
+
+        return nearClipPlanePoints;
     }
 }

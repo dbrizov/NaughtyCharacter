@@ -97,7 +97,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 222199027}
   m_Layer: 0
-  m_Name: Static Objects
+  m_Name: Environment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -355,10 +355,6 @@ Prefab:
     - target: {fileID: 473374, guid: 80844b2319340044da27db99208a9eac, type: 2}
       propertyPath: m_RootOrder
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412444, guid: 80844b2319340044da27db99208a9eac, type: 2}
-      propertyPath: catchSpeedDamp
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 80844b2319340044da27db99208a9eac, type: 2}

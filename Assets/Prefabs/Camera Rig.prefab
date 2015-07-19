@@ -150,7 +150,6 @@ MonoBehaviour:
   target: {fileID: 0}
   autoFindTarget: 1
   targetTag: Player
-  distanceToTarget: 2.5
   catchSpeedDamp: 0
   rotationSmoothing: 15
 --- !u!114 &11489458
@@ -164,13 +163,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa7dd53462a603f418a1e18f6edf960e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraOcclusionSecureDistance: .200000003
-  nearClipPlaneExtentMultiplier: 1.10000002
-  occlusionMoveTime: .0500000007
+  distanceToTarget: 2.5
+  nearClipPlaneExtentMultiplier: 1.20000005
+  occlusionMoveTime: .0250000004
   ignoreLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  maxOcclusionChecks: 5
   visualizeInScene: 1
 --- !u!124 &12418454
 Behaviour:

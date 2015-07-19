@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(CharacterInputController))]
+[RequireComponent(typeof(InputController))]
 public class Character : MonoBehaviour
 {
     // Const variables
@@ -26,7 +26,7 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
-    private float maxJumpSpeed = 5f;
+    private float maxJumpSpeed = 7.5f;
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
@@ -38,11 +38,11 @@ public class Character : MonoBehaviour
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
-    private float jumpAcceleration = 25f;
+    private float jumpAcceleration = 40f;
 
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
-    private float gravityAcceleration = 20f;
+    private float gravityAcceleration = 25f;
 
     [SerializeField]
     [Tooltip("How fast the character rotates around the Y axis. Value of 0 disables Rotation Smoothing")]
@@ -94,18 +94,18 @@ public class Character : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        CharacterInputController.OnMouseRotationInput += this.SetControlRotation;
-        CharacterInputController.OnMoveInput += this.Move;
-        CharacterInputController.OnJumpInput += this.Jump;
-        CharacterInputController.OnSprintInput += this.SetSprintState;
+        InputController.OnMouseRotationInput += this.SetControlRotation;
+        InputController.OnMoveInput += this.Move;
+        InputController.OnJumpInput += this.Jump;
+        InputController.OnSprintInput += this.SetSprintState;
     }
 
     protected virtual void OnDisable()
     {
-        CharacterInputController.OnMouseRotationInput -= this.SetControlRotation;
-        CharacterInputController.OnMoveInput -= this.Move;
-        CharacterInputController.OnJumpInput -= this.Jump;
-        CharacterInputController.OnSprintInput -= this.SetSprintState;
+        InputController.OnMouseRotationInput -= this.SetControlRotation;
+        InputController.OnMoveInput -= this.Move;
+        InputController.OnJumpInput -= this.Jump;
+        InputController.OnSprintInput -= this.SetSprintState;
     }
 
     public float WalkSpeed

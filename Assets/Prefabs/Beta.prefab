@@ -2039,11 +2039,11 @@ MonoBehaviour:
   walkSpeed: 2
   jogSpeed: 4
   sprintSpeed: 6
-  maxJumpSpeed: 5
+  maxJumpSpeed: 7.5
   maxVerticalSpeed: 50
   horizontalAcceleration: 10
-  jumpAcceleration: 25
-  gravityAcceleration: 20
+  jumpAcceleration: 40
+  gravityAcceleration: 25
   rotationSmoothing: 15
 --- !u!114 &11447828
 MonoBehaviour:

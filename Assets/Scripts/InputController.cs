@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-public class CharacterInputController : MonoBehaviour
+public class InputController : MonoBehaviour
 {
     // Delegates and Events
     public delegate void MoveInputHandler(Vector3 moveVector);
@@ -16,10 +16,10 @@ public class CharacterInputController : MonoBehaviour
     public static event SprintInputHandler OnSprintInput;
 
     // Const variables
-    public const float MinTiltAngle = -75.0f;
-    public const float MaxTiltAngle = 45.0f;
-    public const float MinMouseSensitivity = 1f;
-    public const float MaxMouseSensitivity = 5f;
+    private const float MinTiltAngle = -75.0f;
+    private const float MaxTiltAngle = 45.0f;
+    private const float MinMouseSensitivity = 1f;
+    private const float MaxMouseSensitivity = 5f;
 
     // Serializable fields 
     [SerializeField]
@@ -31,7 +31,6 @@ public class CharacterInputController : MonoBehaviour
     private float mouseSensitivity = 3.0f;
 
     // Private fields
-    private Vector3 moveVector;
     private float lookAngle;
     private float tiltAngle;
     private Quaternion controlRotation;
@@ -43,7 +42,6 @@ public class CharacterInputController : MonoBehaviour
             this.followCamera = Camera.main.transform;
         }
 
-        this.moveVector = Vector3.zero;
         this.lookAngle = 0f;
         this.tiltAngle = 0f;
     }
@@ -70,6 +68,7 @@ public class CharacterInputController : MonoBehaviour
 
     private void UpdateMoveVector()
     {
+        Vector3 moveVector;
         float horizontalAxis = Input.GetAxis("Horizontal");
         float verticalAxis = Input.GetAxis("Vertical");
 
@@ -80,22 +79,22 @@ public class CharacterInputController : MonoBehaviour
             Vector3 cameraForward = Vector3.Scale(this.followCamera.forward, scalerVector).normalized;
             Vector3 cameraRight = Vector3.Scale(this.followCamera.right, scalerVector).normalized;
 
-            this.moveVector = (cameraForward * verticalAxis + cameraRight * horizontalAxis);
+            moveVector = (cameraForward * verticalAxis + cameraRight * horizontalAxis);
         }
         else
         {
             // Use world relative directions
-            this.moveVector = (Vector3.forward * verticalAxis + Vector3.right * horizontalAxis);
+            moveVector = (Vector3.forward * verticalAxis + Vector3.right * horizontalAxis);
         }
 
-        if (this.moveVector.magnitude > 1f)
+        if (moveVector.magnitude > 1f)
         {
-            this.moveVector.Normalize();
+            moveVector.Normalize();
         }
 
         if (OnMoveInput != null)
         {
-            OnMoveInput(this.moveVector);
+            OnMoveInput(moveVector);
         }
     }
 
