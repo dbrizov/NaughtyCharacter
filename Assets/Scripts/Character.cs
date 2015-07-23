@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(InputController))]
+[RequireComponent(typeof(CharacterInputController))]
 public class Character : MonoBehaviour
 {
     // Const variables
@@ -94,18 +94,20 @@ public class Character : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        InputController.OnMouseRotationInput += this.SetControlRotation;
-        InputController.OnMoveInput += this.Move;
-        InputController.OnJumpInput += this.Jump;
-        InputController.OnSprintInput += this.SetSprintState;
+        CharacterInputController.OnMouseRotationInput += this.SetControlRotation;
+        CharacterInputController.OnMoveInput += this.Move;
+        CharacterInputController.OnJumpInput += this.Jump;
+        CharacterInputController.OnSprintInput += this.SetSprintState;
+        CharacterInputController.OnToggleWalkInput += this.ToggleWalk;
     }
 
     protected virtual void OnDisable()
     {
-        InputController.OnMouseRotationInput -= this.SetControlRotation;
-        InputController.OnMoveInput -= this.Move;
-        InputController.OnJumpInput -= this.Jump;
-        InputController.OnSprintInput -= this.SetSprintState;
+        CharacterInputController.OnMouseRotationInput -= this.SetControlRotation;
+        CharacterInputController.OnMoveInput -= this.Move;
+        CharacterInputController.OnJumpInput -= this.Jump;
+        CharacterInputController.OnSprintInput -= this.SetSprintState;
+        CharacterInputController.OnToggleWalkInput -= this.ToggleWalk;
     }
 
     public float WalkSpeed
@@ -324,6 +326,7 @@ public class Character : MonoBehaviour
     {
         get
         {
+            // TODO Implement my own isGrounded logic
             return this.controller.isGrounded;
         }
     }
@@ -340,6 +343,7 @@ public class Character : MonoBehaviour
     {
         get
         {
+            // TODO Fix the bug with the character stuttering in the editor
             return this.currentHorizontalSpeed;
             //return new Vector3(this.Velocity.x, 0f, this.Velocity.z).magnitude;
         }
@@ -358,7 +362,7 @@ public class Character : MonoBehaviour
         this.OrientRotationToMoveVector(moveVector);
 
         float moveSpeed = moveVector.magnitude * this.maxHorizontalSpeed;
-        if (moveSpeed < float.Epsilon)
+        if (moveSpeed < Mathf.Epsilon)
         {
             moveVector = this.moveVector;
             this.targetHorizontalSpeed = 0f;
@@ -399,9 +403,25 @@ public class Character : MonoBehaviour
     {
         if (isSprinting)
         {
-            this.IsSprinting = true;
+            if (!this.IsSprinting)
+            {
+                this.IsSprinting = true;
+            }
         }
         else
+        {
+            if (!(this.IsWalking || this.IsJogging))
+            {
+                this.IsJogging = true;
+            }
+        }
+    }
+
+    private void ToggleWalk()
+    {
+        this.IsWalking = !this.IsWalking;
+
+        if (!(this.IsWalking || this.IsJogging))
         {
             this.IsJogging = true;
         }

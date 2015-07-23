@@ -70,7 +70,10 @@ public class CameraOcclusionProtector : MonoBehaviour
     protected virtual void LateUpdate()
     {
         this.UpdateCameraPosition();
+
+#if UNITY_EDITOR
         this.DrawDebugVisualization();
+#endif
     }
 
 #if UNITY_EDITOR

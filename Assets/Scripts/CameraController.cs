@@ -57,12 +57,12 @@ public class CameraController : MonoBehaviour
 
     protected virtual void OnEnable()
     {
-        InputController.OnMouseRotationInput += this.UpdateRotation;
+        CharacterInputController.OnMouseRotationInput += this.UpdateRotation;
     }
 
     protected virtual void OnDisable()
     {
-        InputController.OnMouseRotationInput -= this.UpdateRotation;
+        CharacterInputController.OnMouseRotationInput -= this.UpdateRotation;
     }
 
     public void SetDistanceToTarget(float distanceToTarget)

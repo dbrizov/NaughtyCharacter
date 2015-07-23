@@ -2,18 +2,20 @@
 using System;
 using System.Collections;
 
-public class InputController : MonoBehaviour
+public class CharacterInputController : MonoBehaviour
 {
     // Delegates and Events
     public delegate void MoveInputHandler(Vector3 moveVector);
     public delegate void MouseRotationInputHandler(Quaternion controlRotation);
     public delegate void JumpInputHandler();
     public delegate void SprintInputHandler(bool isSprinting);
+    public delegate void ToggleWalkHandler();
 
     public static event MoveInputHandler OnMoveInput;
     public static event MouseRotationInputHandler OnMouseRotationInput;
     public static event JumpInputHandler OnJumpInput;
     public static event SprintInputHandler OnSprintInput;
+    public static event ToggleWalkHandler OnToggleWalkInput;
 
     // Const variables
     private const float MinTiltAngle = -75.0f;
@@ -48,6 +50,7 @@ public class InputController : MonoBehaviour
 
     protected virtual void Update()
     {
+        this.UpdateWalkState();
         this.UpdateSprintState();
         this.UpdateJumpState();
         this.UpdateControlRotation();
@@ -133,6 +136,17 @@ public class InputController : MonoBehaviour
         if (OnSprintInput != null)
         {
             OnSprintInput(isSprinting);
+        }
+    }
+
+    private void UpdateWalkState()
+    {
+        if (Input.GetButtonDown("Toggle Walk"))
+        {
+            if (OnToggleWalkInput != null)
+            {
+                OnToggleWalkInput();
+            }
         }
     }
 
