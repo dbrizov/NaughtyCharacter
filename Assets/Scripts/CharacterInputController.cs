@@ -120,7 +120,6 @@ public class CharacterInputController : MonoBehaviour
         this.tiltAngle %= 360f;
         this.tiltAngle = MathfExtensions.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
 
-        // The entire Control Rotation
         this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
 
         if (OnMouseRotationInput != null)

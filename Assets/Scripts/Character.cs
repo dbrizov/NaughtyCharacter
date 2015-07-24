@@ -48,9 +48,21 @@ public class Character : MonoBehaviour
     [Tooltip("How fast the character rotates around the Y axis. Value of 0 disables Rotation Smoothing")]
     private float rotationSmoothing = 15f;
 
+    [SerializeField]
+    [Tooltip("Normalized percentage, [0, 1]")]
+    private float airControl = 1f;
+
+    [SerializeField]
+    [HideInInspector] // Hidden in the inspector by default, because the property is shown by an editor script
+    [Tooltip("Should the character be oriented his rotation to movement? The character can't orient it's rotation to movement and use control rotation at the same time.")]
+    private bool orientRotationToMovement = true;
+
+    [SerializeField]
+    [HideInInspector] // Hidden in the inspector by default, because the property is shown by an editor script
+    [Tooltip("Should the character use control rotation? The character can't use control rotation and orient it's rotation to movement at the same time.")]
+    private bool useControlRotation = false;
+
     // Private fields
-    private bool orientRotationToMovement;
-    private bool useControlRotation;
     private bool isWalking;
     private bool isJogging;
     private bool isSprinting;
@@ -75,10 +87,10 @@ public class Character : MonoBehaviour
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
         this.RotationSmoothing = this.RotationSmoothing;
+        this.AirControl = this.AirControl;
 
         // Configure the character
         this.IsJogging = true;
-        this.OrientRotationToMovement = true;
         this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
         this.currentJumpSpeed = Character.DefaultJumpSpeed;
 
@@ -87,9 +99,9 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
+        this.ApplyGravity();
+        this.ApplyJumpForce();
         this.UpdateHorizontalSpeed();
-        this.UpdateGravitySpeed();
-        this.UpdateJumpSpeed();
     }
 
     protected virtual void OnEnable()
@@ -182,18 +194,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    public float GravityAcceleration
-    {
-        get
-        {
-            return this.gravityAcceleration;
-        }
-        set
-        {
-            this.gravityAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
-        }
-    }
-
     public float JumpAcceleration
     {
         get
@@ -206,6 +206,18 @@ public class Character : MonoBehaviour
         }
     }
 
+    public float GravityAcceleration
+    {
+        get
+        {
+            return this.gravityAcceleration;
+        }
+        set
+        {
+            this.gravityAcceleration = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
     public float RotationSmoothing
     {
         get
@@ -215,6 +227,18 @@ public class Character : MonoBehaviour
         set
         {
             this.rotationSmoothing = Mathf.Clamp(value, 0f, float.MaxValue);
+        }
+    }
+
+    public float AirControl
+    {
+        get
+        {
+            return this.airControl;
+        }
+        set
+        {
+            this.airControl = Mathf.Clamp(value, 0f, 1f);
         }
     }
 
@@ -326,7 +350,6 @@ public class Character : MonoBehaviour
     {
         get
         {
-            // TODO Implement my own isGrounded logic
             return this.controller.isGrounded;
         }
     }
@@ -343,9 +366,7 @@ public class Character : MonoBehaviour
     {
         get
         {
-            // TODO Fix the bug with the character stuttering in the editor
-            return this.currentHorizontalSpeed;
-            //return new Vector3(this.Velocity.x, 0f, this.Velocity.z).magnitude;
+            return new Vector3(this.Velocity.x, 0f, this.Velocity.z).magnitude;
         }
     }
 
@@ -385,7 +406,14 @@ public class Character : MonoBehaviour
             moveVector.Normalize();
         }
 
-        Vector3 motion = (moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed) * Time.deltaTime;
+        // TODO Improve the logic for air control
+        float airControl = 1f;
+        if (!this.IsGrounded)
+        {
+            airControl = this.AirControl;
+        }
+
+        Vector3 motion = (moveVector * this.currentHorizontalSpeed * airControl + Vector3.up * this.currentVerticalSpeed) * Time.deltaTime;
         this.controller.Move(motion);
 
         this.moveVector = moveVector;
@@ -395,6 +423,7 @@ public class Character : MonoBehaviour
     {
         if (this.IsGrounded)
         {
+            // This will cause an update upon the jump speed, bacause the currentJumpSpeed is different than the default one
             this.currentJumpSpeed = Character.DefaultJumpSpeed + 0.1f;
         }
     }
@@ -467,7 +496,7 @@ public class Character : MonoBehaviour
 
     private void UpdateHorizontalSpeed()
     {
-        // TODO Fix the stuttering when the HorizontalAcceleration is too big
+        // TODO Fix the jittering when the HorizontalAcceleration is too big
         float deltaSpeed = Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed);
 
         if (deltaSpeed > 0.01f)
@@ -487,7 +516,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void UpdateGravitySpeed()
+    private void ApplyGravity()
     {
         if (!this.IsGrounded)
         {
@@ -506,7 +535,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void UpdateJumpSpeed()
+    private void ApplyJumpForce()
     {
         if (this.currentJumpSpeed > Character.DefaultJumpSpeed)
         {

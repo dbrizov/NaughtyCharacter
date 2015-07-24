@@ -117,7 +117,7 @@ public class CameraOcclusionProtector : MonoBehaviour
             }
         }
 
-        if (nearestCollisionDistance != Mathf.Infinity)
+        if (nearestCollisionDistance < Mathf.Infinity)
         {
             outDistanceToTarget = nearestCollisionDistance + this.sphereCastRadius;
             return true;

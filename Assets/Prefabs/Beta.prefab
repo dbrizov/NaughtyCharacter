@@ -2045,6 +2045,9 @@ MonoBehaviour:
   jumpAcceleration: 40
   gravityAcceleration: 25
   rotationSmoothing: 15
+  airControl: 1
+  orientRotationToMovement: 1
+  useControlRotation: 0
 --- !u!114 &11447828
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2297,9 +2300,9 @@ CharacterController:
   m_Radius: .5
   m_SlopeLimit: 45
   m_StepOffset: .300000012
-  m_SkinWidth: .00999999978
-  m_MinMoveDistance: .00499999989
-  m_Center: {x: 0, y: 1, z: 0}
+  m_SkinWidth: .0500000007
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 1.04999995, z: 0}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
