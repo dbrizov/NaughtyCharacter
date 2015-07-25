@@ -72,12 +72,12 @@ public class Character : MonoBehaviour
     private float currentHorizontalSpeed; // In meters per second
     private float currentVerticalSpeed; // In meters per second
     private float currentJumpSpeed; // In meters per second
-    private CharacterController controller;
     private Quaternion controlRotation;
+    private CharacterController controller;
 
     protected virtual void Awake()
     {
-        // Ensure that the entered values are correct though the setters
+        // Ensure that the entered values are correct through the setters
         this.HorizontalAcceleration = this.HorizontalAcceleration;
         this.GravityAcceleration = this.GravityAcceleration;
         this.JumpAcceleration = this.JumpAcceleration;
