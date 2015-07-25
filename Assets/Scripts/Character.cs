@@ -49,10 +49,6 @@ public class Character : MonoBehaviour
     private float rotationSmoothing = 15f;
 
     [SerializeField]
-    [Tooltip("Normalized percentage, [0, 1]")]
-    private float airControl = 1f;
-
-    [SerializeField]
     [HideInInspector] // Hidden in the inspector by default, because the property is shown by an editor script
     [Tooltip("Should the character be oriented his rotation to movement? The character can't orient it's rotation to movement and use control rotation at the same time.")]
     private bool orientRotationToMovement = true;
@@ -63,17 +59,17 @@ public class Character : MonoBehaviour
     private bool useControlRotation = false;
 
     // Private fields
+    private Vector3 moveVector;
+    private Quaternion controlRotation;
+    private CharacterController controller;
     private bool isWalking;
     private bool isJogging;
     private bool isSprinting;
-    private Vector3 moveVector;
     private float maxHorizontalSpeed; // In meters per second
     private float targetHorizontalSpeed; // In meters per second
     private float currentHorizontalSpeed; // In meters per second
     private float currentVerticalSpeed; // In meters per second
     private float currentJumpSpeed; // In meters per second
-    private Quaternion controlRotation;
-    private CharacterController controller;
 
     protected virtual void Awake()
     {
@@ -87,7 +83,6 @@ public class Character : MonoBehaviour
         this.JogSpeed = this.JogSpeed;
         this.SprintSpeed = this.SprintSpeed;
         this.RotationSmoothing = this.RotationSmoothing;
-        this.AirControl = this.AirControl;
 
         // Configure the character
         this.IsJogging = true;
@@ -230,18 +225,6 @@ public class Character : MonoBehaviour
         }
     }
 
-    public float AirControl
-    {
-        get
-        {
-            return this.airControl;
-        }
-        set
-        {
-            this.airControl = Mathf.Clamp(value, 0f, 1f);
-        }
-    }
-
     /// <summary>
     /// If set to true, this automatically sets UseControlRotation to false
     /// </summary>
@@ -362,6 +345,22 @@ public class Character : MonoBehaviour
         }
     }
 
+    public Vector3 HorizontalVelocity
+    {
+        get
+        {
+            return new Vector3(this.Velocity.x, 0f, this.Velocity.z);
+        }
+    }
+
+    public Vector3 VerticalVelocity
+    {
+        get
+        {
+            return new Vector3(0f, this.Velocity.y, 0f);
+        }
+    }
+
     public float HorizontalSpeed
     {
         get
@@ -406,15 +405,8 @@ public class Character : MonoBehaviour
             moveVector.Normalize();
         }
 
-        // TODO Improve the logic for air control
-        float airControl = 1f;
-        if (!this.IsGrounded)
-        {
-            airControl = this.AirControl;
-        }
-
-        Vector3 motion = (moveVector * this.currentHorizontalSpeed * airControl + Vector3.up * this.currentVerticalSpeed) * Time.deltaTime;
-        this.controller.Move(motion);
+        Vector3 motion = moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
+        this.controller.Move(motion * Time.deltaTime);
 
         this.moveVector = moveVector;
     }
@@ -531,7 +523,7 @@ public class Character : MonoBehaviour
         }
         else
         {
-            this.currentVerticalSpeed = DefaultVerticalSpeed;
+            this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
         }
     }
 
