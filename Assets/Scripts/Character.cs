@@ -7,10 +7,6 @@ using System.Collections.Generic;
 [RequireComponent(typeof(CharacterInputController))]
 public class Character : MonoBehaviour
 {
-    // Const variables
-    private const float DefaultVerticalSpeed = -1f;
-    private const float DefaultJumpSpeed = -1;
-
     // Serializable fields
     [SerializeField]
     [Tooltip("In meters/second, [0, Infinity)")]
@@ -65,11 +61,14 @@ public class Character : MonoBehaviour
     private bool isWalking;
     private bool isJogging;
     private bool isSprinting;
-    private float maxHorizontalSpeed; // In meters per second
-    private float targetHorizontalSpeed; // In meters per second
-    private float currentHorizontalSpeed; // In meters per second
-    private float currentVerticalSpeed; // In meters per second
-    private float currentJumpSpeed; // In meters per second
+    private float maxHorizontalSpeed; // In meters/second
+    private float targetHorizontalSpeed; // In meters/second
+    private float currentHorizontalSpeed; // In meters/second
+    private float currentVerticalSpeed; // In meters/second
+    private float groundedVerticalSpeed; // In meters/second
+    private float currentJumpSpeed; // In meters/second
+    private bool bApplyJumpForce;
+    private bool bApllyGravity;
 
     protected virtual void Awake()
     {
@@ -86,23 +85,27 @@ public class Character : MonoBehaviour
 
         // Configure the character
         this.IsJogging = true;
-        this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
-        this.currentJumpSpeed = Character.DefaultJumpSpeed;
+        this.groundedVerticalSpeed = -(this.SprintSpeed + 2.5f);
+        this.currentVerticalSpeed = this.groundedVerticalSpeed;
+        this.currentJumpSpeed = 0f;
+        this.bApplyJumpForce = false;
+        this.bApllyGravity = false;
 
         this.controller = this.GetComponent<CharacterController>();
     }
 
     protected virtual void Update()
     {
-        this.ApplyGravity();
-        this.ApplyJumpForce();
         this.UpdateHorizontalSpeed();
+        this.UpdateVerticalSpeed();
+
+        this.ApplyMotion();
     }
 
     protected virtual void OnEnable()
     {
         CharacterInputController.OnMouseRotationInput += this.SetControlRotation;
-        CharacterInputController.OnMoveInput += this.Move;
+        CharacterInputController.OnMoveInput += this.SetMoveVector;
         CharacterInputController.OnJumpInput += this.Jump;
         CharacterInputController.OnSprintInput += this.SetSprintState;
         CharacterInputController.OnToggleWalkInput += this.ToggleWalk;
@@ -111,7 +114,7 @@ public class Character : MonoBehaviour
     protected virtual void OnDisable()
     {
         CharacterInputController.OnMouseRotationInput -= this.SetControlRotation;
-        CharacterInputController.OnMoveInput -= this.Move;
+        CharacterInputController.OnMoveInput -= this.SetMoveVector;
         CharacterInputController.OnJumpInput -= this.Jump;
         CharacterInputController.OnSprintInput -= this.SetSprintState;
         CharacterInputController.OnToggleWalkInput -= this.ToggleWalk;
@@ -377,7 +380,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void Move(Vector3 moveVector)
+    private void SetMoveVector(Vector3 moveVector)
     {
         this.OrientRotationToMoveVector(moveVector);
 
@@ -405,18 +408,23 @@ public class Character : MonoBehaviour
             moveVector.Normalize();
         }
 
-        Vector3 motion = moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
-        this.controller.Move(motion * Time.deltaTime);
-
         this.moveVector = moveVector;
+
+        //this.ApplyMotion();
+    }
+
+    private void ApplyMotion()
+    {
+        Vector3 motion = this.moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
+        this.controller.Move(motion * Time.deltaTime);
     }
 
     private void Jump()
     {
         if (this.IsGrounded)
         {
-            // This will cause an update upon the jump speed, bacause the currentJumpSpeed is different than the default one
-            this.currentJumpSpeed = Character.DefaultJumpSpeed + 0.1f;
+            this.bApplyJumpForce = true;
+            this.currentVerticalSpeed = 0f;
         }
     }
 
@@ -508,9 +516,27 @@ public class Character : MonoBehaviour
         }
     }
 
+    private void UpdateVerticalSpeed()
+    {
+        this.ApplyGravity();
+        this.ApplyJumpForce();
+    }
+
     private void ApplyGravity()
     {
-        if (!this.IsGrounded)
+        if (!this.IsGrounded && !this.bApllyGravity)
+        {
+            this.bApllyGravity = true;
+            this.currentVerticalSpeed = 0f;
+        }
+
+        if (this.bApplyJumpForce)
+        {
+            // Don't apply gravity before max jump speed is reached
+            return;
+        }
+
+        if (!this.IsGrounded && this.bApllyGravity)
         {
             if (this.currentVerticalSpeed > -this.MaxVerticalSpeed)
             {
@@ -521,23 +547,25 @@ public class Character : MonoBehaviour
                 this.currentVerticalSpeed = -this.MaxVerticalSpeed;
             }
         }
-        else
+        else if (this.IsGrounded)
         {
-            this.currentVerticalSpeed = Character.DefaultVerticalSpeed;
+            bApllyGravity = false;
+            this.currentVerticalSpeed = this.groundedVerticalSpeed;
         }
     }
 
     private void ApplyJumpForce()
     {
-        if (this.currentJumpSpeed > Character.DefaultJumpSpeed)
+        if (this.bApplyJumpForce)
         {
             this.currentJumpSpeed += this.JumpAcceleration * Time.deltaTime;
             this.currentVerticalSpeed = this.currentJumpSpeed;
 
             if (this.currentJumpSpeed > this.MaxJumpSpeed)
             {
-                this.currentJumpSpeed = Character.DefaultJumpSpeed;
+                this.currentJumpSpeed = 0f;
                 this.currentVerticalSpeed = this.MaxJumpSpeed;
+                this.bApplyJumpForce = false;
             }
         }
     }
