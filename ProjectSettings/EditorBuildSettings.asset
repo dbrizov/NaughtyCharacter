@@ -6,4 +6,4 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TPS Controller/_Scenes/Main.unity
+    path: Assets/TP Controller/_Scenes/Main.unity
