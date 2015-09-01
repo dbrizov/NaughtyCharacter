@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(CameraOcclusionProtector))]
 public class CameraController : MonoBehaviour

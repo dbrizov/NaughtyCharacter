@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
@@ -68,7 +66,7 @@ public class Character : MonoBehaviour
     private float groundedVerticalSpeed; // In meters/second
     private float currentJumpSpeed; // In meters/second
     private bool bApplyJumpForce;
-    private bool bApllyGravity;
+    private bool bApplyGravity;
 
     protected virtual void Awake()
     {
@@ -89,7 +87,7 @@ public class Character : MonoBehaviour
         this.currentVerticalSpeed = this.groundedVerticalSpeed;
         this.currentJumpSpeed = 0f;
         this.bApplyJumpForce = false;
-        this.bApllyGravity = false;
+        this.bApplyGravity = false;
 
         this.controller = this.GetComponent<CharacterController>();
     }
@@ -524,9 +522,9 @@ public class Character : MonoBehaviour
 
     private void ApplyGravity()
     {
-        if (!this.IsGrounded && !this.bApllyGravity)
+        if (!this.IsGrounded && !this.bApplyGravity)
         {
-            this.bApllyGravity = true;
+            this.bApplyGravity = true;
             this.currentVerticalSpeed = 0f;
         }
 
@@ -536,7 +534,7 @@ public class Character : MonoBehaviour
             return;
         }
 
-        if (!this.IsGrounded && this.bApllyGravity)
+        if (!this.IsGrounded && this.bApplyGravity)
         {
             if (this.currentVerticalSpeed > -this.MaxVerticalSpeed)
             {
@@ -549,7 +547,7 @@ public class Character : MonoBehaviour
         }
         else if (this.IsGrounded)
         {
-            bApllyGravity = false;
+            bApplyGravity = false;
             this.currentVerticalSpeed = this.groundedVerticalSpeed;
         }
     }
