@@ -78,10 +78,10 @@ public class Character : MonoBehaviour
             float moveSpeed = value.magnitude * this.maxHorizontalSpeed;
             if (moveSpeed < Mathf.Epsilon)
             {
-                value = this.moveVector;
                 this.targetHorizontalSpeed = 0f;
+                return;
             }
-            else if (moveSpeed > 0f && moveSpeed <= this.MovementSettings.WalkSpeed)
+            else if (moveSpeed > 0.01f && moveSpeed <= this.MovementSettings.WalkSpeed)
             {
                 this.targetHorizontalSpeed = this.MovementSettings.WalkSpeed;
             }
@@ -94,12 +94,11 @@ public class Character : MonoBehaviour
                 this.targetHorizontalSpeed = this.MovementSettings.SprintSpeed;
             }
 
-            if (moveSpeed > 0f)
-            {
-                value.Normalize();
-            }
-
             this.moveVector = value;
+            if (moveSpeed > 0.01f)
+            {
+                this.moveVector.Normalize();
+            }
         }
     }
 
