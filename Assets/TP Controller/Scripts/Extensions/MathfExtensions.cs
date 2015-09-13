@@ -19,5 +19,10 @@ public static class MathfExtensions
 
         return Mathf.Clamp(angle, min, max);
     }
+
+    public static float ApplyGravity(float speed, float gravity, float maxSpeed)
+    {
+        return Mathf.Max(-maxSpeed, speed - gravity * Time.deltaTime);
+    }
 }
 
