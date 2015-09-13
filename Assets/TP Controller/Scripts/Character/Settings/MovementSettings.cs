@@ -21,12 +21,7 @@ public class MovementSettings
     private float sprintSpeed = 6f;
 
     [SerializeField]
-    [Tooltip("In meters/second, [0, Infinity)")]
-    private float jumpAcceleration = 40f;
-
-    [SerializeField]
-    [Tooltip("In meters/second, [0, Infinity)")]
-    private float maxJumpSpeed = 7.5f;
+    private float jumpForce = 10f;
     
     public float Acceleration
     {
@@ -76,27 +71,15 @@ public class MovementSettings
         }
     }
 
-    public float JumpAcceleration
+    public float JumpForce
     {
         get
         {
-            return this.jumpAcceleration;
+            return this.jumpForce;
         }
         set
         {
-            this.jumpAcceleration = value;
-        }
-    }
-
-    public float MaxJumpSpeed
-    {
-        get
-        {
-            return this.maxJumpSpeed;
-        }
-        set
-        {
-            this.maxJumpSpeed = value;
+            this.jumpForce = value;
         }
     }
 }

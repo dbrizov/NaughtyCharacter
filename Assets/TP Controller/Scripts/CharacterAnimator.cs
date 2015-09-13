@@ -2,7 +2,7 @@
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(Character))]
-public class CharacterAnimatorController : MonoBehaviour
+public class CharacterAnimator : MonoBehaviour
 {
     private Animator animator;
     private Character character;

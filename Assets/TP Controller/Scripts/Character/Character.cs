@@ -2,10 +2,12 @@
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(CharacterInputController))]
+[RequireComponent(typeof(PlayerInput))]
 public class Character : MonoBehaviour
 {
-    // Serialize fields
+    public static Character Instance { get; private set; }
+
+    // Serialized fields
     [SerializeField]
     private MovementSettings movementSettings;
 
@@ -27,53 +29,87 @@ public class Character : MonoBehaviour
     private float targetHorizontalSpeed; // In meters/second
     private float currentHorizontalSpeed; // In meters/second
     private float currentVerticalSpeed; // In meters/second
-    private float groundedVerticalSpeed; // In meters/second
-    private float currentJumpSpeed; // In meters/second
-    private bool bApplyJumpForce;
-    private bool bApplyGravity;
 
     #region Unity Methods
 
     protected virtual void Awake()
     {
-        // Configure the character
-        this.IsJogging = true;
-        this.groundedVerticalSpeed = -(this.MovementSettings.SprintSpeed + 2.5f);
-        this.currentVerticalSpeed = this.groundedVerticalSpeed;
-        this.currentJumpSpeed = 0f;
-        this.bApplyJumpForce = false;
-        this.bApplyGravity = false;
+        if (Instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
 
         this.controller = this.GetComponent<CharacterController>();
+
+        this.GroundedState = new GroundedCharacterState(this);
+        this.JumpState = new JumpCharacterState(this);
+        this.CurrentState = this.GroundedState;        
+        this.IsJogging = true;
     }
 
     protected virtual void Update()
     {
-        this.UpdateHorizontalSpeed();
-        this.UpdateVerticalSpeed();
+        this.ApplyGravity();
+        this.CurrentState.UpdateState();
 
+        this.UpdateHorizontalSpeed();
         this.ApplyMotion();
     }
 
-    protected virtual void OnEnable()
-    {
-        CharacterInputController.OnMouseRotationInput += this.SetControlRotation;
-        CharacterInputController.OnMoveInput += this.SetMoveVector;
-        CharacterInputController.OnJumpInput += this.Jump;
-        CharacterInputController.OnSprintInput += this.SetSprintState;
-        CharacterInputController.OnToggleWalkInput += this.ToggleWalk;
-    }
-
-    protected virtual void OnDisable()
-    {
-        CharacterInputController.OnMouseRotationInput -= this.SetControlRotation;
-        CharacterInputController.OnMoveInput -= this.SetMoveVector;
-        CharacterInputController.OnJumpInput -= this.Jump;
-        CharacterInputController.OnSprintInput -= this.SetSprintState;
-        CharacterInputController.OnToggleWalkInput -= this.ToggleWalk;
-    }
-
     #endregion Unity Methods
+
+    public ICharacterState CurrentState { get; set; }
+
+    public GroundedCharacterState GroundedState { get; private set; }
+
+    public JumpCharacterState JumpState { get; private set; }
+
+    public Vector3 MoveVector
+    {
+        get
+        {
+            return this.moveVector;
+        }
+        set
+        {
+            float moveSpeed = value.magnitude * this.maxHorizontalSpeed;
+            if (moveSpeed < Mathf.Epsilon)
+            {
+                value = this.moveVector;
+                this.targetHorizontalSpeed = 0f;
+            }
+            else if (moveSpeed > 0f && moveSpeed <= this.MovementSettings.WalkSpeed)
+            {
+                this.targetHorizontalSpeed = this.MovementSettings.WalkSpeed;
+            }
+            else if (moveSpeed > this.MovementSettings.WalkSpeed && moveSpeed <= this.MovementSettings.JogSpeed)
+            {
+                this.targetHorizontalSpeed = this.MovementSettings.JogSpeed;
+            }
+            else if (moveSpeed > this.MovementSettings.JogSpeed)
+            {
+                this.targetHorizontalSpeed = this.MovementSettings.SprintSpeed;
+            }
+
+            if (moveSpeed > 0f)
+            {
+                value.Normalize();
+            }
+
+            this.moveVector = value;
+        }
+    }
+
+    public CharacterController Controller
+    {
+        get
+        {
+            return this.controller;
+        }
+    }
 
     public MovementSettings MovementSettings
     {
@@ -117,9 +153,10 @@ public class Character : MonoBehaviour
         {
             return this.controlRotation;
         }
-        private set
+        set
         {
             this.controlRotation = value;
+            this.AlignRotationWithControlRotationY();
         }
     }
 
@@ -174,6 +211,13 @@ public class Character : MonoBehaviour
                 this.IsWalking = false;
                 this.IsJogging = false;
             }
+            else
+            {
+                if (!(this.IsWalking || this.IsJogging))
+                {
+                    this.IsJogging = true;
+                }
+            }
         }
     }
 
@@ -225,71 +269,12 @@ public class Character : MonoBehaviour
         }
     }
 
-    private void SetMoveVector(Vector3 moveVector)
+    public void Jump()
     {
-        this.OrientRotationToMoveVector(moveVector);
-
-        float moveSpeed = moveVector.magnitude * this.maxHorizontalSpeed;
-        if (moveSpeed < Mathf.Epsilon)
-        {
-            moveVector = this.moveVector;
-            this.targetHorizontalSpeed = 0f;
-        }
-        else if (moveSpeed > 0f && moveSpeed <= this.MovementSettings.WalkSpeed)
-        {
-            this.targetHorizontalSpeed = this.MovementSettings.WalkSpeed;
-        }
-        else if (moveSpeed > this.MovementSettings.WalkSpeed && moveSpeed <= this.MovementSettings.JogSpeed)
-        {
-            this.targetHorizontalSpeed = this.MovementSettings.JogSpeed;
-        }
-        else if (moveSpeed > this.MovementSettings.JogSpeed)
-        {
-            this.targetHorizontalSpeed = this.MovementSettings.SprintSpeed;
-        }
-
-        if (moveSpeed > 0f)
-        {
-            moveVector.Normalize();
-        }
-
-        this.moveVector = moveVector;
+        this.currentVerticalSpeed = this.MovementSettings.JumpForce;
     }
 
-    private void ApplyMotion()
-    {
-        Vector3 motion = this.moveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
-        this.controller.Move(motion * Time.deltaTime);
-    }
-
-    private void Jump()
-    {
-        if (this.IsGrounded)
-        {
-            this.bApplyJumpForce = true;
-            this.currentVerticalSpeed = 0f;
-        }
-    }
-
-    private void SetSprintState(bool isSprinting)
-    {
-        if (isSprinting)
-        {
-            if (!this.IsSprinting)
-            {
-                this.IsSprinting = true;
-            }
-        }
-        else
-        {
-            if (!(this.IsWalking || this.IsJogging))
-            {
-                this.IsJogging = true;
-            }
-        }
-    }
-
-    private void ToggleWalk()
+    public void ToggleWalk()
     {
         this.IsWalking = !this.IsWalking;
 
@@ -297,6 +282,55 @@ public class Character : MonoBehaviour
         {
             this.IsJogging = true;
         }
+    }
+
+    private void UpdateHorizontalSpeed()
+    {
+        float deltaSpeed = Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed);
+        if (deltaSpeed < 0.1f)
+        {
+            this.currentHorizontalSpeed = this.targetHorizontalSpeed;
+            return;
+        }
+
+        bool shouldAccelerate = (this.currentHorizontalSpeed < this.targetHorizontalSpeed);
+
+        this.currentHorizontalSpeed +=
+            this.MovementSettings.Acceleration * Mathf.Sign(this.targetHorizontalSpeed - this.currentHorizontalSpeed) * Time.deltaTime;
+
+        if (shouldAccelerate)
+        {
+            this.currentHorizontalSpeed = Mathf.Min(this.currentHorizontalSpeed, this.targetHorizontalSpeed);
+        }
+        else
+        {
+            this.currentHorizontalSpeed = Mathf.Max(this.currentHorizontalSpeed, this.targetHorizontalSpeed);
+        }
+    }
+
+    private void ApplyGravity()
+    {
+        this.currentVerticalSpeed =
+            MathfExtensions.ApplyGravity(this.VerticalSpeed, this.GravitySettings.GravityStrength, this.GravitySettings.MaxFallSpeed);
+    }
+
+    private void ApplyMotion()
+    {
+        this.OrientRotationToMoveVector(this.MoveVector);
+        
+        Vector3 motion = this.MoveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
+        this.controller.Move(motion * Time.deltaTime);
+    }
+
+    private bool AlignRotationWithControlRotationY()
+    {
+        if (this.RotationSettings.UseControlRotation)
+        {
+            this.transform.rotation = Quaternion.Euler(0f, this.ControlRotation.eulerAngles.y, 0f);
+            return true;
+        }
+
+        return false;
     }
 
     private bool OrientRotationToMoveVector(Vector3 moveVector)
@@ -317,99 +351,5 @@ public class Character : MonoBehaviour
         }
 
         return false;
-    }
-
-    private void SetControlRotation(Quaternion controlRotation)
-    {
-        this.ControlRotation = controlRotation;
-
-        this.AlignRotationWithControlRotationY();
-    }
-
-    private bool AlignRotationWithControlRotationY()
-    {
-        if (this.RotationSettings.UseControlRotation)
-        {
-            this.transform.rotation = Quaternion.Euler(0f, this.ControlRotation.eulerAngles.y, 0f);
-            return true;
-        }
-
-        return false;
-    }
-
-    private void UpdateHorizontalSpeed()
-    {
-        // TODO Fix the jittering when the HorizontalAcceleration is too big
-        float deltaSpeed = Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed);
-
-        if (deltaSpeed > 0.01f)
-        {
-            this.currentHorizontalSpeed +=
-                this.MovementSettings.Acceleration * Mathf.Sign(this.targetHorizontalSpeed - this.currentHorizontalSpeed) * Time.deltaTime;
-        }
-
-        if (deltaSpeed < 0.1f)
-        {
-            this.currentHorizontalSpeed = this.targetHorizontalSpeed;
-        }
-
-        if (this.targetHorizontalSpeed < 0.001f && this.currentHorizontalSpeed < 0.1f)
-        {
-            this.currentHorizontalSpeed = 0f;
-        }
-    }
-
-    private void UpdateVerticalSpeed()
-    {
-        this.ApplyGravity();
-        this.ApplyJumpForce();
-    }
-
-    private void ApplyGravity()
-    {
-        if (!this.IsGrounded && !this.bApplyGravity)
-        {
-            this.bApplyGravity = true;
-            this.currentVerticalSpeed = 0f;
-        }
-
-        if (this.bApplyJumpForce)
-        {
-            // Don't apply gravity before max jump speed is reached
-            return;
-        }
-
-        if (!this.IsGrounded && this.bApplyGravity)
-        {
-            if (this.currentVerticalSpeed > -this.GravitySettings.MaxFallSpeed)
-            {
-                this.currentVerticalSpeed -= this.GravitySettings.GravityStrength * Time.deltaTime;
-            }
-            else
-            {
-                this.currentVerticalSpeed = -this.GravitySettings.MaxFallSpeed;
-            }
-        }
-        else if (this.IsGrounded)
-        {
-            bApplyGravity = false;
-            this.currentVerticalSpeed = this.groundedVerticalSpeed;
-        }
-    }
-
-    private void ApplyJumpForce()
-    {
-        if (this.bApplyJumpForce)
-        {
-            this.currentJumpSpeed += this.MovementSettings.JumpAcceleration * Time.deltaTime;
-            this.currentVerticalSpeed = this.currentJumpSpeed;
-
-            if (this.currentJumpSpeed > this.MovementSettings.MaxJumpSpeed)
-            {
-                this.currentJumpSpeed = 0f;
-                this.currentVerticalSpeed = this.MovementSettings.MaxJumpSpeed;
-                this.bApplyJumpForce = false;
-            }
-        }
     }
 }

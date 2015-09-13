@@ -1063,8 +1063,8 @@ GameObject:
   - 4: {fileID: 447046}
   - 95: {fileID: 9583070}
   - 143: {fileID: 14317122}
-  - 114: {fileID: 11438042}
   - 114: {fileID: 11406360}
+  - 114: {fileID: 11438042}
   - 114: {fileID: 11447828}
   m_Layer: 8
   m_Name: Beta
@@ -2036,18 +2036,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2f9fa4fe47ea94c9fb7ce83d43e264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 2
-  jogSpeed: 4
-  sprintSpeed: 6
-  maxJumpSpeed: 7.5
-  maxVerticalSpeed: 50
-  horizontalAcceleration: 10
-  jumpAcceleration: 40
-  gravityAcceleration: 25
-  rotationSmoothing: 15
-  airControl: 1
-  orientRotationToMovement: 1
-  useControlRotation: 0
+  movementSettings:
+    acceleration: 10
+    walkSpeed: 2
+    jogSpeed: 4
+    sprintSpeed: 6
+    jumpAcceleration: 40
+    maxJumpSpeed: 7.5
+  gravitySettings:
+    gravityStrength: 27
+    maxFallSpeed: 38
+  rotationSettings:
+    rotationSmoothing: 15
+    orientRotationToMovement: 1
+    useControlRotation: 0
 --- !u!114 &11447828
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2309,7 +2311,11 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_StepOffset
+      value: .200000003
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 197420}

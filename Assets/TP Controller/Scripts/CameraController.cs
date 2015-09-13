@@ -49,19 +49,15 @@ public class CameraController : MonoBehaviour
         this.transform.localRotation = Quaternion.identity;
     }
 
+    protected virtual void Update()
+    {
+        var controlRotation = PlayerInput.Instance.MouseRotationInput();
+        this.UpdateRotation(controlRotation);
+    }
+
     protected virtual void LateUpdate()
     {
         this.FollowTarget();
-    }
-
-    protected virtual void OnEnable()
-    {
-        CharacterInputController.OnMouseRotationInput += this.UpdateRotation;
-    }
-
-    protected virtual void OnDisable()
-    {
-        CharacterInputController.OnMouseRotationInput -= this.UpdateRotation;
     }
 
     public void SetDistanceToTarget(float distanceToTarget)

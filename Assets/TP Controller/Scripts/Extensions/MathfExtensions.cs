@@ -24,5 +24,25 @@ public static class MathfExtensions
     {
         return Mathf.Max(-maxSpeed, speed - gravity * Time.deltaTime);
     }
+
+    public static float AccelerateSpeed(float speed, float acceleration, float maxSpeed, bool negative)
+    {
+        if (negative)
+        {
+            return Mathf.Max(-maxSpeed, speed - acceleration * Time.deltaTime);
+        }
+
+        return Mathf.Min(maxSpeed, speed + acceleration * Time.deltaTime);
+    }
+
+    public static float DecelerateSpeed(float speed, float deceleration)
+    {
+        if (speed > 0f)
+        {
+            return Mathf.Max(0f, speed - deceleration * Time.deltaTime);
+        }
+
+        return Mathf.Min(0f, speed + deceleration * Time.deltaTime);
+    }
 }
 

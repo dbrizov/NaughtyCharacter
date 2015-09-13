@@ -1,4 +1,5 @@
 ﻿using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(Character), true)]
 public class CharacterEditor : Editor
@@ -7,8 +8,8 @@ public class CharacterEditor : Editor
     private SerializedProperty rotationSmoothing;
     private SerializedProperty orientRotationToMovement;
     private SerializedProperty useControlRotation;
-
-    private bool showRotationSettings = false;
+    
+    private bool showRotationSettings = true;
 
     protected virtual void OnEnable()
     {

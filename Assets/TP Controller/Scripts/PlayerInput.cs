@@ -1,19 +1,8 @@
 ﻿using UnityEngine;
 
-public class CharacterInputController : MonoBehaviour
+public class PlayerInput : MonoBehaviour
 {
-    // Delegates and Events
-    public delegate void MoveInputHandler(Vector3 moveVector);
-    public delegate void MouseRotationInputHandler(Quaternion controlRotation);
-    public delegate void JumpInputHandler();
-    public delegate void SprintInputHandler(bool isSprinting);
-    public delegate void ToggleWalkHandler();
-
-    public static event MoveInputHandler OnMoveInput;
-    public static event MouseRotationInputHandler OnMouseRotationInput;
-    public static event JumpInputHandler OnJumpInput;
-    public static event SprintInputHandler OnSprintInput;
-    public static event ToggleWalkHandler OnToggleWalkInput;
+    public static PlayerInput Instance { get; private set; }
 
     // Const variables
     private const float MinTiltAngle = -75.0f;
@@ -33,10 +22,17 @@ public class CharacterInputController : MonoBehaviour
     // Private fields
     private float lookAngle;
     private float tiltAngle;
-    private Quaternion controlRotation;
 
     protected virtual void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+
+        Instance = this;
+
         if (this.followCamera == null)
         {
             this.followCamera = Camera.main.transform;
@@ -46,28 +42,7 @@ public class CharacterInputController : MonoBehaviour
         this.tiltAngle = 0f;
     }
 
-    protected virtual void Update()
-    {
-        this.UpdateWalkState();
-        this.UpdateSprintState();
-        this.UpdateJumpState();
-        this.UpdateControlRotation();
-        this.UpdateMoveVector();
-    }
-
-    public Quaternion ControlRotation
-    {
-        get
-        {
-            return this.controlRotation;
-        }
-        private set
-        {
-            this.controlRotation = value;
-        }
-    }
-
-    private void UpdateMoveVector()
+    public Vector3 MovementInput()
     {
         Vector3 moveVector;
         float horizontalAxis = Input.GetAxis("Horizontal");
@@ -75,7 +50,7 @@ public class CharacterInputController : MonoBehaviour
 
         if (this.followCamera != null)
         {
-            // Calculate the move vector relative to camera direction
+            // Calculate the move vector relative to camera rotation
             Vector3 scalerVector = new Vector3(1f, 0f, 1f);
             Vector3 cameraForward = Vector3.Scale(this.followCamera.forward, scalerVector).normalized;
             Vector3 cameraRight = Vector3.Scale(this.followCamera.right, scalerVector).normalized;
@@ -93,13 +68,10 @@ public class CharacterInputController : MonoBehaviour
             moveVector.Normalize();
         }
 
-        if (OnMoveInput != null)
-        {
-            OnMoveInput(moveVector);
-        }
+        return moveVector;
     }
 
-    private void UpdateControlRotation()
+    public Quaternion MouseRotationInput()
     {
         //if (!Input.GetMouseButton(1))
         //{
@@ -118,43 +90,22 @@ public class CharacterInputController : MonoBehaviour
         this.tiltAngle %= 360f;
         this.tiltAngle = MathfExtensions.ClampAngle(this.tiltAngle, MinTiltAngle, MaxTiltAngle);
 
-        this.ControlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
-
-        if (OnMouseRotationInput != null)
-        {
-            OnMouseRotationInput(this.ControlRotation);
-        }
+        var controlRotation = Quaternion.Euler(-this.tiltAngle, this.lookAngle, 0f);
+        return controlRotation;
     }
 
-    private void UpdateSprintState()
+    public bool SprintInput()
     {
-        bool isSprinting = Input.GetAxis("Sprint") > 0f ? true : false;
-
-        if (OnSprintInput != null)
-        {
-            OnSprintInput(isSprinting);
-        }
+        return Input.GetButton("Sprint");
     }
 
-    private void UpdateWalkState()
+    public bool JumpInput()
     {
-        if (Input.GetButtonDown("Toggle Walk"))
-        {
-            if (OnToggleWalkInput != null)
-            {
-                OnToggleWalkInput();
-            }
-        }
+        return Input.GetButtonDown("Jump");
     }
 
-    private void UpdateJumpState()
+    public bool ToggleWalkInput()
     {
-        if (Input.GetButtonDown("Jump"))
-        {
-            if (OnJumpInput != null)
-            {
-                OnJumpInput();
-            }
-        }
+        return Input.GetButtonDown("Toggle Walk");
     }
 }
