@@ -2041,11 +2041,11 @@ MonoBehaviour:
     walkSpeed: 2
     jogSpeed: 4
     sprintSpeed: 6
-    jumpAcceleration: 40
-    maxJumpSpeed: 7.5
+    jumpForce: 10
   gravitySettings:
     gravityStrength: 27
     maxFallSpeed: 38
+    groundedGravityForce: 9
   rotationSettings:
     rotationSmoothing: 15
     orientRotationToMovement: 1

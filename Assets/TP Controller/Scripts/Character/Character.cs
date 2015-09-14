@@ -45,15 +45,16 @@ public class Character : MonoBehaviour
         this.controller = this.GetComponent<CharacterController>();
 
         this.GroundedState = new GroundedCharacterState(this);
-        this.JumpState = new JumpCharacterState(this);
-        this.CurrentState = this.GroundedState;        
+        this.JumpingState = new JumpingCharacterState(this);
+        this.InAirState = new InAirCharacterState(this);
+        this.CurrentState = this.GroundedState;   
+             
         this.IsJogging = true;
     }
 
     protected virtual void Update()
     {
-        this.ApplyGravity();
-        this.CurrentState.UpdateState();
+        this.CurrentState.Update();
 
         this.UpdateHorizontalSpeed();
         this.ApplyMotion();
@@ -65,7 +66,9 @@ public class Character : MonoBehaviour
 
     public GroundedCharacterState GroundedState { get; private set; }
 
-    public JumpCharacterState JumpState { get; private set; }
+    public JumpingCharacterState JumpingState { get; private set; }
+
+    public InAirCharacterState InAirState { get; private set; }
 
     public Vector3 MoveVector
     {
@@ -283,6 +286,24 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void ApplyGravity(bool isGrounded = false)
+    {
+        if (!isGrounded)
+        {
+            this.currentVerticalSpeed =
+                MathfExtensions.ApplyGravity(this.VerticalSpeed, this.GravitySettings.GravityStrength, this.GravitySettings.MaxFallSpeed);
+        }
+        else
+        {
+            this.currentVerticalSpeed = -this.GravitySettings.GroundedGravityForce;
+        }
+    }
+
+    public void ResetVerticalSpeed()
+    {
+        this.currentVerticalSpeed = 0f;
+    }
+
     private void UpdateHorizontalSpeed()
     {
         float deltaSpeed = Mathf.Abs(this.currentHorizontalSpeed - this.targetHorizontalSpeed);
@@ -305,12 +326,6 @@ public class Character : MonoBehaviour
         {
             this.currentHorizontalSpeed = Mathf.Max(this.currentHorizontalSpeed, this.targetHorizontalSpeed);
         }
-    }
-
-    private void ApplyGravity()
-    {
-        this.currentVerticalSpeed =
-            MathfExtensions.ApplyGravity(this.VerticalSpeed, this.GravitySettings.GravityStrength, this.GravitySettings.MaxFallSpeed);
     }
 
     private void ApplyMotion()

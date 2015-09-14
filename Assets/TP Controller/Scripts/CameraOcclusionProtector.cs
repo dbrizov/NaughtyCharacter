@@ -62,7 +62,7 @@ public class CameraOcclusionProtector : MonoBehaviour
         float halfFOV = (this.camera.fieldOfView / 2.0f) * Mathf.Deg2Rad; // vertical FOV in radians
         this.nearClipPlaneHalfHeight = Mathf.Tan(halfFOV) * this.camera.nearClipPlane * this.nearClipPlaneExtentMultiplier;
         this.nearClipPlaneHalfWidth = nearClipPlaneHalfHeight * this.camera.aspect;
-        this.sphereCastRadius = new Vector2(this.nearClipPlaneHalfWidth, this.nearClipPlaneHalfHeight).magnitude;
+        this.sphereCastRadius = new Vector2(this.nearClipPlaneHalfWidth, this.nearClipPlaneHalfHeight).magnitude; // Pythagoras
     }
 
     protected virtual void LateUpdate()
@@ -104,7 +104,7 @@ public class CameraOcclusionProtector : MonoBehaviour
     {
         // Cast a sphere along a ray to see if the camera is occluded
         Ray ray = new Ray(this.pivot.transform.position, -this.transform.forward);
-        RaycastHit[] hits = Physics.SphereCastAll(ray, this.sphereCastRadius, this.distanceToTarget, ~this.ignoreLayerMask);
+        RaycastHit[] hits = Physics.SphereCastAll(ray, this.sphereCastRadius, this.distanceToTarget - this.camera.nearClipPlane, ~this.ignoreLayerMask);
 
         float nearestCollisionDistance = Mathf.Infinity;
         foreach (var hit in hits)
@@ -142,8 +142,7 @@ public class CameraOcclusionProtector : MonoBehaviour
 
             occlusionChecks++;
         }
-
-        // Update the position
+        
         this.transform.localPosition = Vector3.SmoothDamp(
             this.transform.localPosition, newCameraLocalPosition, ref this.cameraVelocity, this.occlusionMoveTime);
     }
@@ -170,4 +169,13 @@ public class CameraOcclusionProtector : MonoBehaviour
 
         return nearClipPlanePoints;
     }
+
+    //private void OnDrawGizmos()
+    //{
+    //    if (Application.isPlaying)
+    //    {
+    //        Gizmos.color = Color.yellow;
+    //        Gizmos.DrawSphere(this.pivot.transform.position - (this.transform.forward * (this.distanceToTarget - this.camera.nearClipPlane)), this.sphereCastRadius);
+    //    }
+    //}
 }

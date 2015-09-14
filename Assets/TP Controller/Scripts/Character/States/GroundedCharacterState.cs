@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// The character is on the ground
+/// </summary>
 public class GroundedCharacterState : CharacterStateBase
 {
     public GroundedCharacterState(Character character)
@@ -8,9 +11,10 @@ public class GroundedCharacterState : CharacterStateBase
     {
     }
 
-    public override void UpdateState()
+    public override void Update()
     {
-        base.UpdateState();
+        base.Update();
+        this.character.ApplyGravity(true); // Apply extra gravity
 
         if (PlayerInput.Instance.ToggleWalkInput())
         {
@@ -22,7 +26,11 @@ public class GroundedCharacterState : CharacterStateBase
         if (PlayerInput.Instance.JumpInput())
         {
             this.character.Jump();
-            this.ToJumpState();
+            this.ToJumpingState();
+        }
+        else if (!Character.Instance.IsGrounded)
+        {
+            this.ToInAirState();
         }
     }
 }

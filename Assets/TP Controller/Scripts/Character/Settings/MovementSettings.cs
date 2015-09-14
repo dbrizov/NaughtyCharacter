@@ -21,6 +21,7 @@ public class MovementSettings
     private float sprintSpeed = 6f;
 
     [SerializeField]
+    [Tooltip("Force impulse, [0, Infinity)")]
     private float jumpForce = 10f;
     
     public float Acceleration

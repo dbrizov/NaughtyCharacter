@@ -2,9 +2,15 @@
 
 public interface ICharacterState
 {
-    void UpdateState();
+    void OnEnter();
+
+    void OnExit();
+
+    void Update();
 
     void ToGroundedState();
 
-    void ToJumpState();
+    void ToJumpingState();
+
+    void ToInAirState();
 }
