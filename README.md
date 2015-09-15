@@ -3,10 +3,24 @@
 Third Person Controller for Unity. </br>
 I don't use physics and <a href="http://docs.unity3d.com/ScriptReference/Rigidbody.html">Rigidbody</a> to control the character. Instead I use a <a href="http://docs.unity3d.com/Manual/class-CharacterController.html">CharacterController</a> component and custom gravity.
 
+![gif](https://38.media.tumblr.com/4ebc3043e562cf533abfa0334767fcf6/tumblr_nuq9m2ccV21uf0epoo1_400.gif)
+![gif](https://33.media.tumblr.com/2a03084df33025081e073684311c2553/tumblr_nuqahdQ8Sj1uf0epoo1_400.gif)
+![gif](https://38.media.tumblr.com/8fdfbde5eb4ea89af6bd5348f4853814/tumblr_nuqaihte8p1uf0epoo1_400.gif)
+![gif](https://33.media.tumblr.com/096295113f6b645b60d66af325e00d17/tumblr_nuqajqGkTh1uf0epoo1_400.gif)
+![gif](https://33.media.tumblr.com/6bebcd8ec379de46b81335d4e7b74643/tumblr_nuqakhO5gt1uf0epoo1_400.gif)
+
 ## System Requirements
 
 Unity 5.0 or later versions.<br />
 I actually created the controller with Unity 5.0 and haven't tried to run it with an older version. If you are using an older version of Unity, feel free to try it out. I don't think there are any reasons for it not to run in Unity 4.6.
+
+## Controls
+
+- Movement: **WASD**
+- Jump: **Space**
+- Toggle Walk/Run: **Caps Lock**
+- Sprint: **Left Shift**
+- Slow Motion: **Tab**
 
 ## License
 
