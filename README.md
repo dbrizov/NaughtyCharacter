@@ -16,11 +16,20 @@ I actually created the controller with Unity 5.0 and haven't tried to run it wit
 
 ## Controls
 
+**Keyboard And Mouse**
 - Movement: **WASD**
+- Camera: **Mouse**
 - Jump: **Space**
 - Toggle Walk/Run: **Caps Lock**
 - Sprint: **Left Shift**
-- Slow Motion: **Tab**
+- Toggle Slow Motion: **Tab**
+
+**XBOX 360/ONE Controller**
+- Movement: **Left Stick**
+- Camera: **Right Stick**
+- Jump: **A**
+- Sprint: **LB**
+- Toggle Slow Motion: **RB**
 
 ## License
 
