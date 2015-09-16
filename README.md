@@ -14,6 +14,10 @@ I don't use physics and <a href="http://docs.unity3d.com/ScriptReference/Rigidbo
 Unity 5.0 or later versions.<br />
 I actually created the controller with Unity 5.0 and haven't tried to run it with an older version. If you are using an older version of Unity, feel free to try it out. I don't think there are any reasons for it not to run in Unity 4.6.
 
+## Used Assets
+
+The character and the animations are taken from <a href="https://www.mixamo.com/">Mixamo</a>. Just check it out. All of the characters are free to use. There are also many free animations, and the first 20 animations you buy are free of charge.
+
 ## Controls
 
 **Keyboard And Mouse**
