@@ -14,13 +14,6 @@ public class CameraController : MonoBehaviour
     private Transform target = null; // The target to follow
 
     [SerializeField]
-    [Tooltip("Should the target be found with the target tag")]
-    private bool autoFindTarget = true;
-
-    [SerializeField]
-    private string targetTag = Tag.Player;
-
-    [SerializeField]
     [Range(MinCatchSpeedDamp, MaxCatchSpeedDamp)]
     private float catchSpeedDamp = MinCatchSpeedDamp;
 
@@ -38,11 +31,6 @@ public class CameraController : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (this.autoFindTarget)
-        {
-            this.target = GameObject.FindGameObjectWithTag(this.targetTag).transform;
-        }
-
         this.pivot = this.transform.parent;
         this.rig = this.pivot.parent;
 
@@ -51,7 +39,7 @@ public class CameraController : MonoBehaviour
 
     protected virtual void Update()
     {
-        var controlRotation = PlayerInput.Instance.MouseRotationInput();
+        var controlRotation = PlayerInput.GetMouseRotationInput();
         this.UpdateRotation(controlRotation);
     }
 
@@ -60,12 +48,12 @@ public class CameraController : MonoBehaviour
         this.FollowTarget();
     }
 
-    public void SetDistanceToTarget(float distanceToTarget)
-    {
-        Vector3 cameraTargetLocalPosition = Vector3.zero;
-        cameraTargetLocalPosition.z = -distanceToTarget;
-        this.transform.localPosition = cameraTargetLocalPosition;
-    }
+    //public void SetDistanceToTarget(float distanceToTarget)
+    //{
+    //    Vector3 cameraTargetLocalPosition = Vector3.zero;
+    //    cameraTargetLocalPosition.z = -distanceToTarget;
+    //    this.transform.localPosition = cameraTargetLocalPosition;
+    //}
 
     private void FollowTarget()
     {

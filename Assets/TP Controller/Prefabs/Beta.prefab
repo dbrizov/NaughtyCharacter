@@ -1063,7 +1063,6 @@ GameObject:
   - 4: {fileID: 447046}
   - 95: {fileID: 9583070}
   - 143: {fileID: 14317122}
-  - 114: {fileID: 11406360}
   - 114: {fileID: 11438042}
   - 114: {fileID: 11447828}
   m_Layer: 8
@@ -2012,19 +2011,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &11406360
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 197420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41864be034f28844f8fd3f4f724f4244, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  followCamera: {fileID: 0}
-  mouseSensitivity: 3
 --- !u!114 &11438042
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2036,6 +2022,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc2f9fa4fe47ea94c9fb7ce83d43e264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camera: {fileID: 0}
   movementSettings:
     acceleration: 10
     walkSpeed: 2

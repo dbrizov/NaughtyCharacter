@@ -2,10 +2,12 @@
 
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerInput))]
 public class Character : MonoBehaviour
 {
     // Serialized fields
+    [SerializeField]
+    private new Camera camera;
+
     [SerializeField]
     private MovementSettings movementSettings;
 
@@ -92,6 +94,14 @@ public class Character : MonoBehaviour
             {
                 this.moveVector.Normalize();
             }
+        }
+    }
+
+    public Camera Camera
+    {
+        get
+        {
+            return this.camera;
         }
     }
 

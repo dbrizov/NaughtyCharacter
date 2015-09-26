@@ -16,14 +16,14 @@ public class GroundedCharacterState : CharacterStateBase
         base.Update();
         this.character.ApplyGravity(true); // Apply extra gravity
 
-        if (PlayerInput.Instance.ToggleWalkInput())
+        if (PlayerInput.GetToggleWalkInput())
         {
             this.character.ToggleWalk();
         }
 
-        this.character.IsSprinting = PlayerInput.Instance.SprintInput();
+        this.character.IsSprinting = PlayerInput.GetSprintInput();
 
-        if (PlayerInput.Instance.JumpInput())
+        if (PlayerInput.GetJumpInput())
         {
             this.character.Jump();
             this.ToJumpingState();

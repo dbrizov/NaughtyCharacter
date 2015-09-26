@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System;
 
 public abstract class CharacterStateBase : ICharacterState
 {
@@ -43,7 +41,7 @@ public abstract class CharacterStateBase : ICharacterState
     public virtual void Update()
     {
         this.character.ApplyGravity();
-        this.character.MoveVector = PlayerInput.Instance.MovementInput();
-        this.character.ControlRotation = PlayerInput.Instance.MouseRotationInput();
+        this.character.MoveVector = PlayerInput.GetMovementInput(this.character.Camera);
+        this.character.ControlRotation = PlayerInput.GetMouseRotationInput();
     }
 }
