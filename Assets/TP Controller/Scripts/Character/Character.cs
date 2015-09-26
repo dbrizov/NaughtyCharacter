@@ -5,8 +5,6 @@
 [RequireComponent(typeof(PlayerInput))]
 public class Character : MonoBehaviour
 {
-    public static Character Instance { get; private set; }
-
     // Serialized fields
     [SerializeField]
     private MovementSettings movementSettings;
@@ -34,14 +32,6 @@ public class Character : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
-
-        Instance = this;
-
         this.controller = this.GetComponent<CharacterController>();
 
         this.GroundedState = new GroundedCharacterState(this);
