@@ -36,17 +36,14 @@ public class Character : MonoBehaviour
     {
         this.controller = this.GetComponent<CharacterController>();
 
-        this.GroundedState = new GroundedCharacterState(this);
-        this.JumpingState = new JumpingCharacterState(this);
-        this.InAirState = new InAirCharacterState(this);
-        this.CurrentState = this.GroundedState;   
-             
+        this.CurrentState = CharacterStateBase.GROUNDED_STATE;
+
         this.IsJogging = true;
     }
 
     protected virtual void Update()
     {
-        this.CurrentState.Update();
+        this.CurrentState.Update(this);
 
         this.UpdateHorizontalSpeed();
         this.ApplyMotion();
@@ -55,12 +52,6 @@ public class Character : MonoBehaviour
     #endregion Unity Methods
 
     public ICharacterState CurrentState { get; set; }
-
-    public GroundedCharacterState GroundedState { get; private set; }
-
-    public JumpingCharacterState JumpingState { get; private set; }
-
-    public InAirCharacterState InAirState { get; private set; }
 
     public Vector3 MoveVector
     {
@@ -331,7 +322,7 @@ public class Character : MonoBehaviour
     private void ApplyMotion()
     {
         this.OrientRotationToMoveVector(this.MoveVector);
-        
+
         Vector3 motion = this.MoveVector * this.currentHorizontalSpeed + Vector3.up * this.currentVerticalSpeed;
         this.controller.Move(motion * Time.deltaTime);
     }

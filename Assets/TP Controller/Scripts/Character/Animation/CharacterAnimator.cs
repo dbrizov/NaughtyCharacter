@@ -4,6 +4,13 @@
 [RequireComponent(typeof(Character))]
 public class CharacterAnimator : MonoBehaviour
 {
+    public static readonly int HORIZONTAL_SPEED = Animator.StringToHash("HorizontalSpeed");
+    public static readonly int VERTICAL_SPEED = Animator.StringToHash("VerticalSpeed");
+    public static readonly int IS_GROUNDED = Animator.StringToHash("IsGrounded");
+    public static readonly int IDLE = Animator.StringToHash("Idle");
+    public static readonly int IDLE_THINKING = Animator.StringToHash("IdleThinking");
+    public static readonly int IDLE_REJECTED = Animator.StringToHash("IdleRejected");
+
     private Animator animator;
     private Character character;
 
@@ -15,8 +22,8 @@ public class CharacterAnimator : MonoBehaviour
 
     protected virtual void Update()
     {
-        this.animator.SetFloat(AnimatorPropertyHash.HorizontalSpeed, this.character.HorizontalSpeed);
-        this.animator.SetFloat(AnimatorPropertyHash.VerticalSpeed, this.character.VerticalSpeed);
-        this.animator.SetBool(AnimatorPropertyHash.IsGrounded, this.character.IsGrounded);
+        this.animator.SetFloat(HORIZONTAL_SPEED, this.character.HorizontalSpeed);
+        this.animator.SetFloat(VERTICAL_SPEED, this.character.VerticalSpeed);
+        this.animator.SetBool(IS_GROUNDED, this.character.IsGrounded);
     }
 }

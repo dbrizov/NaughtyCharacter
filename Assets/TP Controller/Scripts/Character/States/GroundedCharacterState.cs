@@ -6,31 +6,27 @@ using System.Collections;
 /// </summary>
 public class GroundedCharacterState : CharacterStateBase
 {
-    public GroundedCharacterState(Character character)
-        : base(character)
+    public override void Update(Character character)
     {
-    }
+        base.Update(character);
 
-    public override void Update()
-    {
-        base.Update();
-        this.character.ApplyGravity(true); // Apply extra gravity
+        character.ApplyGravity(true); // Apply extra gravity
 
         if (PlayerInput.GetToggleWalkInput())
         {
-            this.character.ToggleWalk();
+            character.ToggleWalk();
         }
 
-        this.character.IsSprinting = PlayerInput.GetSprintInput();
+        character.IsSprinting = PlayerInput.GetSprintInput();
 
         if (PlayerInput.GetJumpInput())
         {
-            this.character.Jump();
-            this.ToJumpingState();
+            character.Jump();
+            this.ToState(character, CharacterStateBase.JUMPING_STATE);
         }
-        else if (!this.character.IsGrounded)
+        else if (!character.IsGrounded)
         {
-            this.ToInAirState();
+            this.ToState(character, CharacterStateBase.IN_AIR_STATE);
         }
     }
 }

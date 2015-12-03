@@ -3,12 +3,12 @@
 [RequireComponent(typeof(CameraController))]
 public class CameraOcclusionProtector : MonoBehaviour
 {
-    private const float MinDistanceToPlayer = 1f;
-    private const float MaxDistanceToPlayer = 5f;
-    private const float MinNearClipPlaneExtentMultiplier = 1f;
-    private const float MaxNearClipPlaneExtentMultiplier = 2f;
-    private const float MinOcclusionMoveTime = 0f;
-    private const float MaxOcclusionMoveTime = 1f;
+    private const float MIN_DISTANCE_TO_PLAYER = 1f;
+    private const float MAX_DISTANCE_TO_PLAYER = 5f;
+    private const float MIN_NEAR_CLIP_PLANE_EXTENT_MULTIPLIER = 1f;
+    private const float MAX_NEAR_CLIP_PLANE_EXTENT_MULTIPLIER = 2f;
+    private const float MIN_OCCLUSION_MOVE_TIME = 0f;
+    private const float MAX_OCCLUSION_MOVE_TIME = 1f;
 
     private struct ClipPlaneCornerPoints
     {
@@ -23,17 +23,17 @@ public class CameraOcclusionProtector : MonoBehaviour
 
     // Serializable fields
     [SerializeField]
-    [Range(MinDistanceToPlayer, MaxDistanceToPlayer)]
+    [Range(MIN_DISTANCE_TO_PLAYER, MAX_DISTANCE_TO_PLAYER)]
     [Tooltip("The original distance to target (in meters)")]
     private float distanceToTarget = 2.5f; // In meters
 
     [SerializeField]
-    [Range(MinNearClipPlaneExtentMultiplier, MaxNearClipPlaneExtentMultiplier)]
+    [Range(MIN_NEAR_CLIP_PLANE_EXTENT_MULTIPLIER, MAX_NEAR_CLIP_PLANE_EXTENT_MULTIPLIER)]
     [Tooltip("Higher values ensure better occlusion protection, but decrease the distance between the camera and the target")]
     private float nearClipPlaneExtentMultiplier = 1.2f;
 
     [SerializeField]
-    [Range(MinOcclusionMoveTime, MaxOcclusionMoveTime)]
+    [Range(MIN_OCCLUSION_MOVE_TIME, MAX_OCCLUSION_MOVE_TIME)]
     [Tooltip("The time needed for the camera to reach secure position when an occlusion occurs (in seconds)")]
     private float occlusionMoveTime = 0.025f; // The lesser, the better
 

@@ -4,21 +4,21 @@
 public class CameraController : MonoBehaviour
 {
     // Const variables
-    private const float MinCatchSpeedDamp = 0f;
-    private const float MaxCatchSpeedDamp = 1f;
-    private const float MinRotationSmoothing = 0f;
-    private const float MaxRotationSmoothing = 30f;
+    private const float MIN_CATCH_SPEED_DAMP = 0f;
+    private const float MAX_CATCH_SPEED_DAMP = 1f;
+    private const float MIN_ROTATION_SMOOTHING = 0f;
+    private const float MAX_ROTATION_SMOOTHING = 30f;
 
     // Serializable fields
     [SerializeField]
     private Transform target = null; // The target to follow
 
     [SerializeField]
-    [Range(MinCatchSpeedDamp, MaxCatchSpeedDamp)]
-    private float catchSpeedDamp = MinCatchSpeedDamp;
+    [Range(MIN_CATCH_SPEED_DAMP, MAX_CATCH_SPEED_DAMP)]
+    private float catchSpeedDamp = MIN_CATCH_SPEED_DAMP;
 
     [SerializeField]
-    [Range(MinRotationSmoothing, MaxRotationSmoothing)]
+    [Range(MIN_ROTATION_SMOOTHING, MAX_ROTATION_SMOOTHING)]
     [Tooltip("How fast the camera rotates around the pivot")]
     private float rotationSmoothing = 15.0f;
 

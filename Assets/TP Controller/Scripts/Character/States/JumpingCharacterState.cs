@@ -6,18 +6,13 @@ using System.Collections;
 /// </summary>
 public class JumpingCharacterState : CharacterStateBase
 {
-    public JumpingCharacterState(Character character)
-        : base(character)
+    public override void Update(Character character)
     {
-    }
+        base.Update(character);
 
-    public override void Update()
-    {
-        base.Update();
-
-        if (this.character.IsGrounded)
+        if (character.IsGrounded)
         {
-            this.ToGroundedState();
+            this.ToState(character, CharacterStateBase.GROUNDED_STATE);
         }
     }
 }

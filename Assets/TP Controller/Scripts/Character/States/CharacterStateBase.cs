@@ -2,46 +2,25 @@
 
 public abstract class CharacterStateBase : ICharacterState
 {
-    protected Character character;
+    public static readonly ICharacterState GROUNDED_STATE = new GroundedCharacterState();
+    public static readonly ICharacterState JUMPING_STATE = new JumpingCharacterState();
+    public static readonly ICharacterState IN_AIR_STATE = new InAirCharacterState();
 
-    public CharacterStateBase(Character character)
+    public virtual void OnEnter(Character character) { }
+
+    public virtual void OnExit(Character character) { }
+
+    public virtual void Update(Character character)
     {
-        this.character = character;
+        character.ApplyGravity();
+        character.MoveVector = PlayerInput.GetMovementInput(character.Camera);
+        character.ControlRotation = PlayerInput.GetMouseRotationInput();
     }
 
-    public virtual void OnEnter()
+    public virtual void ToState(Character character, ICharacterState state)
     {
-    }
-
-    public virtual void OnExit()
-    {
-    }
-
-    public virtual void ToGroundedState()
-    {
-        this.character.CurrentState.OnExit();
-        this.character.CurrentState = this.character.GroundedState;
-        this.character.CurrentState.OnEnter();
-    }
-
-    public void ToInAirState()
-    {
-        this.character.CurrentState.OnExit();
-        this.character.CurrentState = this.character.InAirState;
-        this.character.CurrentState.OnEnter();
-    }
-
-    public virtual void ToJumpingState()
-    {
-        this.character.CurrentState.OnExit();
-        this.character.CurrentState = this.character.JumpingState;
-        this.character.CurrentState.OnEnter();
-    }
-
-    public virtual void Update()
-    {
-        this.character.ApplyGravity();
-        this.character.MoveVector = PlayerInput.GetMovementInput(this.character.Camera);
-        this.character.ControlRotation = PlayerInput.GetMouseRotationInput();
+        character.CurrentState.OnExit(character);
+        character.CurrentState = state;
+        character.CurrentState.OnEnter(character);
     }
 }

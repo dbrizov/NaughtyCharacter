@@ -6,25 +6,20 @@ using System.Collections;
 /// </summary>
 public class InAirCharacterState : CharacterStateBase
 {
-    public InAirCharacterState(Character character)
-        : base(character)
+    public override void OnEnter(Character character)
     {
+        base.OnEnter(character);
+
+        character.ResetVerticalSpeed();
     }
 
-    public override void OnEnter()
+    public override void Update(Character character)
     {
-        base.OnEnter();
+        base.Update(character);
 
-        this.character.ResetVerticalSpeed();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-
-        if (this.character.IsGrounded)
+        if (character.IsGrounded)
         {
-            this.ToGroundedState();
+            this.ToState(character, CharacterStateBase.GROUNDED_STATE);
         }
     }
 }

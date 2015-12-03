@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class IdleStateBehaviour : StateMachineBehaviour
@@ -13,11 +12,11 @@ public class IdleStateBehaviour : StateMachineBehaviour
         if (this.idleStates == null)
         {
             this.idleStates = new List<int>();
-            idleStates.Add(AnimatorPropertyHash.IdleThinking);
-            idleStates.Add(AnimatorPropertyHash.IdleRejected);
+            idleStates.Add(CharacterAnimator.IDLE_THINKING);
+            idleStates.Add(CharacterAnimator.IDLE_REJECTED);
         }
 
-        this.nextIdleState = this.idleStates.RandomElement();
+        this.nextIdleState = this.idleStates.GetRandomElement();
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

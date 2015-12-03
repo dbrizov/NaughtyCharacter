@@ -4,7 +4,7 @@ using System.Linq;
 
 public static class ListExtensions
 {
-    public static T RandomElement<T>(this List<T> list)
+    public static T GetRandomElement<T>(this List<T> list)
     {
         int randomIndex = UnityEngine.Random.Range(0, list.Count);
         return list[randomIndex];
