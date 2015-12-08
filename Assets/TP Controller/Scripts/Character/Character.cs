@@ -6,17 +6,17 @@ public class Character : MonoBehaviour
 {
     // Serialized fields
     [SerializeField]
-    private new Camera camera;
+    private new Camera camera = null;
 
     [SerializeField]
-    private MovementSettings movementSettings;
+    private MovementSettings movementSettings = null;
 
     [SerializeField]
-    private GravitySettings gravitySettings;
+    private GravitySettings gravitySettings = null;
 
     [SerializeField]
     [HideInInspector]
-    private RotationSettings rotationSettings;
+    private RotationSettings rotationSettings = null;
 
     // Private fields
     private Vector3 moveVector;
