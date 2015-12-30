@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(CharacterController))]
 public class Character : MonoBehaviour
 {
     // Serialized fields

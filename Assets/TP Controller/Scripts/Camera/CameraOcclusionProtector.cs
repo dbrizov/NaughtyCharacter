@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(CameraController))]
 public class CameraOcclusionProtector : MonoBehaviour
 {
     private const float MIN_DISTANCE_TO_PLAYER = 1f;

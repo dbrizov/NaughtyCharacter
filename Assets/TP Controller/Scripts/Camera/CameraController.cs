@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(CameraOcclusionProtector))]
 public class CameraController : MonoBehaviour
 {
     // Const variables

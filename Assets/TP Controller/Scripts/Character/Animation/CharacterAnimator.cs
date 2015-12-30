@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(Character))]
 public class CharacterAnimator : MonoBehaviour
 {
     public static readonly int HORIZONTAL_SPEED = Animator.StringToHash("HorizontalSpeed");
