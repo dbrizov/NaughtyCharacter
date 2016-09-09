@@ -103,20 +103,12 @@ public class CameraOcclusionProtector : MonoBehaviour
     {
         // Cast a sphere along a ray to see if the camera is occluded
         Ray ray = new Ray(this.pivot.transform.position, -this.transform.forward);
-        RaycastHit[] hits = Physics.SphereCastAll(ray, this.sphereCastRadius, this.distanceToTarget - this.camera.nearClipPlane, ~this.ignoreLayerMask);
+        float rayLength = this.distanceToTarget - this.camera.nearClipPlane;
+        RaycastHit hit;
 
-        float nearestCollisionDistance = Mathf.Infinity;
-        foreach (var hit in hits)
+        if (Physics.SphereCast(ray, this.sphereCastRadius, out hit, rayLength, ~this.ignoreLayerMask))
         {
-            if (!hit.collider.isTrigger && hit.distance < nearestCollisionDistance)
-            {
-                nearestCollisionDistance = hit.distance;
-            }
-        }
-
-        if (nearestCollisionDistance < Mathf.Infinity)
-        {
-            outDistanceToTarget = nearestCollisionDistance + this.sphereCastRadius;
+            outDistanceToTarget = hit.distance + this.sphereCastRadius;
             return true;
         }
         else
@@ -132,14 +124,11 @@ public class CameraOcclusionProtector : MonoBehaviour
         newCameraLocalPosition.z = -this.distanceToTarget;
         Vector3 newCameraPosition = this.pivot.TransformPoint(newCameraLocalPosition);
         float newDistanceToTarget = this.distanceToTarget;
-
-        int occlusionChecks = 0;
+        
         if (this.IsCameraOccluded(newCameraPosition, ref newDistanceToTarget))
         {
             newCameraLocalPosition.z = -newDistanceToTarget;
             newCameraPosition = this.pivot.TransformPoint(newCameraLocalPosition);
-
-            occlusionChecks++;
         }
         
         this.transform.localPosition = Vector3.SmoothDamp(
