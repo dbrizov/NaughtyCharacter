@@ -3,11 +3,11 @@
 Third Person Controller for Unity. </br>
 I don't use physics and <a href="http://docs.unity3d.com/ScriptReference/Rigidbody.html">Rigidbody</a> to control the character. Instead I use a <a href="http://docs.unity3d.com/Manual/class-CharacterController.html">CharacterController</a> component and custom gravity.
 
-![gif](https://66.media.tumblr.com/4ebc3043e562cf533abfa0334767fcf6/tumblr_nuq9m2ccV21uf0epoo1_400.gif)
-![gif](https://67.media.tumblr.com/2a03084df33025081e073684311c2553/tumblr_nuqahdQ8Sj1uf0epoo1_400.gif)
-![gif](https://66.media.tumblr.com/8fdfbde5eb4ea89af6bd5348f4853814/tumblr_nuqaihte8p1uf0epoo1_400.gif)
-![gif](https://67.media.tumblr.com/096295113f6b645b60d66af325e00d17/tumblr_nuqajqGkTh1uf0epoo1_400.gif)
-![gif](https://67.media.tumblr.com/6bebcd8ec379de46b81335d4e7b74643/tumblr_nuqakhO5gt1uf0epoo1_400.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/Character%20Controller/camera_occlusion.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/Character%20Controller/jogging.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/Character%20Controller/jumping.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/Character%20Controller/sprinting.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/Character%20Controller/walking.gif)
 
 ## System Requirements
 
