@@ -12,8 +12,6 @@ GameObject:
   - component: {fileID: 2048630}
   - component: {fileID: 12483552}
   - component: {fileID: 8154942}
-  - component: {fileID: 11403334}
-  - component: {fileID: 11473368}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -93,40 +91,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101362}
   m_Enabled: 1
---- !u!114 &11403334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 101362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9313f025caa6d194da80c8482bdebbd4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  catchSpeedDamp: 0
-  rotationSmoothing: 15
---- !u!114 &11473368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 101362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa7dd53462a603f418a1e18f6edf960e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  distanceToTarget: 2.5
-  nearClipPlaneExtentMultiplier: 1.2
-  occlusionMoveTime: 0.025
-  ignoreLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
-  visualizeInScene: 1
 --- !u!1 &178034
 GameObject:
   m_ObjectHideFlags: 0
