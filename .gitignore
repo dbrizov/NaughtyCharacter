@@ -1,16 +1,12 @@
-=============== 
-Unity
-===============
+====================
 Temp/
 Library/
-UnityVS/
-UnityVS.meta
 
-=====================================
-Visual Studio / MonoDevelop generated
-=====================================
+====================
 ExportedObj/
 obj/
+.vs/
+.vscode/
 *.svd
 *.userprefs
 *.csproj
@@ -21,9 +17,7 @@ obj/
 *.unityproj
 *.booproj
 
-============
-OS generated
-============
+====================
 .DS_Store
 .DS_Store?
 ._*
@@ -32,7 +26,5 @@ OS generated
 ehthumbs.db
 Thumbs.db
 
-============
-Other
-============
+====================
 Builds/
