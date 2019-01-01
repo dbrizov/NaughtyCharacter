@@ -14,9 +14,9 @@ namespace NaughtyCharacter
     [System.Serializable]
     public class GravitySettings
     {
-        public float GravityStrength = 20f;
+        public float Gravity = 20f;
+        public float GroundedGravity = 7f; // A constant grabity that is applied when the player is grounded
         public float MaxFallSpeed = 40f;
-        public float GroundedGravityForce = 7f;
     }
 
     public enum ControllerState
@@ -37,6 +37,7 @@ namespace NaughtyCharacter
         private float _targetHorizontalSpeed; // In meters/second
         private float _horizontalSpeed; // In meters/second
         private float _verticalSpeed; // In meters/second
+        private bool _isGrounded;
 
         public Vector3 Velocity => _characterController.velocity;
         public Vector3 HorizontalVelocity => _characterController.velocity.SetY(0.0f);
@@ -51,12 +52,12 @@ namespace NaughtyCharacter
         {
             UpdateState();
             UpdateHorizontalSpeed();
+            UpdateVerticalSpeed();
 
-            Vector3 moveDir = GetMovementDirection();
-            _characterController.Move(moveDir * _horizontalSpeed * Time.deltaTime);
+            Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
+            _characterController.Move(movement * Time.deltaTime);
 
-            Debug.Log("HorizontalSpeed: " + _horizontalSpeed);
-            Debug.Log("VelocityMagnitude: " + _characterController.velocity.magnitude);
+            _isGrounded = _characterController.isGrounded;
         }
 
         private void UpdateState()
@@ -83,6 +84,24 @@ namespace NaughtyCharacter
             float acceleration = PlayerInput.HasMoveInput ? MovementSettings.Acceleration : MovementSettings.Decceleration;
 
             _horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, _targetHorizontalSpeed, acceleration * Time.deltaTime);
+        }
+
+        private void UpdateVerticalSpeed()
+        {
+            if (_isGrounded)
+            {
+                _verticalSpeed = -GravitySettings.GroundedGravity;
+
+                if (PlayerInput.JumpInput)
+                {
+                    _verticalSpeed = MovementSettings.JumpSpeed;
+                    _isGrounded = false;
+                }
+            }
+            else
+            {
+                _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * Time.deltaTime);
+            }
         }
 
         private Vector3 GetMovementDirection()
