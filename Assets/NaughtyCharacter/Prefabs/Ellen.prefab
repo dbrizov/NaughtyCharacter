@@ -3412,6 +3412,7 @@ GameObject:
   - component: {fileID: 6073199023300449882}
   - component: {fileID: 4215047323344438979}
   - component: {fileID: 8571703080305393802}
+  - component: {fileID: 4449062145031092406}
   m_Layer: 0
   m_Name: Ellen
   m_TagString: Untagged
@@ -3443,12 +3444,12 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8871225050701723248}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: a5674d01884853d4e8f2386a171e14d9, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0fa58a8109af25844ad90190674049a6, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_UpdateMode: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -3465,13 +3466,13 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 1.7
+  m_Height: 1.62
   m_Radius: 0.25
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.85, z: 0}
+  m_Center: {x: 0, y: 0.89, z: 0}
 --- !u!114 &8571703080305393802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3495,6 +3496,21 @@ MonoBehaviour:
     Gravity: 20
     GroundedGravity: 7
     MaxFallSpeed: 40
+  RotationSettings:
+    RotationSpeed: 15
+    OrientRotationToMovement: 1
+--- !u!114 &4449062145031092406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8871225050701723248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42948da0c996a1f429b0906415869b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &9029171360561855646
 GameObject:
   m_ObjectHideFlags: 0

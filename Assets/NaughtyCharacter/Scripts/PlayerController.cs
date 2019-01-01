@@ -20,10 +20,18 @@ namespace NaughtyCharacter
         public float MaxFallSpeed = 40f;
     }
 
+    [System.Serializable]
+    public class RotationSettings
+    {
+        public float RotationSpeed = 15.0f;
+        public bool OrientRotationToMovement = true;
+    }
+
     public enum ControllerState
     {
         Idle,
-        Running
+        Running,
+        Airborne
     }
 
     public class PlayerController : MonoBehaviour
@@ -31,15 +39,17 @@ namespace NaughtyCharacter
         public Camera PlayerCamera;
         public MovementSettings MovementSettings;
         public GravitySettings GravitySettings;
+        public RotationSettings RotationSettings;
 
         private CharacterController _characterController;
 
-        private ControllerState _state;
         private float _targetHorizontalSpeed; // In meters/second
         private float _horizontalSpeed; // In meters/second
         private float _verticalSpeed; // In meters/second
         private bool _isGrounded;
 
+        public ControllerState State { get; private set; }
+        public ControllerState PrevState { get; private set; }
         public Vector3 Velocity => _characterController.velocity;
         public Vector3 HorizontalVelocity => _characterController.velocity.SetY(0.0f);
         public Vector3 VerticalVelocity => _characterController.velocity.Multiply(0.0f, 1.0f, 0.0f);
@@ -58,18 +68,29 @@ namespace NaughtyCharacter
             Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
             _characterController.Move(movement * Time.deltaTime);
 
+            OrientRotationToMovement();
+
             _isGrounded = _characterController.isGrounded;
         }
 
         private void UpdateState()
         {
-            if (Velocity.sqrMagnitude < 0.01f)
+            PrevState = State;
+
+            if (_isGrounded)
             {
-                _state = ControllerState.Idle;
+                if (Velocity.sqrMagnitude > 0.0f)
+                {
+                    State = ControllerState.Running;
+                }
+                else
+                {
+                    State = ControllerState.Idle;
+                }
             }
             else
             {
-                _state = ControllerState.Running;
+                State = ControllerState.Airborne;
             }
         }
 
@@ -109,6 +130,26 @@ namespace NaughtyCharacter
 
                 _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * Time.deltaTime);
             }
+        }
+
+        private bool OrientRotationToMovement()
+        {
+            if (RotationSettings.OrientRotationToMovement && HorizontalVelocity.sqrMagnitude > 0.0f)
+            {
+                Quaternion rotation = Quaternion.LookRotation(HorizontalVelocity, Vector3.up);
+                if (RotationSettings.RotationSpeed > 0.0f)
+                {
+                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, RotationSettings.RotationSpeed * Time.deltaTime);
+                }
+                else
+                {
+                    transform.rotation = rotation;
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         private Vector3 GetMovementDirection()

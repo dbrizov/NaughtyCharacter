@@ -102,7 +102,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 101362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 074a04320eb424b44b29923291da1a6a, type: 3}
+  m_Script: {fileID: 11500000, guid: c13ee35010795cc40a47bd37c09f0215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _target: {fileID: 0}
@@ -120,7 +120,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 101362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3127cd8ca22a1e44a8c046a3605ccbdc, type: 3}
+  m_Script: {fileID: 11500000, guid: 7ea0716ccf891b043bb661fd6794e0e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _distanceToTarget: 3
@@ -128,7 +128,7 @@ MonoBehaviour:
   _occlusionMoveTime: 0.025
   _ignoreLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   _visualizeInScene: 1
 --- !u!1 &178034
 GameObject:
