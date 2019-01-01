@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 2048630}
   - component: {fileID: 12483552}
   - component: {fileID: 8154942}
+  - component: {fileID: 6682908455664559284}
+  - component: {fileID: 273237691768379724}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -91,6 +93,43 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101362}
   m_Enabled: 1
+--- !u!114 &6682908455664559284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 074a04320eb424b44b29923291da1a6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _target: {fileID: 0}
+  _catchSpeedDamp: 0
+  _rotationSpeed: 0
+  _mouseSensitivity: 3
+  _minTiltAngle: -75
+  _maxTiltAngle: 45
+--- !u!114 &273237691768379724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3127cd8ca22a1e44a8c046a3605ccbdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _distanceToTarget: 3
+  _nearClipPlaneExtentMultiplier: 1.2
+  _occlusionMoveTime: 0.025
+  _ignoreLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _visualizeInScene: 1
 --- !u!1 &178034
 GameObject:
   m_ObjectHideFlags: 0
