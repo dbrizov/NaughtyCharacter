@@ -23,8 +23,14 @@ namespace NaughtyCharacter
     [System.Serializable]
     public class RotationSettings
     {
+        [Header("Character Rotation")]
         public float RotationSpeed = 15.0f;
         public bool OrientRotationToMovement = true;
+
+        [Header("Control Rotation")]
+        public float ControlRotationSensitivity = 3.0f;
+        public float MinPitchAngle = -75.0f;
+        public float MaxPitchAngle = 5.0f;
     }
 
     public enum ControllerState
@@ -36,7 +42,7 @@ namespace NaughtyCharacter
 
     public class PlayerController : MonoBehaviour
     {
-        public Camera PlayerCamera;
+        public PlayerCamera PlayerCamera;
         public MovementSettings MovementSettings;
         public GravitySettings GravitySettings;
         public RotationSettings RotationSettings;
@@ -53,10 +59,17 @@ namespace NaughtyCharacter
         public Vector3 Velocity => _characterController.velocity;
         public Vector3 HorizontalVelocity => _characterController.velocity.SetY(0.0f);
         public Vector3 VerticalVelocity => _characterController.velocity.Multiply(0.0f, 1.0f, 0.0f);
+        public Vector2 ControlRotation { get; private set; } // X (Pitch), Y (Yaw)
 
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
+        }
+
+        private void Update()
+        {
+            UpdateControlRotation();
+            PlayerCamera.SetControlRotation(ControlRotation);
         }
 
         private void FixedUpdate()
@@ -68,7 +81,8 @@ namespace NaughtyCharacter
             Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
             _characterController.Move(movement * Time.deltaTime);
 
-            OrientRotationToMovement();
+            OrientRotationToMovement(movement.SetY(0.0f));
+            PlayerCamera.SetPosition(transform.position);
 
             _isGrounded = _characterController.isGrounded;
         }
@@ -132,24 +146,42 @@ namespace NaughtyCharacter
             }
         }
 
-        private bool OrientRotationToMovement()
+        private bool OrientRotationToMovement(Vector3 movement)
         {
-            if (RotationSettings.OrientRotationToMovement && HorizontalVelocity.sqrMagnitude > 0.0f)
+            if (RotationSettings.OrientRotationToMovement && movement.sqrMagnitude > 0.0f)
             {
-                Quaternion rotation = Quaternion.LookRotation(HorizontalVelocity, Vector3.up);
+                Quaternion targetRotation = Quaternion.LookRotation(movement, Vector3.up);
                 if (RotationSettings.RotationSpeed > 0.0f)
                 {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, rotation, RotationSettings.RotationSpeed * Time.deltaTime);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSettings.RotationSpeed * Time.deltaTime);
                 }
                 else
                 {
-                    transform.rotation = rotation;
+                    transform.rotation = targetRotation;
                 }
 
                 return true;
             }
 
             return false;
+        }
+
+        private void UpdateControlRotation()
+        {
+            Vector2 camInput = PlayerInput.CameraInput;
+
+            // Adjust the yaw angle (Y Rotation)
+            float yawAngle = ControlRotation.y;
+            yawAngle += camInput.x * RotationSettings.ControlRotationSensitivity;
+            yawAngle %= 360.0f;
+
+            // Adjust the pitch angle (X Rotation)
+            float pitchAngle = ControlRotation.x;
+            pitchAngle -= camInput.y * RotationSettings.ControlRotationSensitivity;
+            pitchAngle %= 360.0f;
+            pitchAngle = Util.ClampAngle(pitchAngle, RotationSettings.MinPitchAngle, RotationSettings.MaxPitchAngle);
+
+            ControlRotation = new Vector2(pitchAngle, yawAngle);
         }
 
         private Vector3 GetMovementDirection()
@@ -166,9 +198,9 @@ namespace NaughtyCharacter
                 }
             }
 
-            // Calculate the move direction relative to camera rotation
-            Vector3 cameraForward = PlayerCamera.transform.forward.SetY(0.0f).normalized;
-            Vector3 cameraRight = PlayerCamera.transform.right.SetY(0.0f).normalized;
+            // Calculate the move direction relative to camera yaw rotation
+            Vector3 cameraForward = PlayerCamera.Camera.transform.forward.SetY(0.0f).normalized;
+            Vector3 cameraRight = PlayerCamera.Camera.transform.right.SetY(0.0f).normalized;
 
             Vector3 moveDir = (cameraForward * PlayerInput.MoveInput.y + cameraRight * PlayerInput.MoveInput.x);
 

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2048630}
   - component: {fileID: 12483552}
   - component: {fileID: 8154942}
-  - component: {fileID: 6682908455664559284}
   - component: {fileID: 273237691768379724}
   m_Layer: 0
   m_Name: Main Camera
@@ -93,24 +92,6 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 101362}
   m_Enabled: 1
---- !u!114 &6682908455664559284
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 101362}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c13ee35010795cc40a47bd37c09f0215, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _target: {fileID: 0}
-  _catchSpeedDamp: 0
-  _rotationSpeed: 0
-  _mouseSensitivity: 3
-  _minTiltAngle: -75
-  _maxTiltAngle: 45
 --- !u!114 &273237691768379724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,8 +151,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 423682}
+  - component: {fileID: 6048109559728643373}
   m_Layer: 0
-  m_Name: Camera Rig
+  m_Name: CameraRig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -192,3 +174,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6048109559728643373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c13ee35010795cc40a47bd37c09f0215, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotationSpeed: 0
+  Rig: {fileID: 423682}
+  Pivot: {fileID: 497028}
+  Camera: {fileID: 2048630}

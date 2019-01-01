@@ -3499,6 +3499,9 @@ MonoBehaviour:
   RotationSettings:
     RotationSpeed: 15
     OrientRotationToMovement: 1
+    ControlRotationSensitivity: 3
+    MinPitchAngle: -45
+    MaxPitchAngle: 75
 --- !u!114 &4449062145031092406
 MonoBehaviour:
   m_ObjectHideFlags: 0

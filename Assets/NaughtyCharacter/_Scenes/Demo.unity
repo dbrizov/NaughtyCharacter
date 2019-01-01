@@ -1126,7 +1126,7 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!1001 &666811439
+--- !u!1001 &635912918
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -1135,11 +1135,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 189416, guid: 80844b2319340044da27db99208a9eac, type: 3}
       propertyPath: m_Name
-      value: Camera Rig
+      value: CameraRig
       objectReference: {fileID: 0}
     - target: {fileID: 423682, guid: 80844b2319340044da27db99208a9eac, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 28
+      value: 23
       objectReference: {fileID: 0}
     - target: {fileID: 423682, guid: 80844b2319340044da27db99208a9eac, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1147,7 +1147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 423682, guid: 80844b2319340044da27db99208a9eac, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -33
+      value: -24
       objectReference: {fileID: 0}
     - target: {fileID: 423682, guid: 80844b2319340044da27db99208a9eac, type: 3}
       propertyPath: m_LocalRotation.x
@@ -1181,13 +1181,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6682908455664559284, guid: 80844b2319340044da27db99208a9eac,
-        type: 3}
-      propertyPath: _target
-      value: 
-      objectReference: {fileID: 3902157398716559074}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80844b2319340044da27db99208a9eac, type: 3}
+--- !u!114 &635912919 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6048109559728643373, guid: 80844b2319340044da27db99208a9eac,
+    type: 3}
+  m_PrefabInstance: {fileID: 635912918}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c13ee35010795cc40a47bd37c09f0215, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &761118632
 Mesh:
   m_ObjectHideFlags: 0
@@ -1348,12 +1355,6 @@ Mesh:
     offset: 0
     size: 0
     path: 
---- !u!20 &766321196 stripped
-Camera:
-  m_CorrespondingSourceObject: {fileID: 2048630, guid: 80844b2319340044da27db99208a9eac,
-    type: 3}
-  m_PrefabInstance: {fileID: 666811439}
-  m_PrefabAsset: {fileID: 0}
 --- !u!43 &936543454
 Mesh:
   m_ObjectHideFlags: 0
@@ -1608,7 +1609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 974403623}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 34.888912, y: -6.944057, z: -24.780916}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5752,17 +5753,17 @@ PrefabInstance:
     - target: {fileID: 3108487886347770767, guid: ba8caf42824fc7045a2e03d1235d1740,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 33.903584
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3108487886347770767, guid: ba8caf42824fc7045a2e03d1235d1740,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -8.917529
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3108487886347770767, guid: ba8caf42824fc7045a2e03d1235d1740,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -13.097093
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3108487886347770767, guid: ba8caf42824fc7045a2e03d1235d1740,
         type: 3}
@@ -5806,12 +5807,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba8caf42824fc7045a2e03d1235d1740, type: 3}
---- !u!4 &3902157398716559074 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3902157398716559074, guid: 624ed88bdba9ae549b799fc81ade2689,
-    type: 3}
-  m_PrefabInstance: {fileID: 8561506009790873443}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8561506009790873443
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5883,6 +5878,6 @@ PrefabInstance:
         type: 3}
       propertyPath: PlayerCamera
       value: 
-      objectReference: {fileID: 766321196}
+      objectReference: {fileID: 635912919}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 624ed88bdba9ae549b799fc81ade2689, type: 3}
