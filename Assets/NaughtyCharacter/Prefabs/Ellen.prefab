@@ -3489,11 +3489,12 @@ MonoBehaviour:
     Acceleration: 25
     Decceleration: 25
     MaxHorizontalSpeed: 8
-    JumpSpeed: 8
+    JumpSpeed: 10
+    JumpAbortSpeed: 10
   GravitySettings:
-    GravityStrength: 20
+    Gravity: 20
+    GroundedGravity: 7
     MaxFallSpeed: 40
-    GroundedGravityForce: 7
 --- !u!1 &9029171360561855646
 GameObject:
   m_ObjectHideFlags: 0

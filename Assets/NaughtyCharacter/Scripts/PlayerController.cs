@@ -8,7 +8,8 @@ namespace NaughtyCharacter
         public float Acceleration = 25.0f;
         public float Decceleration = 25.0f;
         public float MaxHorizontalSpeed = 8.0f;
-        public float JumpSpeed = 8.0f;
+        public float JumpSpeed = 10.0f;
+        public float JumpAbortSpeed = 10.0f;
     }
 
     [System.Serializable]
@@ -100,6 +101,12 @@ namespace NaughtyCharacter
             }
             else
             {
+                if (!PlayerInput.JumpInput && _verticalSpeed > 0.0f)
+                {
+                    // This is what causes holding jump to jump higher that tapping jump.
+                    _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, MovementSettings.JumpAbortSpeed * Time.deltaTime);
+                }
+
                 _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * Time.deltaTime);
             }
         }
