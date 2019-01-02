@@ -3448,7 +3448,7 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: a5674d01884853d4e8f2386a171e14d9, type: 3}
   m_Controller: {fileID: 9100000, guid: 0fa58a8109af25844ad90190674049a6, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 1
+  m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
@@ -3467,7 +3467,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 1.62
-  m_Radius: 0.25
+  m_Radius: 0.3
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -3497,8 +3497,9 @@ MonoBehaviour:
     GroundedGravity: 7
     MaxFallSpeed: 40
   RotationSettings:
-    RotationSpeed: 15
     OrientRotationToMovement: 1
+    MinRotationSpeed: 600
+    MaxRotationSpeed: 1200
     ControlRotationSensitivity: 3
     MinPitchAngle: -45
     MaxPitchAngle: 75

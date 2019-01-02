@@ -24,8 +24,7 @@ namespace NaughtyCharacter
             _playerController = GetComponent<PlayerController>();
         }
 
-        // OnAnimatorMove will be called after FixedUpdate of the character if the animator's update mode is UpdateMode.AnimatePhysics
-        private void OnAnimatorMove()
+        public void UpdateState()
         {
             if (_playerController.State == ControllerState.Idle)
             {

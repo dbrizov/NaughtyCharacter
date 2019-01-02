@@ -5,32 +5,33 @@ namespace NaughtyCharacter
     [System.Serializable]
     public class MovementSettings
     {
-        public float Acceleration = 25.0f;
-        public float Decceleration = 25.0f;
-        public float MaxHorizontalSpeed = 8.0f;
-        public float JumpSpeed = 10.0f;
-        public float JumpAbortSpeed = 10.0f;
+        public float Acceleration = 25.0f; // In meters/second
+        public float Decceleration = 25.0f; // In meters/second
+        public float MaxHorizontalSpeed = 8.0f; // In meters/second
+        public float JumpSpeed = 10.0f; // In meters/second
+        public float JumpAbortSpeed = 10.0f; // In meters/second
     }
 
     [System.Serializable]
     public class GravitySettings
     {
-        public float Gravity = 20f;
-        public float GroundedGravity = 7f; // A constant grabity that is applied when the player is grounded
-        public float MaxFallSpeed = 40f;
+        public float Gravity = 20f; // Gravity applied when the player is airborne
+        public float GroundedGravity = 7f; // A constant gravity that is applied when the player is grounded
+        public float MaxFallSpeed = 40f; // The max speed at which the player can fall
     }
 
     [System.Serializable]
     public class RotationSettings
     {
         [Header("Character Rotation")]
-        public float RotationSpeed = 15.0f;
         public bool OrientRotationToMovement = true;
+        public float MinRotationSpeed = 400.0f; // The turn speed when the player is at max speed (in degrees/second)
+        public float MaxRotationSpeed = 1200.0f; // The turn speed when the player is stationary (in degrees/second)
 
         [Header("Control Rotation")]
         public float ControlRotationSensitivity = 3.0f;
-        public float MinPitchAngle = -75.0f;
-        public float MaxPitchAngle = 5.0f;
+        public float MinPitchAngle = -45.0f;
+        public float MaxPitchAngle = 75.0f;
     }
 
     public enum ControllerState
@@ -48,6 +49,7 @@ namespace NaughtyCharacter
         public RotationSettings RotationSettings;
 
         private CharacterController _characterController;
+        private PlayerAnimator _playerAnimator;
 
         private float _targetHorizontalSpeed; // In meters/second
         private float _horizontalSpeed; // In meters/second
@@ -64,16 +66,14 @@ namespace NaughtyCharacter
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();
+            _playerAnimator = GetComponent<PlayerAnimator>();
         }
 
         private void Update()
         {
             UpdateControlRotation();
             PlayerCamera.SetControlRotation(ControlRotation);
-        }
 
-        private void FixedUpdate()
-        {
             UpdateState();
             UpdateHorizontalSpeed();
             UpdateVerticalSpeed();
@@ -81,10 +81,12 @@ namespace NaughtyCharacter
             Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
             _characterController.Move(movement * Time.deltaTime);
 
-            OrientRotationToMovement(movement.SetY(0.0f));
+            OrientToTargetRotation(movement.SetY(0.0f));
             PlayerCamera.SetPosition(transform.position);
 
             _isGrounded = _characterController.isGrounded;
+
+            _playerAnimator.UpdateState();
         }
 
         private void UpdateState()
@@ -138,32 +140,12 @@ namespace NaughtyCharacter
             {
                 if (!PlayerInput.JumpInput && _verticalSpeed > 0.0f)
                 {
-                    // This is what causes holding jump to jump higher that tapping jump.
+                    // This is what causes holding jump to jump higher than tapping jump.
                     _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, MovementSettings.JumpAbortSpeed * Time.deltaTime);
                 }
 
                 _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * Time.deltaTime);
             }
-        }
-
-        private bool OrientRotationToMovement(Vector3 movement)
-        {
-            if (RotationSettings.OrientRotationToMovement && movement.sqrMagnitude > 0.0f)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(movement, Vector3.up);
-                if (RotationSettings.RotationSpeed > 0.0f)
-                {
-                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, RotationSettings.RotationSpeed * Time.deltaTime);
-                }
-                else
-                {
-                    transform.rotation = targetRotation;
-                }
-
-                return true;
-            }
-
-            return false;
         }
 
         private void UpdateControlRotation()
@@ -179,9 +161,22 @@ namespace NaughtyCharacter
             float pitchAngle = ControlRotation.x;
             pitchAngle -= camInput.y * RotationSettings.ControlRotationSensitivity;
             pitchAngle %= 360.0f;
-            pitchAngle = Util.ClampAngle(pitchAngle, RotationSettings.MinPitchAngle, RotationSettings.MaxPitchAngle);
+            pitchAngle = Mathf.Clamp(pitchAngle, RotationSettings.MinPitchAngle, RotationSettings.MaxPitchAngle);
 
             ControlRotation = new Vector2(pitchAngle, yawAngle);
+        }
+
+        private void OrientToTargetRotation(Vector3 horizontalMovement)
+        {
+            if (RotationSettings.OrientRotationToMovement && horizontalMovement.sqrMagnitude > 0.0f)
+            {
+                float rotationSpeed = Mathf.Lerp(
+                    RotationSettings.MaxRotationSpeed, RotationSettings.MinRotationSpeed, _horizontalSpeed / _targetHorizontalSpeed);
+
+                Quaternion targetRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
+
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
         }
 
         private Vector3 GetMovementDirection()

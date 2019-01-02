@@ -4,23 +4,6 @@ namespace NaughtyCharacter
 {
     public static class Util
     {
-        public static float ClampAngle(float angle, float min, float max)
-        {
-            while (angle < -360f || angle > 360f)
-            {
-                if (angle < -360f)
-                {
-                    angle += 360f;
-                }
-                else if (angle > 360f)
-                {
-                    angle -= 360f;
-                }
-            }
-
-            return Mathf.Clamp(angle, min, max);
-        }
-
         public static Vector3 SetX(this Vector3 vec, float x)
         {
             return new Vector3(x, vec.y, vec.z);
