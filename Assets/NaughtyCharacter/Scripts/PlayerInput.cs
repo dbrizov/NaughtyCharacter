@@ -4,34 +4,28 @@ namespace NaughtyCharacter
 {
     public class PlayerInput : MonoBehaviour
     {
-        private static PlayerInput _instance;
+        public Vector2 MoveInput { get; private set; }
+        public Vector2 LastMoveInput { get; private set; }
+        public Vector2 CameraInput { get; private set; }
+        public bool JumpInput { get; private set; }
 
-        private Vector2 _moveInput;
-        private Vector2 _cameraInput;
-        private bool _jumpInput;
+        public bool HasMoveInput { get; private set; }
 
-        public static Vector2 MoveInput => _instance._moveInput;
-        public static Vector2 CameraInput => _instance._cameraInput;
-        public static bool JumpInput => _instance._jumpInput;
-
-        public static bool HasMoveInput => _instance._moveInput.sqrMagnitude > 0.0f;
-
-        private void Awake()
+        public void UpdateInput()
         {
-            if (_instance != null)
+            Vector2 moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+            bool hasMoveInput = moveInput.sqrMagnitude > 0.0f;
+
+            if (HasMoveInput && !hasMoveInput)
             {
-                Destroy(gameObject);
-                return;
+                LastMoveInput = MoveInput;
             }
 
-            _instance = this;
-        }
+            MoveInput = moveInput;
+            CameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+            JumpInput = Input.GetButton("Jump");
 
-        private void Update()
-        {
-            _moveInput = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-            _cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-            _jumpInput = Input.GetButton("Jump");
+            HasMoveInput = hasMoveInput;
         }
     }
 }

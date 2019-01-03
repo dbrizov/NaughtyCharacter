@@ -48,8 +48,9 @@ namespace NaughtyCharacter
         public GravitySettings GravitySettings;
         public RotationSettings RotationSettings;
 
-        private CharacterController _characterController;
+        private PlayerInput _playerInput;
         private PlayerAnimator _playerAnimator;
+        private CharacterController _characterController;
 
         private float _targetHorizontalSpeed; // In meters/second
         private float _horizontalSpeed; // In meters/second
@@ -65,12 +66,15 @@ namespace NaughtyCharacter
 
         private void Awake()
         {
-            _characterController = GetComponent<CharacterController>();
+            _playerInput = GetComponent<PlayerInput>();
             _playerAnimator = GetComponent<PlayerAnimator>();
+            _characterController = GetComponent<CharacterController>();
         }
 
         private void Update()
         {
+            _playerInput.UpdateInput();
+
             UpdateControlRotation();
             PlayerCamera.SetControlRotation(ControlRotation);
 
@@ -78,7 +82,7 @@ namespace NaughtyCharacter
             UpdateHorizontalSpeed();
             UpdateVerticalSpeed();
 
-            Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
+            Vector3 movement = _horizontalSpeed * GetMovementVector() + _verticalSpeed * Vector3.up;
             _characterController.Move(movement * Time.deltaTime);
 
             OrientToTargetRotation(movement.SetY(0.0f));
@@ -112,14 +116,14 @@ namespace NaughtyCharacter
 
         private void UpdateHorizontalSpeed()
         {
-            Vector2 moveInput = PlayerInput.MoveInput;
+            Vector2 moveInput = _playerInput.MoveInput;
             if (moveInput.sqrMagnitude > 1.0f)
             {
                 moveInput.Normalize();
             }
 
             _targetHorizontalSpeed = moveInput.magnitude * MovementSettings.MaxHorizontalSpeed;
-            float acceleration = PlayerInput.HasMoveInput ? MovementSettings.Acceleration : MovementSettings.Decceleration;
+            float acceleration = _playerInput.HasMoveInput ? MovementSettings.Acceleration : MovementSettings.Decceleration;
 
             _horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, _targetHorizontalSpeed, acceleration * Time.deltaTime);
         }
@@ -130,7 +134,7 @@ namespace NaughtyCharacter
             {
                 _verticalSpeed = -GravitySettings.GroundedGravity;
 
-                if (PlayerInput.JumpInput)
+                if (_playerInput.JumpInput)
                 {
                     _verticalSpeed = MovementSettings.JumpSpeed;
                     _isGrounded = false;
@@ -138,7 +142,7 @@ namespace NaughtyCharacter
             }
             else
             {
-                if (!PlayerInput.JumpInput && _verticalSpeed > 0.0f)
+                if (!_playerInput.JumpInput && _verticalSpeed > 0.0f)
                 {
                     // This is what causes holding jump to jump higher than tapping jump.
                     _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, MovementSettings.JumpAbortSpeed * Time.deltaTime);
@@ -150,7 +154,7 @@ namespace NaughtyCharacter
 
         private void UpdateControlRotation()
         {
-            Vector2 camInput = PlayerInput.CameraInput;
+            Vector2 camInput = _playerInput.CameraInput;
 
             // Adjust the yaw angle (Y Rotation)
             float yawAngle = ControlRotation.y;
@@ -179,25 +183,14 @@ namespace NaughtyCharacter
             }
         }
 
-        private Vector3 GetMovementDirection()
+        private Vector3 GetMovementVector()
         {
-            if (!PlayerInput.HasMoveInput)
-            {
-                if (HorizontalVelocity.sqrMagnitude > 0.0f)
-                {
-                    return HorizontalVelocity.normalized;
-                }
-                else
-                {
-                    return Vector3.zero;
-                }
-            }
-
-            // Calculate the move direction relative to camera yaw rotation
+            // Calculate the move direction relative to camera's yaw rotation
             Vector3 cameraForward = PlayerCamera.Camera.transform.forward.SetY(0.0f).normalized;
             Vector3 cameraRight = PlayerCamera.Camera.transform.right.SetY(0.0f).normalized;
 
-            Vector3 moveDir = (cameraForward * PlayerInput.MoveInput.y + cameraRight * PlayerInput.MoveInput.x);
+            Vector2 moveInput = _playerInput.HasMoveInput ? _playerInput.MoveInput : _playerInput.LastMoveInput;
+            Vector3 moveDir = (cameraForward * moveInput.y + cameraRight * moveInput.x);
 
             if (moveDir.sqrMagnitude > 1f)
             {
