@@ -13,7 +13,7 @@ GameObject:
   m_Layer: 0
   m_Name: SpringArm
   m_TagString: Untagged
-  m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -45,12 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TargetLength: 3
-  SpeedDamp: 0.025
+  SpeedDamp: 0
   CollisionSocket: {fileID: 4232072121104726621}
-  CollisionRadius: 0.5
+  CollisionRadius: 0.25
   CollisionMask:
     serializedVersion: 2
     m_Bits: 1
+  Camera: {fileID: 0}
+  CameraViewportExtentsMultipllier: 1
 --- !u!1 &4232072121104726622
 GameObject:
   m_ObjectHideFlags: 0
