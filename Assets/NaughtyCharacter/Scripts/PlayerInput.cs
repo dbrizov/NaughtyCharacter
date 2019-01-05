@@ -4,8 +4,7 @@ namespace NaughtyCharacter
 {
     public class PlayerInput : MonoBehaviour
     {
-        public float MoveAxisDeadZone = 0.25f;
-        public float CameraAxisDeadZone = 0.25f;
+        public float MoveAxisDeadZone = 0.2f;
 
         public Vector2 MoveInput { get; private set; }
         public Vector2 LastMoveInput { get; private set; }
@@ -38,21 +37,8 @@ namespace NaughtyCharacter
             MoveInput = moveInput;
             HasMoveInput = hasMoveInput;
 
-            // Update CameraInput
-            Vector2 cameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-            if (Mathf.Abs(cameraInput.x) < CameraAxisDeadZone)
-            {
-                cameraInput.x = 0.0f;
-            }
-
-            if (Mathf.Abs(cameraInput.y) < CameraAxisDeadZone)
-            {
-                cameraInput.y = 0.0f;
-            }
-
-            CameraInput = cameraInput;
-
-            // Update JumpInput
+            // Update other inputs
+            CameraInput = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
             JumpInput = Input.GetButton("Jump");
         }
     }
