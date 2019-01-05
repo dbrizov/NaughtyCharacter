@@ -15,9 +15,9 @@ namespace NaughtyCharacter
     [System.Serializable]
     public class GravitySettings
     {
-        public float Gravity = 20f; // Gravity applied when the player is airborne
-        public float GroundedGravity = 7f; // A constant gravity that is applied when the player is grounded
-        public float MaxFallSpeed = 40f; // The max speed at which the player can fall
+        public float Gravity = 20.0f; // Gravity applied when the player is airborne
+        public float GroundedGravity = 5.0f; // A constant gravity that is applied when the player is grounded
+        public float MaxFallSpeed = 40.0f; // The max speed at which the player can fall
     }
 
     [System.Serializable]
@@ -25,7 +25,7 @@ namespace NaughtyCharacter
     {
         [Header("Character Rotation")]
         public bool OrientRotationToMovement = true;
-        public float MinRotationSpeed = 400.0f; // The turn speed when the player is at max speed (in degrees/second)
+        public float MinRotationSpeed = 600.0f; // The turn speed when the player is at max speed (in degrees/second)
         public float MaxRotationSpeed = 1200.0f; // The turn speed when the player is stationary (in degrees/second)
 
         [Header("Control Rotation")]
@@ -55,7 +55,6 @@ namespace NaughtyCharacter
         private float _targetHorizontalSpeed; // In meters/second
         private float _horizontalSpeed; // In meters/second
         private float _verticalSpeed; // In meters/second
-        private bool _isGrounded;
 
         public ControllerState State { get; private set; }
         public ControllerState PrevState { get; private set; }
@@ -63,6 +62,7 @@ namespace NaughtyCharacter
         public Vector3 HorizontalVelocity => _characterController.velocity.SetY(0.0f);
         public Vector3 VerticalVelocity => _characterController.velocity.Multiply(0.0f, 1.0f, 0.0f);
         public Vector2 ControlRotation { get; private set; } // X (Pitch), Y (Yaw)
+        public bool IsGrounded { get; private set; }
 
         private void Awake()
         {
@@ -88,7 +88,7 @@ namespace NaughtyCharacter
             OrientToTargetRotation(movement.SetY(0.0f));
             PlayerCamera.SetPosition(transform.position);
 
-            _isGrounded = _characterController.isGrounded;
+            IsGrounded = _characterController.isGrounded;
 
             _playerAnimator.UpdateState();
         }
@@ -97,7 +97,7 @@ namespace NaughtyCharacter
         {
             PrevState = State;
 
-            if (_isGrounded)
+            if (IsGrounded)
             {
                 if (Velocity.sqrMagnitude > 0.0f)
                 {
@@ -130,14 +130,14 @@ namespace NaughtyCharacter
 
         private void UpdateVerticalSpeed()
         {
-            if (_isGrounded)
+            if (IsGrounded)
             {
                 _verticalSpeed = -GravitySettings.GroundedGravity;
 
                 if (_playerInput.JumpInput)
                 {
                     _verticalSpeed = MovementSettings.JumpSpeed;
-                    _isGrounded = false;
+                    IsGrounded = false;
                 }
             }
             else

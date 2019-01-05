@@ -3486,6 +3486,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e170c5d4fe2d01c488cf24c716e467a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MoveAxisDeadZone: 0.25
+  CameraAxisDeadZone: 0.25
 --- !u!114 &8571703080305393802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3507,7 +3509,7 @@ MonoBehaviour:
     JumpAbortSpeed: 10
   GravitySettings:
     Gravity: 20
-    GroundedGravity: 7
+    GroundedGravity: 5
     MaxFallSpeed: 40
   RotationSettings:
     OrientRotationToMovement: 1

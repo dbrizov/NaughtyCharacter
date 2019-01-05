@@ -37,5 +37,11 @@ namespace NaughtyCharacter
 
             return vec;
         }
+
+        public static float Remap(this float f, float fromMin, float fromMax, float toMin, float toMax)
+        {
+            float t = (f - fromMin) / (fromMax - fromMin);
+            return Mathf.Lerp(toMin, toMax, t);
+        }
     }
 }
