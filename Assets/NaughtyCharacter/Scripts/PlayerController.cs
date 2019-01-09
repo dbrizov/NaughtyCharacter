@@ -62,8 +62,7 @@ namespace NaughtyCharacter
         public PlayerCamera PlayerCamera;
         public MovementSettings MovementSettings;
         public GravitySettings GravitySettings;
-        [HideInInspector]
-        public RotationSettings RotationSettings;
+        [HideInInspector] public RotationSettings RotationSettings;
 
         private PlayerInput _playerInput;
         private PlayerAnimator _playerAnimator;
