@@ -1619,7 +1619,7 @@ ModelImporter:
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
-      cycleOffset: 0
+      cycleOffset: 0.975
       loop: 0
       hasAdditiveReferencePose: 0
       loopTime: 1

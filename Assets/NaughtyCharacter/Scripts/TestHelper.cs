@@ -8,7 +8,7 @@ namespace NaughtyCharacter
         private int _targetFrameRate = 60;
 
         [SerializeField]
-        private float _slowMotion = 0.2f;
+        private float _slowMotion = 0.1f;
 
         protected virtual void Awake()
         {
