@@ -2,11 +2,10 @@
 
 Third Person Controller for Unity. </br>
 
-![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/camera_occlusion.gif)
-![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/jogging.gif)
-![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/jumping.gif)
-![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/sprinting.gif)
-![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/walking.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/naughty_character_camera_rotation.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/naughty_character_jump_inplace.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/naughty_character_jump_moving.gif)
+![gif](https://github.com/dbrizov/dbrizov.github.io/blob/master/images/project-images/character-controller/naughty_character_jump_moving2.gif)
 
 ## System Requirements
 
@@ -18,16 +17,11 @@ Unity 2018.3.0 or later versions.<br />
 - Movement: **WASD**
 - Camera: **Mouse**
 - Jump: **Space**
-- Toggle Walk/Run: **Caps Lock**
-- Sprint: **Left Shift**
-- Toggle Slow Motion: **Tab**
 
 **XBOX 360/ONE Controller**
 - Movement: **Left Stick**
 - Camera: **Right Stick**
 - Jump: **A**
-- Sprint: **LB**
-- Toggle Slow Motion: **RB**
 
 ## License
 
