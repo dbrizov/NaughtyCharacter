@@ -177,11 +177,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 497028}
     m_Modifications:
-    - target: {fileID: 4232072120738076647, guid: d156b914596d0ae43ba2c7656cef2c47,
-        type: 3}
-      propertyPath: m_Name
-      value: SpringArm
-      objectReference: {fileID: 0}
     - target: {fileID: 4232072120738076646, guid: d156b914596d0ae43ba2c7656cef2c47,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -236,6 +231,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4232072120738076647, guid: d156b914596d0ae43ba2c7656cef2c47,
+        type: 3}
+      propertyPath: m_Name
+      value: SpringArm
       objectReference: {fileID: 0}
     - target: {fileID: 4232072120738076645, guid: d156b914596d0ae43ba2c7656cef2c47,
         type: 3}

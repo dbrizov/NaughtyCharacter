@@ -3411,9 +3411,10 @@ GameObject:
   - component: {fileID: 3902157398716559074}
   - component: {fileID: 6073199023300449882}
   - component: {fileID: 4215047323344438979}
+  - component: {fileID: 6056266156059210567}
+  - component: {fileID: 4449062145031092406}
   - component: {fileID: 3442074524196029751}
   - component: {fileID: 8571703080305393802}
-  - component: {fileID: 4449062145031092406}
   m_Layer: 0
   m_Name: Ellen
   m_TagString: Untagged
@@ -3474,6 +3475,47 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.89, z: 0}
+--- !u!114 &6056266156059210567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8871225050701723248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19895b2297432194286737f0a8f1042d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MovementSettings:
+    Acceleration: 25
+    Decceleration: 25
+    MaxHorizontalSpeed: 8
+    JumpSpeed: 10
+    JumpAbortSpeed: 10
+  GravitySettings:
+    Gravity: 20
+    GroundedGravity: 5
+    MaxFallSpeed: 40
+  RotationSettings:
+    MinPitchAngle: -45
+    MaxPitchAngle: 75
+    _useControlRotation: 0
+    _orientRotationToMovement: 1
+    MinRotationSpeed: 600
+    MaxRotationSpeed: 1200
+--- !u!114 &4449062145031092406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8871225050701723248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42948da0c996a1f429b0906415869b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3442074524196029751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3487,7 +3529,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveAxisDeadZone: 0.2
-  CameraAxisDeadZone: 0.2
 --- !u!114 &8571703080305393802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3501,35 +3542,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerCamera: {fileID: 0}
-  MovementSettings:
-    Acceleration: 25
-    Decceleration: 25
-    MaxHorizontalSpeed: 8
-    JumpSpeed: 10
-    JumpAbortSpeed: 10
-  GravitySettings:
-    Gravity: 20
-    GroundedGravity: 5
-    MaxFallSpeed: 40
-  RotationSettings:
-    OrientRotationToMovement: 1
-    MinRotationSpeed: 600
-    MaxRotationSpeed: 1200
-    ControlRotationSensitivity: 3
-    MinPitchAngle: -45
-    MaxPitchAngle: 75
---- !u!114 &4449062145031092406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8871225050701723248}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 42948da0c996a1f429b0906415869b25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  ControlRotationSensitivity: 3
 --- !u!1 &9029171360561855646
 GameObject:
   m_ObjectHideFlags: 0
