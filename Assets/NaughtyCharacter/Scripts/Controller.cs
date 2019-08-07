@@ -2,22 +2,13 @@ using UnityEngine;
 
 namespace NaughtyCharacter
 {
-    public abstract class Controller : MonoBehaviour
+    public abstract class Controller : ScriptableObject
     {
-        protected Character _character;
+        public Character Character { get; set; }
 
-        private void Awake()
-        {
-            Init();
-        }
-
-        public virtual void Init()
-        {
-            _character = GetComponent<Character>();
-        }
-
-        public abstract void OnInputUpdate();
-        public abstract void OnBeforeCharacterMoved();
-        public abstract void OnAfterCharacterMoved();
+        public abstract void Init();
+        public abstract void OnCharacterUpdate();
+        public abstract void OnCharacterFixedUpdate();
+        public abstract void OnCharacterLateUpdate();
     }
 }

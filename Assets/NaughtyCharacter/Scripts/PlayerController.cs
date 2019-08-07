@@ -2,45 +2,43 @@ using UnityEngine;
 
 namespace NaughtyCharacter
 {
+    [CreateAssetMenu(fileName = "PlayerController", menuName = "NaughtyCharacter/PlayerController")]
     public class PlayerController : Controller
     {
-        public PlayerCamera PlayerCamera;
         public float ControlRotationSensitivity = 3.0f;
 
         private PlayerInput _playerInput;
+        private PlayerCamera _playerCamera;
 
         public override void Init()
         {
-            base.Init();
-
-            _playerInput = GetComponent<PlayerInput>();
+            _playerInput = FindObjectOfType<PlayerInput>();
+            _playerCamera = FindObjectOfType<PlayerCamera>();
         }
 
-        public override void OnInputUpdate()
+        public override void OnCharacterUpdate()
         {
             _playerInput.UpdateInput();
-        }
 
-        public override void OnBeforeCharacterMoved()
-        {
             UpdateControlRotation();
-            PlayerCamera.SetControlRotation(_character.GetControlRotation());
-
-            Vector3 movementInput = GetMovementInput();
-            _character.SetMovementInput(movementInput);
-
-            _character.SetJumpInput(_playerInput.JumpInput);
+            Character.SetMovementInput(GetMovementInput());
+            Character.SetJumpInput(_playerInput.JumpInput);
         }
 
-        public override void OnAfterCharacterMoved()
+        public override void OnCharacterFixedUpdate()
         {
-            PlayerCamera.SetPosition(_character.transform.position);
+            _playerCamera.SetPosition(Character.transform.position);
+            _playerCamera.SetControlRotation(Character.GetControlRotation());
+        }
+
+        public override void OnCharacterLateUpdate()
+        {
         }
 
         private void UpdateControlRotation()
         {
             Vector2 camInput = _playerInput.CameraInput;
-            Vector2 controlRotation = _character.GetControlRotation();
+            Vector2 controlRotation = Character.GetControlRotation();
 
             // Adjust the pitch angle (X Rotation)
             float pitchAngle = controlRotation.x;
@@ -51,15 +49,16 @@ namespace NaughtyCharacter
             yawAngle += camInput.x * ControlRotationSensitivity;
 
             controlRotation = new Vector2(pitchAngle, yawAngle);
-            _character.SetControlRotation(controlRotation);
+            Character.SetControlRotation(controlRotation);
         }
 
         private Vector3 GetMovementInput()
         {
-            // Calculate the move direction relative to camera's yaw rotation
-            Vector3 cameraForward = PlayerCamera.Camera.transform.forward.SetY(0.0f).normalized;
-            Vector3 cameraRight = PlayerCamera.Camera.transform.right.SetY(0.0f).normalized;
-            Vector3 movementInput = (cameraForward * _playerInput.MoveInput.y + cameraRight * _playerInput.MoveInput.x);
+            // Calculate the move direction relative to the character's yaw rotation
+            Quaternion yawRotation = Quaternion.Euler(0.0f, Character.GetControlRotation().y, 0.0f);
+            Vector3 forward = yawRotation * Vector3.forward;
+            Vector3 right = yawRotation * Vector3.right;
+            Vector3 movementInput = (forward * _playerInput.MoveInput.y + right * _playerInput.MoveInput.x);
 
             if (movementInput.sqrMagnitude > 1f)
             {

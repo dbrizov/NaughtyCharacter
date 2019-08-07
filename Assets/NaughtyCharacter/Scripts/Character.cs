@@ -51,12 +51,12 @@ namespace NaughtyCharacter
 
     public class Character : MonoBehaviour
     {
+        public Controller Controller; // The controller that controls the character
         public MovementSettings MovementSettings;
         public GravitySettings GravitySettings;
         public RotationSettings RotationSettings;
 
         private CharacterController _characterController; // The Unity's CharacterController
-        private Controller _controller; // The controller that actually controls the character
         private CharacterAnimator _characterAnimator;
 
         private float _targetHorizontalSpeed; // In meters/second
@@ -76,16 +76,31 @@ namespace NaughtyCharacter
 
         private void Awake()
         {
+            Controller.Init();
+            Controller.Character = this;
+
             _characterController = GetComponent<CharacterController>();
-            _controller = GetComponent<Controller>();
             _characterAnimator = GetComponent<CharacterAnimator>();
         }
 
         private void Update()
         {
-            _controller.OnInputUpdate();
-            _controller.OnBeforeCharacterMoved();
+            Controller.OnCharacterUpdate();
+        }
 
+        private void FixedUpdate()
+        {
+            UpdateState();
+            Controller.OnCharacterFixedUpdate();
+        }
+
+        private void LateUpdate()
+        {
+            Controller.OnCharacterLateUpdate();
+        }
+
+        private void UpdateState()
+        {
             UpdateHorizontalSpeed();
             UpdateVerticalSpeed();
 
@@ -95,8 +110,6 @@ namespace NaughtyCharacter
             OrientToTargetRotation(movement.SetY(0.0f));
 
             IsGrounded = _characterController.isGrounded;
-
-            _controller.OnAfterCharacterMoved();
 
             _characterAnimator.UpdateState();
         }
