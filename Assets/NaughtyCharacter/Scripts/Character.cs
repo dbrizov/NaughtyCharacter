@@ -94,11 +94,6 @@ namespace NaughtyCharacter
             Controller.OnCharacterFixedUpdate();
         }
 
-        private void LateUpdate()
-        {
-            Controller.OnCharacterLateUpdate();
-        }
-
         private void UpdateState()
         {
             UpdateHorizontalSpeed();

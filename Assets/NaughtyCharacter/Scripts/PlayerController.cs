@@ -31,10 +31,6 @@ namespace NaughtyCharacter
             _playerCamera.SetControlRotation(Character.GetControlRotation());
         }
 
-        public override void OnCharacterLateUpdate()
-        {
-        }
-
         private void UpdateControlRotation()
         {
             Vector2 camInput = _playerInput.CameraInput;

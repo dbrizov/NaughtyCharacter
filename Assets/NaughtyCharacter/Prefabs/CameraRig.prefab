@@ -75,7 +75,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c13ee35010795cc40a47bd37c09f0215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RotationSpeed: 0
+  RotationSpeed: 25
+  PositionSmoothDamp: 0.025
   Rig: {fileID: 423682}
   Pivot: {fileID: 497028}
   Camera: {fileID: 4479908057211236910}
@@ -124,9 +125,10 @@ Camera:
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0.019607844}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -177,6 +179,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 497028}
     m_Modifications:
+    - target: {fileID: 4232072120738076647, guid: d156b914596d0ae43ba2c7656cef2c47,
+        type: 3}
+      propertyPath: m_Name
+      value: SpringArm
+      objectReference: {fileID: 0}
     - target: {fileID: 4232072120738076646, guid: d156b914596d0ae43ba2c7656cef2c47,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -231,11 +238,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4232072120738076647, guid: d156b914596d0ae43ba2c7656cef2c47,
-        type: 3}
-      propertyPath: m_Name
-      value: SpringArm
       objectReference: {fileID: 0}
     - target: {fileID: 4232072120738076645, guid: d156b914596d0ae43ba2c7656cef2c47,
         type: 3}
