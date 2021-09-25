@@ -8,6 +8,8 @@ ExportedObj/
 obj/
 .vs/
 .vscode/
+.vsconfig
+.idea/
 *.svd
 *.userprefs
 *.csproj
