@@ -5,21 +5,19 @@ namespace NaughtyCharacter
 	[CreateAssetMenu(fileName = "PlayerController", menuName = "NaughtyCharacter/PlayerController")]
 	public class PlayerController : Controller
 	{
-		public float ControlRotationSensitivity = 3.0f;
+		public float ControlRotationSensitivity = 1.0f;
 
-		private PlayerInput _playerInput;
+		private PlayerInputComponent _playerInput;
 		private PlayerCamera _playerCamera;
 
 		public override void Init()
 		{
-			_playerInput = FindObjectOfType<PlayerInput>();
+			_playerInput = FindObjectOfType<PlayerInputComponent>();
 			_playerCamera = FindObjectOfType<PlayerCamera>();
 		}
 
 		public override void OnCharacterUpdate()
 		{
-			_playerInput.UpdateInput();
-
 			UpdateControlRotation();
 			Character.SetMovementInput(GetMovementInput());
 			Character.SetJumpInput(_playerInput.JumpInput);

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f8bc0f18ee8ab4791101b7157f61a7, type: 3}
   m_Name: PlayerController
   m_EditorClassIdentifier: 
-  ControlRotationSensitivity: 3
+  ControlRotationSensitivity: 2
