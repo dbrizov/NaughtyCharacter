@@ -108,15 +108,6 @@ namespace NaughtyCharacter
 			_characterAnimator.UpdateState();
 		}
 
-		private bool CheckGrounded()
-		{
-			Vector3 spherePosition = transform.position;
-			spherePosition.y = transform.position.y + GroundSettings.SphereCastRadius - GroundSettings.SphereCastDistance;
-			bool isGrounded = Physics.CheckSphere(spherePosition, GroundSettings.SphereCastRadius, GroundSettings.GroundLayers, QueryTriggerInteraction.Ignore);
-
-			return isGrounded;
-		}
-
 		public void SetMovementInput(Vector3 movementInput)
 		{
 			bool hasMovementInput = movementInput.sqrMagnitude > 0.0f;
@@ -152,6 +143,15 @@ namespace NaughtyCharacter
 			yawAngle %= 360.0f;
 
 			_controlRotation = new Vector2(pitchAngle, yawAngle);
+		}
+
+		private bool CheckGrounded()
+		{
+			Vector3 spherePosition = transform.position;
+			spherePosition.y = transform.position.y + GroundSettings.SphereCastRadius - GroundSettings.SphereCastDistance;
+			bool isGrounded = Physics.CheckSphere(spherePosition, GroundSettings.SphereCastRadius, GroundSettings.GroundLayers, QueryTriggerInteraction.Ignore);
+
+			return isGrounded;
 		}
 
 		private void UpdateHorizontalSpeed()
