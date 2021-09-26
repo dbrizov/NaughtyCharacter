@@ -20,6 +20,12 @@ namespace NaughtyCharacter
 		public float MaxFallSpeed = 40.0f; // The max speed at which the player can fall
 	}
 
+	public enum ERotationBehavior
+	{
+		OrientRotationToMovement,
+		UseControlRotation
+	}
+
 	[System.Serializable]
 	public class RotationSettings
 	{
@@ -28,25 +34,9 @@ namespace NaughtyCharacter
 		public float MaxPitchAngle = 75.0f;
 
 		[Header("Character Orientation")]
-		[SerializeField] private bool _useControlRotation = false;
-		[SerializeField] private bool _orientRotationToMovement = true;
+		public ERotationBehavior RotationBehavior = ERotationBehavior.OrientRotationToMovement;
 		public float MinRotationSpeed = 600.0f; // The turn speed when the player is at max speed (in degrees/second)
 		public float MaxRotationSpeed = 1200.0f; // The turn speed when the player is stationary (in degrees/second)
-
-		public bool UseControlRotation { get { return _useControlRotation; } set { SetUseControlRotation(value); } }
-		public bool OrientRotationToMovement { get { return _orientRotationToMovement; } set { SetOrientRotationToMovement(value); } }
-
-		private void SetUseControlRotation(bool useControlRotation)
-		{
-			_useControlRotation = useControlRotation;
-			_orientRotationToMovement = !_useControlRotation;
-		}
-
-		private void SetOrientRotationToMovement(bool orientRotationToMovement)
-		{
-			_orientRotationToMovement = orientRotationToMovement;
-			_useControlRotation = !_orientRotationToMovement;
-		}
 	}
 
 	public class Character : MonoBehaviour
@@ -197,7 +187,7 @@ namespace NaughtyCharacter
 
 		private void OrientToTargetRotation(Vector3 horizontalMovement)
 		{
-			if (RotationSettings.OrientRotationToMovement && horizontalMovement.sqrMagnitude > 0.0f)
+			if (RotationSettings.RotationBehavior == ERotationBehavior.OrientRotationToMovement && horizontalMovement.sqrMagnitude > 0.0f)
 			{
 				float rotationSpeed = Mathf.Lerp(
 					RotationSettings.MaxRotationSpeed, RotationSettings.MinRotationSpeed, _horizontalSpeed / _targetHorizontalSpeed);
@@ -206,7 +196,7 @@ namespace NaughtyCharacter
 
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
-			else if (RotationSettings.UseControlRotation)
+			else if (RotationSettings.RotationBehavior == ERotationBehavior.UseControlRotation)
 			{
 				Quaternion targetRotation = Quaternion.Euler(0.0f, _controlRotation.y, 0.0f);
 				transform.rotation = targetRotation;
