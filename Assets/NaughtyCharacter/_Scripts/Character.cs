@@ -2,24 +2,6 @@ using UnityEngine;
 
 namespace NaughtyCharacter
 {
-	[System.Serializable]
-	public class MovementSettings
-	{
-		public float Acceleration = 25.0f; // In meters/second
-		public float Decceleration = 25.0f; // In meters/second
-		public float MaxHorizontalSpeed = 8.0f; // In meters/second
-		public float JumpSpeed = 10.0f; // In meters/second
-		public float JumpAbortSpeed = 10.0f; // In meters/second
-	}
-
-	[System.Serializable]
-	public class GravitySettings
-	{
-		public float Gravity = 20.0f; // Gravity applied when the player is airborne
-		public float GroundedGravity = 5.0f; // A constant gravity that is applied when the player is grounded
-		public float MaxFallSpeed = 40.0f; // The max speed at which the player can fall
-	}
-
 	public enum ERotationBehavior
 	{
 		OrientRotationToMovement,
@@ -39,12 +21,39 @@ namespace NaughtyCharacter
 		public float MaxRotationSpeed = 1200.0f; // The turn speed when the player is stationary (in degrees/second)
 	}
 
+	[System.Serializable]
+	public class MovementSettings
+	{
+		public float Acceleration = 25.0f; // In meters/second
+		public float Decceleration = 25.0f; // In meters/second
+		public float MaxHorizontalSpeed = 8.0f; // In meters/second
+		public float JumpSpeed = 10.0f; // In meters/second
+		public float JumpAbortSpeed = 10.0f; // In meters/second
+	}
+
+	[System.Serializable]
+	public class GravitySettings
+	{
+		public float Gravity = 20.0f; // Gravity applied when the player is airborne
+		public float GroundedGravity = 5.0f; // A constant gravity that is applied when the player is grounded
+		public float MaxFallSpeed = 40.0f; // The max speed at which the player can fall
+	}
+
+	[System.Serializable]
+	public class GroundSettings
+	{
+		public LayerMask GroundLayers; // Which layers are considered as ground
+		public float SphereCastRadius = 0.35f; // The radius of the sphere cast for the grounded check
+		public float SphereCastDistance = 0.15f; // The distance below the character's capsule used for the sphere cast grounded check
+	}
+
 	public class Character : MonoBehaviour
 	{
 		public Controller Controller; // The controller that controls the character
 		public MovementSettings MovementSettings;
 		public GravitySettings GravitySettings;
 		public RotationSettings RotationSettings;
+		public GroundSettings GroundSettings;
 
 		private CharacterController _characterController; // The Unity's CharacterController
 		private CharacterAnimator _characterAnimator;
@@ -94,9 +103,18 @@ namespace NaughtyCharacter
 
 			OrientToTargetRotation(movement.SetY(0.0f));
 
-			IsGrounded = _characterController.isGrounded;
+			IsGrounded = CheckGrounded();
 
 			_characterAnimator.UpdateState();
+		}
+
+		private bool CheckGrounded()
+		{
+			Vector3 spherePosition = transform.position;
+			spherePosition.y = transform.position.y + GroundSettings.SphereCastRadius - GroundSettings.SphereCastDistance;
+			bool isGrounded = Physics.CheckSphere(spherePosition, GroundSettings.SphereCastRadius, GroundSettings.GroundLayers, QueryTriggerInteraction.Ignore);
+
+			return isGrounded;
 		}
 
 		public void SetMovementInput(Vector3 movementInput)
@@ -193,7 +211,6 @@ namespace NaughtyCharacter
 					RotationSettings.MaxRotationSpeed, RotationSettings.MinRotationSpeed, _horizontalSpeed / _targetHorizontalSpeed);
 
 				Quaternion targetRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
-
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 			}
 			else if (RotationSettings.RotationBehavior == ERotationBehavior.UseControlRotation)
