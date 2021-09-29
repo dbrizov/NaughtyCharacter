@@ -61,6 +61,7 @@ namespace NaughtyCharacter
 		private float _targetHorizontalSpeed; // In meters/second
 		private float _horizontalSpeed; // In meters/second
 		private float _verticalSpeed; // In meters/second
+		private bool _justWalkedOffALedge;
 
 		private Vector2 _controlRotation; // X (Pitch), Y (Yaw)
 		private Vector3 _movementInput;
@@ -89,21 +90,21 @@ namespace NaughtyCharacter
 
 		private void FixedUpdate()
 		{
-			UpdateState();
+			Tick(Time.deltaTime);
 			Controller.OnCharacterFixedUpdate();
 		}
 
-		private void UpdateState()
+		private void Tick(float deltaTime)
 		{
-			UpdateHorizontalSpeed();
-			UpdateVerticalSpeed();
+			UpdateHorizontalSpeed(deltaTime);
+			UpdateVerticalSpeed(deltaTime);
 
 			Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
-			_characterController.Move(movement * Time.deltaTime);
+			_characterController.Move(movement * deltaTime);
 
-			OrientToTargetRotation(movement.SetY(0.0f));
+			OrientToTargetRotation(movement.SetY(0.0f), deltaTime);
 
-			IsGrounded = CheckGrounded();
+			UpdateGrounded();
 
 			_characterAnimator.UpdateState();
 		}
@@ -154,7 +155,20 @@ namespace NaughtyCharacter
 			return isGrounded;
 		}
 
-		private void UpdateHorizontalSpeed()
+		private void UpdateGrounded()
+		{
+			_justWalkedOffALedge = false;
+
+			bool isGrounded = CheckGrounded();
+			if (IsGrounded && !isGrounded && !_jumpInput)
+			{
+				_justWalkedOffALedge = true;
+			}
+
+			IsGrounded = isGrounded;
+		}
+
+		private void UpdateHorizontalSpeed(float deltaTime)
 		{
 			Vector3 movementInput = _movementInput;
 			if (movementInput.sqrMagnitude > 1.0f)
@@ -165,10 +179,10 @@ namespace NaughtyCharacter
 			_targetHorizontalSpeed = movementInput.magnitude * MovementSettings.MaxHorizontalSpeed;
 			float acceleration = _hasMovementInput ? MovementSettings.Acceleration : MovementSettings.Decceleration;
 
-			_horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, _targetHorizontalSpeed, acceleration * Time.deltaTime);
+			_horizontalSpeed = Mathf.MoveTowards(_horizontalSpeed, _targetHorizontalSpeed, acceleration * deltaTime);
 		}
 
-		private void UpdateVerticalSpeed()
+		private void UpdateVerticalSpeed(float deltaTime)
 		{
 			if (IsGrounded)
 			{
@@ -185,10 +199,14 @@ namespace NaughtyCharacter
 				if (!_jumpInput && _verticalSpeed > 0.0f)
 				{
 					// This is what causes holding jump to jump higher than tapping jump.
-					_verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, MovementSettings.JumpAbortSpeed * Time.deltaTime);
+					_verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, MovementSettings.JumpAbortSpeed * deltaTime);
+				}
+				else if (_justWalkedOffALedge)
+				{
+					_verticalSpeed = 0.0f;
 				}
 
-				_verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * Time.deltaTime);
+				_verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * deltaTime);
 			}
 		}
 
@@ -203,7 +221,7 @@ namespace NaughtyCharacter
 			return moveDir;
 		}
 
-		private void OrientToTargetRotation(Vector3 horizontalMovement)
+		private void OrientToTargetRotation(Vector3 horizontalMovement, float deltaTime)
 		{
 			if (RotationSettings.RotationBehavior == ERotationBehavior.OrientRotationToMovement && horizontalMovement.sqrMagnitude > 0.0f)
 			{
@@ -211,7 +229,7 @@ namespace NaughtyCharacter
 					RotationSettings.MaxRotationSpeed, RotationSettings.MinRotationSpeed, _horizontalSpeed / _targetHorizontalSpeed);
 
 				Quaternion targetRotation = Quaternion.LookRotation(horizontalMovement, Vector3.up);
-				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+				transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * deltaTime);
 			}
 			else if (RotationSettings.RotationBehavior == ERotationBehavior.UseControlRotation)
 			{
