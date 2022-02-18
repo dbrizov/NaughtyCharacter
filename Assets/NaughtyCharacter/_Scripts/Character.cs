@@ -191,7 +191,6 @@ namespace NaughtyCharacter
                 if (_jumpInput)
                 {
                     _verticalSpeed = MovementSettings.JumpSpeed;
-                    IsGrounded = false;
                 }
             }
             else
