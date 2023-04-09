@@ -99,7 +99,7 @@ namespace NaughtyCharacter
             UpdateHorizontalSpeed(deltaTime);
             UpdateVerticalSpeed(deltaTime);
 
-            Vector3 movement = _horizontalSpeed * GetMovementDirection() + _verticalSpeed * Vector3.up;
+            Vector3 movement = _horizontalSpeed * GetMovementInput() + _verticalSpeed * Vector3.up;
             _characterController.Move(movement * deltaTime);
 
             OrientToTargetRotation(movement.SetY(0.0f), deltaTime);
@@ -120,6 +120,17 @@ namespace NaughtyCharacter
 
             _movementInput = movementInput;
             _hasMovementInput = hasMovementInput;
+        }
+
+        private Vector3 GetMovementInput()
+        {
+            Vector3 movementInput = _hasMovementInput ? _movementInput : _lastMovementInput;
+            if (movementInput.sqrMagnitude > 1f)
+            {
+                movementInput.Normalize();
+            }
+
+            return movementInput;
         }
 
         public void SetJumpInput(bool jumpInput)
@@ -207,17 +218,6 @@ namespace NaughtyCharacter
 
                 _verticalSpeed = Mathf.MoveTowards(_verticalSpeed, -GravitySettings.MaxFallSpeed, GravitySettings.Gravity * deltaTime);
             }
-        }
-
-        private Vector3 GetMovementDirection()
-        {
-            Vector3 moveDir = _hasMovementInput ? _movementInput : _lastMovementInput;
-            if (moveDir.sqrMagnitude > 1f)
-            {
-                moveDir.Normalize();
-            }
-
-            return moveDir;
         }
 
         private void OrientToTargetRotation(Vector3 horizontalMovement, float deltaTime)
